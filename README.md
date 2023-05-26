@@ -1,8 +1,8 @@
 # 365AutomatedLab
 
-This module will create a Microsoft 365 Test Environment using an excel workboook
+This module will create a Microsoft 365 Test Environment using an excel workbook
 
-## Current Functions:
+## Current Functions
 
 * Create Users and assign license
 * Remove Users
