@@ -27,10 +27,10 @@ Make sure the provided Excel file contains the following fields for each user: M
 function Remove-CT365User {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$FilePath,
         
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$domain
     )
 
