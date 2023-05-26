@@ -12,7 +12,7 @@ An mandatory parameter which specifies the location of an Excel file containing 
 A mandatory parameter which specifies the domain for user removal. This should be a valid Microsoft 365 domain.
 
 .EXAMPLE
-Remove-CT365User -FilePath C:\Data\365DataEnvironment.xlsx -Domain contoso.com
+Remove-CT365User -FilePath "C:\Data\365DataEnvironment.xlsx" -Domain contoso.com
 
 This example demonstrates how to remove users from the "contoso.com" domain using an Excel file located at the specified file path.
 
