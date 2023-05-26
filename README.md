@@ -2,7 +2,7 @@
 
 This module will create a Microsoft 365 Test Environment using an excel workboook
 
-Current Functions:
+## Current Functions:
 
 * Create Users and assign license
 * Remove Users
