@@ -17,7 +17,7 @@ The domain to be appended to the PrimarySMTP. This parameter is mandatory.
 .EXAMPLE
 Add-CT365Group -FilePath C:\Data\365\365DataEnvironment.xlsx -UserPrincipalName john.doe@contoso.com -domain contoso.com
 
-This example creates groups based on the data in 'groupdata.xlsx' using the user principal name 'john.doe@contoso.com' and the domain 'contoso.com'.
+This example creates groups based on the data in '365DataEnvironment.xlsx' using the user principal name 'john.doe@contoso.com' and the domain 'contoso.com'.
 
 .INPUTS
 None. You cannot pipe objects to Add-CT365Group.
@@ -31,11 +31,11 @@ This function requires the ExchangeOnlineManagement, Microsoft.Graph, and Import
 function Add-CT365Group {
     [CmdletBinding()]
     param (
-        [Parameter()]
-        [string]$FilePath = "C:\Data\365DataEnvironment.xlsx",
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [string]$FilePath,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$UserPrincialName,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$Domain
     )
 
