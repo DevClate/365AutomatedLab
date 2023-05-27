@@ -51,7 +51,7 @@ function Add-CT365Group {
     Import-Module ImportExcel
 
     # Connect to Exchange Online
-    $exoSession = Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
+    Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
 
