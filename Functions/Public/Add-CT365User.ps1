@@ -7,14 +7,14 @@
     The Excel file should have a worksheet named 'Users' containing the required user data. The function also assigns a license to the created users.
 
 .PARAMETER FilePath
-    The path to the Excel file which contains the user data. The default value is 365DataEnvironment.xlsx.
+    The path to the Excel file which contains the user data.
 
 .PARAMETER domain
     The domain of the Office 365 organization in which the users are to be created. This parameter is mandatory.
 
 .EXAMPLE
     Add-CT365User -FilePath "C:\Data\365DataEnvironment.xlsx" -domain "example.com"
-    This example creates users in the 'example.com' domain using the user data from the 'UserData.xlsx' file.
+    This example creates users in the 'example.com' domain using the user data from the '365DataEnvironment.xlsx' file.
 
 .INPUTS
     FilePath: A string representing the path to the Excel file.
