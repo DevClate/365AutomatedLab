@@ -69,8 +69,12 @@ Description = 'This module will allow you to create a 365 Development Environmen
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Add-CT365Group', 'Add-CT365User', 'Remove-CT365Group', 
-               'Remove-CT365User'
+FunctionsToExport = @(
+    'Add-CT365Group', 
+    'Add-CT365User',
+    'Remove-CT365Group', 
+    'Remove-CT365User'
+    )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
