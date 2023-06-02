@@ -77,7 +77,7 @@ FunctionsToExport = @(
     'Add-CT365Group', 
     'Add-CT365User',
     'Remove-CT365Group', 
-    'Remove-CT365User'
+    'Remove-CT365User',
     'Copy-WorksheetName'
     )
 
