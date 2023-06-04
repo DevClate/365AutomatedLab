@@ -76,8 +76,10 @@ RequiredModules = @(
 FunctionsToExport = @(
     'Add-CT365Group', 
     'Add-CT365User',
+    'Add-CT365GroupByTitle',
     'Remove-CT365Group', 
     'Remove-CT365User',
+    'Remove-CT465GroupByTitle',
     'Copy-WorksheetName'
     )
 
