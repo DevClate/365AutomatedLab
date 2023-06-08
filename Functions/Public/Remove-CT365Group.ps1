@@ -34,7 +34,8 @@ function Remove-CT365Group {
 
     # Import the required modules
     Import-Module ExchangeOnlineManagement
-    Import-Module Microsoft.Graph
+    Import-Module Microsoft.Graph.Groups
+    Import-MOdule Microsoft.Graph.Users
     Import-Module ImportExcel
 
     # Connect to Exchange Online
