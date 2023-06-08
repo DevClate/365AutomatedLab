@@ -15,9 +15,9 @@ The User Principal Name (UPN) used to connect to Exchange Online.
 The domain to be appended to the PrimarySMTP of each group to form the email address of the group.
 
 .EXAMPLE
-Add-CT365Group -FilePath "C:\Users\user\Desktop\GroupsData.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
+Add-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
 
-This will read the Excel file "GroupsData.xlsx" located at "C:\Users\user\Desktop\", use "admin@domain.com" to connect to Exchange Online, and append "@domain.com" to the PrimarySMTP of each group to form the email address of the group.
+This will read the Excel file "file.xlsx" located at "C:\Path\to\", use "admin@domain.com" to connect to Exchange Online, and append "@domain.com" to the PrimarySMTP of each group to form the email address of the group.
 
 .INPUTS
 System.String
