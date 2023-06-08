@@ -54,7 +54,8 @@ Description = 'This module will allow you to create a 365 Development Environmen
 RequiredModules = @(
     @{ ModuleName='ImportExcel'; ModuleVersion='7.8.2' }
     @{ ModuleName='ExchangeOnlineManagement'; ModuleVersion='2.0.6' }
-    @{ ModuleName='Microsoft.Graph'; ModuleVersion='1.17.0' }
+    @{ ModuleName='Microsoft.Graph.Users'; ModuleVersion='1.17.0' }
+    @{ ModuleName='Microsoft.Graph.Groups'; ModuleVersion='1.17.0' }
 )
 
 # Assemblies that must be loaded prior to importing this module
