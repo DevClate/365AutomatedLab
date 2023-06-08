@@ -1,28 +1,34 @@
 <#
 .SYNOPSIS
-Removes users from Microsoft 365 using a provided Excel file with user data.
+Removes a user from Microsoft 365 based on the provided Excel data.
 
 .DESCRIPTION
-The Remove-CT365User function uses the Microsoft Graph API to remove users from a Microsoft 365 environment. It takes two parameters: a file path to an Excel file containing user data, and a mandatory domain parameter for user removal.
+The Remove-CT365User function connects to the Microsoft Graph, reads user data from the provided Excel file, 
+and attempts to remove each user listed in the file from Microsoft 365.
 
 .PARAMETER FilePath
-An mandatory parameter which specifies the location of an Excel file containing user data.
+Specifies the full path to the Excel file that contains the user data. This parameter is mandatory.
 
 .PARAMETER Domain
-A mandatory parameter which specifies the domain for user removal. This should be a valid Microsoft 365 domain.
+Specifies the domain that will be concatenated with the UserPrincipalName to form a valid email address. This parameter is mandatory.
 
 .EXAMPLE
-Remove-CT365User -FilePath "C:\Data\365DataEnvironment.xlsx" -Domain contoso.com
+Remove-CT365User -FilePath "C:\Path\to\file.xlsx" -Domain "example.com"
 
-This example demonstrates how to remove users from the "contoso.com" domain using an Excel file located at the specified file path.
+This command attempts to remove the users listed in the "file.xlsx" Excel file from the "example.com" domain.
+
+.INPUTS
+System.String. You can pipe a string that contains the file path and domain to Remove-CT365User.
+
+.OUTPUTS
+System.String. Outputs a message for each attempted user removal, indicating success or failure.
 
 .NOTES
-This function relies on the Microsoft.Graph and ImportExcel PowerShell modules. If these modules are not installed, the function will attempt to install them. 
+This function requires the Microsoft.Graph.Users and ImportExcel modules. Make sure to install them using Install-Module before running this function.
 
-It also requires Microsoft 365 Administrator permissions for the 'User.ReadWrite.All' scope to perform user removal operations. 
-
-Make sure the provided Excel file contains the following fields for each user: MailNickname, FirstName, LastName, Title, Department. The Title and Department are for future use.
-
+.LINK
+Microsoft.Graph.Users: https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.users/?view=graph-powershell-1.0
+ImportExcel: https://www.powershellgallery.com/packages/ImportExcel
 #>
 function Remove-CT365User {
     [CmdletBinding()]
