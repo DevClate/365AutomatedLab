@@ -35,13 +35,13 @@ function Remove-CT365Group {
     # Import the required modules
     Import-Module ExchangeOnlineManagement
     Import-Module Microsoft.Graph.Groups
-    Import-MOdule Microsoft.Graph.Users
+    Import-Module Microsoft.Graph.Users
     Import-Module ImportExcel
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     
-    # Connect to Microsoft Graph
+    # Connect to Microsoft Graph - remove when done testing
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
 
     # Import data from Excel
