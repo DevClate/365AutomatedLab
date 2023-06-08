@@ -1,30 +1,32 @@
 <#
 .SYNOPSIS
-    This function copies the names of all worksheets in an Excel file to a CSV file.
+This function copies the names of all the worksheets in an Excel file and exports them into a CSV file.
 
 .DESCRIPTION
-    The Copy-WorksheetName function copies the names of all worksheets from a specified Excel file and exports them to a CSV file. It uses the ImportExcel module to handle Excel files.
+The function Copy-WorksheetName takes two parameters, the file path of the Excel file and the output path of the CSV file. It reads the Excel file, extracts the names of all worksheets, and exports these names into a CSV file. 
 
 .PARAMETER FilePath
-    The path to the Excel file whose worksheet names you want to copy. The function will throw an error if the Excel file doesn't exist at the specified path.
+The path to the Excel file. This is a mandatory parameter and it accepts pipeline input.
 
 .PARAMETER outputCsvPath
-    The path where the CSV file containing the worksheet names should be created.
+The path where the CSV file will be created. This is a mandatory parameter and it accepts pipeline input.
 
 .EXAMPLE
-    PS C:\> Copy-WorksheetName -FilePath "C:\input.xlsx" -outputCsvPath "C:\output.csv"
-    This command will copy all worksheet names from the input.xlsx file and output them to output.csv.
+Copy-WorksheetName -FilePath "C:\path\to\your\excel\file.xlsx" -outputCsvPath "C:\path\to\your\output\file.csv"
 
-.INPUTS
-    System.String
-    You can pipe a string to Copy-WorksheetName.
-
-.OUTPUTS
-    None. This function does not return any output. It writes the worksheet names to a CSV file.
+This will read the Excel file located at "C:\path\to\your\excel\file.xlsx", get the names of all worksheets, and export these names to a CSV file at "C:\path\to\your\output\file.csv".
 
 .NOTES
-    This function requires the ImportExcel module. If the module is not installed, you can install it using the Install-Module cmdlet:
-    PS C:\> Install-Module -Name ImportExcel
+This function requires the ImportExcel module to be installed. If not already installed, you can install it by running Install-Module -Name ImportExcel.
+
+.INPUTS
+System.String. You can pipe a string that contains the file path to this cmdlet.
+
+.OUTPUTS
+System.String. This cmdlet outputs a CSV file containing the names of all worksheets in the Excel file.
+
+.LINK
+TBD
 #>
 function Copy-WorksheetName {
     [CmdletBinding()]
