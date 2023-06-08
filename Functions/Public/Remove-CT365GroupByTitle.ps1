@@ -31,6 +31,7 @@ The Excel file should have columns for PrimarySMTP, GroupType, and DisplayName. 
 The function supports the following group types: 365Group, 365Distribution, 365MailEnabledSecurity, and 365Security. For each group type, it uses a different cmdlet to remove the user from the group.
 
 .LINK
+
 https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.groups/?view=graph-powershell-1.0
 
 .LINK
