@@ -15,7 +15,7 @@ RootModule = '365AutomatedLab.psm1'
 ModuleVersion = '0.0.1'
 
 # Supported PSEditions
-CompatiblePSEditions = '7.1'
+CompatiblePSEditions = 'Core'
 
 # ID used to uniquely identify this module
 GUID = 'd2cf0a82-aeab-4c4c-83fc-764cf4c23ffb'
@@ -33,7 +33,7 @@ Copyright = '(c) Clayton Tyger. All rights reserved.'
 Description = 'This module will allow you to create a 365 Development Environment from an Excel workbook'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '7.1'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
