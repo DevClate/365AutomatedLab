@@ -49,11 +49,12 @@ function Remove-CT365GroupByTitle {
     Import-Module ExchangeOnlineManagement
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Groups
+    Import-Module Microsoft.Graph.Users
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     # Connect to Microsoft Graph
-    Connect-MgGraph -Scopes "Group.ReadWrite.All"
+    Connect-MgGraph -Scopes "Group.ReadWrite.All","Directory.AccessAsUser.All"
 
     if (!(Test-Path $ExcelFilePath)) {
         Write-Error "Excel file not found at the specified path: $ExcelFilePath"
