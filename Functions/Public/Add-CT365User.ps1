@@ -45,12 +45,11 @@ function Add-CT365User {
         return
     }
     
-    # Install the ImportExcel module if not already installed
-    if (!(Get-Module -ListAvailable -Name ImportExcel)) {
-        Install-Module -Name ImportExcel -Force
-    }
+    Import-Module ImportExcel
+    Import-Module Microsoft.Graph.Users
+    Import-Module Microsoft.Graph.Groups
 
-    # Connect to Microsoft Graph
+    # Connect to Microsoft Graph - Pull these out eventually still in here for testing
     Connect-MgGraph -Scopes "Directory.ReadWrite.All"
 
 
