@@ -50,7 +50,7 @@ function Remove-CT365User {
     }
 
     # Import Required Modules
-    Import-Module Microsoft.Graph
+    Import-Module Microsoft.Graph.Users
     Import-Module ImportExcel
 
     # Connect to Microsoft Graph
