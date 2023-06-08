@@ -1,33 +1,34 @@
 <#
 .SYNOPSIS
-    Removes a user from specific Office 365 groups based on an Excel file.
+Removes a user from Office 365 groups as specified in an Excel file.
 
 .DESCRIPTION
-    The Remove-CT365GroupByTitle function uses the Office 365 Exchange Online and Microsoft Graph APIs to remove a user 
-    from specific Office 365 groups. The groups to remove the user from are listed in an Excel file.
-    
+This function removes a user from different types of Office 365 groups as specified in an Excel file.
+The function uses the ExchangeOnlineManagement, ImportExcel, Microsoft.Graph.Groups, and Microsoft.Graph.Users modules.
+
+The function first connects to Exchange Online and Microsoft Graph using the UserPrincipalName provided. 
+It then imports data from an Excel file and iterates through each row. For each row, it removes the user from the group based on the group type.
+
 .PARAMETER FilePath
-    The path to an Excel file that contains the groups to remove the user from. Each row in the Excel file represents a group.
-    The file must contain columns for PrimarySMTP, GroupType, and DisplayName.
+This mandatory parameter specifies the path to the Excel file which contains information about the groups from which the user should be removed.
 
 .PARAMETER UserEmail
-    The email address of the user to remove from the groups.
+This mandatory parameter specifies the email of the user who should be removed from the groups.
 
 .PARAMETER Domain
-    The domain of the user.
+This mandatory parameter specifies the domain of the user. The domain is used to construct the group name.
 
 .PARAMETER UserRole
-    The role of the user. This is used as the name of the worksheet in the Excel file to process.
-    Valid values are 'NY-IT' and 'NY-HR'.
+This mandatory parameter specifies the user's role. It should be either "NY-IT" or "NY-HR". This parameter is used to identify the worksheet in the Excel file to import.
 
 .EXAMPLE
-    Remove-CT365GroupByTitle -FilePath 'C:\Path\to\file.xlsx' -UserEmail 'user@example.com' -Domain 'example.com' -UserRole 'NY-IT'
-
-    This example removes the user 'user@example.com' from all groups listed in the 'NY-IT' worksheet of 'file.xlsx'.
+Remove-CT365GroupByTitle -FilePath "C:\Path\to\file.xlsx" -UserEmail "johndoe@example.com" -Domain "example.com" -UserRole "NY-IT"
+This example removes the user "johndoe@example.com" from the groups specified in the "NY-IT" worksheet of the Excel file at "C:\Path\to\file.xlsx".
 
 .NOTES
-    This function requires the ExchangeOnlineManagement, ImportExcel, and Microsoft.Graph.Groups PowerShell modules.
-    It also requires administrative access to the Office 365 tenant.
+The Excel file should have columns for PrimarySMTP, GroupType, and DisplayName. These columns are used to get information about the groups from which the user should be removed.
+
+The function supports the following group types: 365Group, 365Distribution, 365MailEnabledSecurity, and 365Security. For each group type, it uses a different cmdlet to remove the user from the group.
 #>
 function Remove-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
