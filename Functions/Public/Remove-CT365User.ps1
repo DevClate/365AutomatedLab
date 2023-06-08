@@ -39,16 +39,6 @@ function Remove-CT365User {
         return
     }
 
-    # Install the ImportExcel module if not already installed
-    if (!(Get-Module -ListAvailable -Name ImportExcel)) {
-        Install-Module -Name ImportExcel -Force
-    }
-
-    # Install the Microsoft Graph module if not already installed
-    if (!(Get-Module -ListAvailable -Name Microsoft.Graph)) {
-        Install-Module -Name Microsoft.Graph -Force
-    }
-
     # Import Required Modules
     Import-Module Microsoft.Graph.Users
     Import-Module ImportExcel
