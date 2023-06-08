@@ -15,7 +15,7 @@ RootModule = '365AutomatedLab.psm1'
 ModuleVersion = '0.0.1'
 
 # Supported PSEditions
-CompatiblePSEditions = 'Core'
+CompatiblePSEditions = '7.1'
 
 # ID used to uniquely identify this module
 GUID = 'd2cf0a82-aeab-4c4c-83fc-764cf4c23ffb'
