@@ -27,8 +27,11 @@ System.String. Outputs a message for each attempted user removal, indicating suc
 This function requires the Microsoft.Graph.Users and ImportExcel modules. Make sure to install them using Install-Module before running this function.
 
 .LINK
-Microsoft.Graph.Users: https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.users/?view=graph-powershell-1.0
-ImportExcel: https://www.powershellgallery.com/packages/ImportExcel
+https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.users/?view=graph-powershell-1.0
+
+.LINK
+
+https://www.powershellgallery.com/packages/ImportExcel
 #>
 function Remove-CT365User {
     [CmdletBinding()]
