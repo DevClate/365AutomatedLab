@@ -5,7 +5,7 @@
 .DESCRIPTION
     The Copy-WorksheetName function copies the names of all worksheets from a specified Excel file and exports them to a CSV file. It uses the ImportExcel module to handle Excel files.
 
-.PARAMETER excelFilePath
+.PARAMETER FilePath
     The path to the Excel file whose worksheet names you want to copy. The function will throw an error if the Excel file doesn't exist at the specified path.
 
 .PARAMETER outputCsvPath
@@ -30,20 +30,20 @@ function Copy-WorksheetName {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$excelFilePath,
+        [string]$FilePath,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$outputCsvPath
     )
 
-if (!(Test-Path $ExcelFilePath)) {
-    Write-Error "Excel file not found at the specified path: $ExcelFilePath"
+if (!(Test-Path $FilePath)) {
+    Write-Error "Excel file not found at the specified path: $FilePath"
     return
 }
 
 Import-Module ImportExcel
 
 # Import Excel file
-$excel = Import-excel -ExcelPackage $excelFilePath
+$excel = Import-excel -ExcelPackage $FilePath
 
 '"'+((Get-ExcelFileSummary $excel).WorksheetName -join '","')+'"' | Export-Csv -Path $outputCsvPath
 }
