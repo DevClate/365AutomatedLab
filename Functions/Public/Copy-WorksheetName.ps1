@@ -12,7 +12,7 @@
     The path where the CSV file containing the worksheet names should be created.
 
 .EXAMPLE
-    PS C:\> Copy-WorksheetName -excelFilePath "C:\input.xlsx" -outputCsvPath "C:\output.csv"
+    PS C:\> Copy-WorksheetName -FilePath "C:\input.xlsx" -outputCsvPath "C:\output.csv"
     This command will copy all worksheet names from the input.xlsx file and output them to output.csv.
 
 .INPUTS
