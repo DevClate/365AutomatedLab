@@ -1,33 +1,27 @@
 <#
 .SYNOPSIS
-    Creates and manages users in Office 365 from an Excel file.
+    This function creates new Microsoft 365 users from data in an Excel file and assigns them a license.
 
 .DESCRIPTION
-    The Add-CT365User function creates and manages users in Office 365 using an Excel file as a data source. 
-    The Excel file should have a worksheet named 'Users' containing the required user data. The function also assigns a license to the created users.
+    The Add-CT365User function imports user data from an Excel file, creates new users in Microsoft 365, and assigns them a license. 
+    It performs these tasks using the Microsoft.Graph.Users and Microsoft.Graph.Groups modules.
 
 .PARAMETER FilePath
-    The path to the Excel file which contains the user data.
+    The path of the Excel file containing user data. The file should have a worksheet named 'Users' with columns for UserName, FirstName, LastName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone, UsageLocation, and License. 
+    This parameter is mandatory and accepts pipeline input and property names.
 
 .PARAMETER domain
-    The domain of the Office 365 organization in which the users are to be created. This parameter is mandatory.
+    The domain to be appended to the UserName to create the UserPrincipalName for each user.
+    This parameter is mandatory and accepts pipeline input and property names.
 
 .EXAMPLE
-    Add-CT365User -FilePath "C:\Data\365DataEnvironment.xlsx" -domain "example.com"
-    This example creates users in the 'example.com' domain using the user data from the '365DataEnvironment.xlsx' file.
-
-.INPUTS
-    FilePath: A string representing the path to the Excel file.
-    domain: A string representing the domain name.
-
-.OUTPUTS
-    The function outputs messages indicating the status of user creation and license assignment.
+    Add-CT365User -FilePath "C:\Path\to\file.xlsx" -domain "contoso.com"
+    This command imports user data from the 'Users.xlsx' file and creates new users in Microsoft 365 under the domain 'contoso.com'.
 
 .NOTES
-    1. The function uses the ImportExcel module. If the module is not installed, the function will install it.
-    2. The function requires the 'Directory.ReadWrite.All' scope in Microsoft Graph for user creation and license assignment.
-    3. User data should be in a worksheet named 'Users' in the Excel file.
-    4. The password for all new users is set to 'P@ssw0rd123' by default. 
+    The function connects to Microsoft Graph using 'Directory.ReadWrite.All' scope. Make sure the account running this script has the necessary permissions.
+    The function sets the password for each new user to 'P@ssw0rd123' and does not require the user to change the password at the next sign-in. 
+    Modify the password setting to meet your organization's security requirements.
 #>
 function Add-CT365User {
     [CmdletBinding()]
