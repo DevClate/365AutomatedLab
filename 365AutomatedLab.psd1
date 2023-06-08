@@ -57,6 +57,7 @@ RequiredModules = @(
     @{ ModuleName='Microsoft.Graph.Users'; ModuleVersion='1.17.0' }
     @{ ModuleName='Microsoft.Graph.Groups'; ModuleVersion='1.17.0' }
     @{ ModuleName='Microsoft.Graph.Identity.DirectoryManagement'; ModuleVersion='1.17.0' }
+    @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='1.17.0' }
 
 )
 
