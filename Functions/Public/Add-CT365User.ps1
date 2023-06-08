@@ -42,6 +42,8 @@ function Add-CT365User {
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Users
     Import-Module Microsoft.Graph.Groups
+    Import-Module Microsoft.Graph.Identity.DirectoryManagement
+    Import-Module Microsoft.Graph.Users.Actions
 
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
     Connect-MgGraph -Scopes "Directory.ReadWrite.All"
