@@ -1,32 +1,41 @@
 <#
 .SYNOPSIS
-Creates Office 365 groups, distribution groups, mail-enabled security groups, and security groups based on an input Excel file.
+This function creates Office 365 Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups based on the data provided in an Excel file.
 
 .DESCRIPTION
-The Add-CT365Group function reads an Excel file, connects to Exchange Online and Microsoft Graph, and creates various types of groups based on the data in the Excel file. The types of groups it can create are 365 Group, 365 Distribution, 365 Mail-Enabled Security, and 365 Security. If a group with the same name already exists, it will not be created and a warning message will be printed.
+The function Add-CT365Group takes the path of an Excel file, User Principal Name and a Domain as input. It creates Office 365 Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups based on the data found in the Excel file. If a group already exists, the function will output a message and skip the creation of that group.
 
 .PARAMETER FilePath
-The path to the Excel file containing the data for the groups to be created.
+The full path to the Excel file containing the data for the groups to be created. The Excel file should have a worksheet named "Groups". Each row in this worksheet should represent a group to be created. The columns in the worksheet should include the DisplayName, Type (365Group, 365Distribution, 365MailEnabledSecurity, 365Security), PrimarySMTP (without domain), and Description of the group.
 
-.PARAMETER UserPrincipalName
-The user principal name used to connect to Exchange Online. This parameter is mandatory.
+.PARAMETER UserPrincialName
+The User Principal Name (UPN) used to connect to Exchange Online.
 
 .PARAMETER Domain
-The domain to be appended to the PrimarySMTP. This parameter is mandatory.
+The domain to be appended to the PrimarySMTP of each group to form the email address of the group.
 
 .EXAMPLE
-Add-CT365Group -FilePath C:\Data\365\365DataEnvironment.xlsx -UserPrincipalName john.doe@contoso.com -domain contoso.com
+Add-CT365Group -FilePath "C:\Users\user\Desktop\GroupsData.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
 
-This example creates groups based on the data in '365DataEnvironment.xlsx' using the user principal name 'john.doe@contoso.com' and the domain 'contoso.com'.
+This will read the Excel file "GroupsData.xlsx" located at "C:\Users\user\Desktop\", use "admin@domain.com" to connect to Exchange Online, and append "@domain.com" to the PrimarySMTP of each group to form the email address of the group.
 
 .INPUTS
-None. You cannot pipe objects to Add-CT365Group.
+System.String
 
 .OUTPUTS
-This function does not produce any output. It will print to the console the progress of creating each group, and whether the group already exists or was created successfully.
+System.String
+The function outputs strings informing about the creation of the groups or if the groups already exist.
 
 .NOTES
-This function requires the ExchangeOnlineManagement, Microsoft.Graph, and ImportExcel modules.
+The function uses the ExchangeOnlineManagement and Microsoft.Graph.Groups modules to interact with Office 365. Make sure these modules are installed before running the function.
+
+.LINK
+Get-UnifiedGroup
+New-UnifiedGroup
+Get-DistributionGroup
+New-DistributionGroup
+Get-MgGroup
+New-MgGroup
 #>
 function Add-CT365Group {
     [CmdletBinding()]
