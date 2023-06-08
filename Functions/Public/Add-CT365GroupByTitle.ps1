@@ -5,7 +5,7 @@ Add a user to specified 365 groups as per the data in the Excel file.
 .DESCRIPTION
 The Add-CT365GroupByTitle function connects to Exchange Online and Microsoft Graph to add a user to specified 365 groups based on an Excel file. The Excel file should contain the group details.
 
-.PARAMETER ExcelFilePath
+.PARAMETER FilePath
 The full file path to the Excel file that contains group details. This parameter is mandatory.
 
 .PARAMETER UserEmail
@@ -18,7 +18,7 @@ The domain to be appended to the group names obtained from the Excel file. This 
 The role of the user that needs to be added. This should be either "NY-IT" or "NY-HR". This parameter is mandatory.
 
 .EXAMPLE
-Add-CT365GroupByTitle -ExcelFilePath "C:\path\to\file.xlsx" -UserEmail "user@domain.com" -Domain "domain.com" -UserRole "NY-IT"
+Add-CT365GroupByTitle -FilePath "C:\path\to\file.xlsx" -UserEmail "user@domain.com" -Domain "domain.com" -UserRole "NY-IT"
 
 This will add the user "user@domain.com" to the 365 groups as per the data in the "C:\path\to\file.xlsx" file and with the role "NY-IT".
 
@@ -33,7 +33,7 @@ function Add-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
-        [string]$ExcelFilePath,
+        [string]$FilePath,
         
         [Parameter(Mandatory)]
         [string]$UserEmail,
@@ -55,12 +55,12 @@ function Add-CT365GroupByTitle {
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
 
-    if (!(Test-Path $ExcelFilePath)) {
-        Write-Error "Excel file not found at the specified path: $ExcelFilePath"
+    if (!(Test-Path $FilePath)) {
+        Write-Error "Excel file not found at the specified path: $FilePath"
         return
     }
 
-    $excelData = Import-Excel -Path $ExcelFilePath -WorksheetName $UserRole
+    $excelData = Import-Excel -Path $FilePath -WorksheetName $UserRole
 
     if ($PSCmdlet.ShouldProcess("Add user to groups from Excel file")) {
         foreach ($row in $excelData) {
