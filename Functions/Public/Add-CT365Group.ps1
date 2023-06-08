@@ -30,11 +30,26 @@ The function outputs strings informing about the creation of the groups or if th
 The function uses the ExchangeOnlineManagement and Microsoft.Graph.Groups modules to interact with Office 365. Make sure these modules are installed before running the function.
 
 .LINK
+
 Get-UnifiedGroup
+
+.LINK
 New-UnifiedGroup
+
+.LINK
+
 Get-DistributionGroup
+
+.LINK
+
 New-DistributionGroup
+
+.LINK
+
 Get-MgGroup
+
+.LINK
+
 New-MgGroup
 #>
 function Add-CT365Group {
