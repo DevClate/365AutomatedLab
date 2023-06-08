@@ -1,21 +1,34 @@
 <#
 .SYNOPSIS
-    Removes Office 365 groups from an Excel file.
+This function removes Office 365 groups based on information provided in an Excel file.
 
 .DESCRIPTION
-    This function reads data from an Excel file and creates three different types of Office 365 groups: Unified Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups. It uses the Exchange Online Management module (v2 or higher) and the Microsoft.Graph module.
+The Remove-CT365Group function is used to remove Office 365 groups. The function imports data from an Excel file and uses it to remove the Office 365 groups. The Excel file should contain a list of groups with their display names and types.
+
+The function supports four types of groups: 
+- 365Group
+- 365Distribution
+- 365MailEnabledSecurity
+- 365Security
 
 .PARAMETER FilePath
-    The full path to the Excel file containing the group information. The Excel file should have columns 'DisplayName', 'PrimarySMTP', 'Description', 'Type'
+The full path to the Excel file that contains information about the groups that should be removed. The file should contain a worksheet named 'Groups'. The 'Groups' worksheet should contain the display names and types of the groups.
+
+.PARAMETER UserPrincipalName
+The User Principal Name (UPN) of the account to connect to Exchange Online and Microsoft Graph.
 
 .EXAMPLE
-    Remove-CT365Group -FilePath "C:\path\to\your\file.xlsx"
+Remove-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincipalName "admin@contoso.com"
 
-    Reads data from the specified Excel file and creates the corresponding Office 365 groups.
+This example removes the Office 365 groups listed in the 'Groups' worksheet of the 'file.xlsx' file, using the 'admin@contoso.com' UPN to connect to Exchange Online and Microsoft Graph.
 
 .NOTES
-    This script assumes that you have the necessary permissions to create Office 365 groups in your organization.
-    Before running the script, make sure you've installed the "ExchangeOnlineManagement", "Microsoft.Graph", and "ImportExcel" modules.
+1. The function checks if the specified file exists. If it doesn't exist, a warning message is displayed and the function returns.
+2. The function imports the required modules: ExchangeOnlineManagement, Microsoft.Graph.Groups, Microsoft.Graph.Users, and ImportExcel.
+3. The function connects to Exchange Online and Microsoft Graph.
+4. The function imports data from the specified Excel file. It expects to find a worksheet named 'Groups' in the file.
+5. The function iterates over the groups listed in the 'Groups' worksheet and removes them. If a group does not exist, a warning message is displayed. If an invalid group type is specified, a warning message is displayed.
+6. After all groups have been processed, the function disconnects the Exchange Online and Microsoft Graph sessions.
 #>
 function Remove-CT365Group {
     [CmdletBinding()]
