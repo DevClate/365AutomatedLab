@@ -16,7 +16,7 @@
 
 .EXAMPLE
     Add-CT365User -FilePath "C:\Path\to\file.xlsx" -domain "contoso.com"
-    This command imports user data from the 'Users.xlsx' file and creates new users in Microsoft 365 under the domain 'contoso.com'.
+    This command imports user data from the 'file.xlsx' file and creates new users in Microsoft 365 under the domain 'contoso.com'.
 
 .NOTES
     The function connects to Microsoft Graph using 'Directory.ReadWrite.All' scope. Make sure the account running this script has the necessary permissions.
