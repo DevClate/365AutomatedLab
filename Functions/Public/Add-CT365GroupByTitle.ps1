@@ -1,3 +1,34 @@
+<#
+.SYNOPSIS
+Add a user to specified 365 groups as per the data in the Excel file.
+
+.DESCRIPTION
+The Add-CT365GroupByTitle function connects to Exchange Online and Microsoft Graph to add a user to specified 365 groups based on an Excel file. The Excel file should contain the group details.
+
+.PARAMETER ExcelFilePath
+The full file path to the Excel file that contains group details. This parameter is mandatory.
+
+.PARAMETER UserEmail
+The email of the user that needs to be added to the specified groups. This parameter is mandatory.
+
+.PARAMETER Domain
+The domain to be appended to the group names obtained from the Excel file. This parameter is mandatory.
+
+.PARAMETER UserRole
+The role of the user that needs to be added. This should be either "NY-IT" or "NY-HR". This parameter is mandatory.
+
+.EXAMPLE
+Add-CT365GroupByTitle -ExcelFilePath "C:\path\to\file.xlsx" -UserEmail "user@domain.com" -Domain "domain.com" -UserRole "NY-IT"
+
+This will add the user "user@domain.com" to the 365 groups as per the data in the "C:\path\to\file.xlsx" file and with the role "NY-IT".
+
+.NOTES
+Make sure to have the required modules installed and the user running the script has necessary permissions in Exchange Online and Microsoft Graph.
+
+.LINK
+For more information about the ExchangeOnlineManagement, ImportExcel, and Microsoft.Graph.Groups modules, see their respective documentation.
+
+#>
 function Add-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
     param(
