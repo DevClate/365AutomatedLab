@@ -6,7 +6,7 @@
     The Remove-CT365GroupByTitle function uses the Office 365 Exchange Online and Microsoft Graph APIs to remove a user 
     from specific Office 365 groups. The groups to remove the user from are listed in an Excel file.
     
-.PARAMETER ExcelFilePath
+.PARAMETER FilePath
     The path to an Excel file that contains the groups to remove the user from. Each row in the Excel file represents a group.
     The file must contain columns for PrimarySMTP, GroupType, and DisplayName.
 
@@ -21,7 +21,7 @@
     Valid values are 'NY-IT' and 'NY-HR'.
 
 .EXAMPLE
-    Remove-CT365GroupByTitle -ExcelFilePath 'C:\Path\to\file.xlsx' -UserEmail 'user@example.com' -Domain 'example.com' -UserRole 'NY-IT'
+    Remove-CT365GroupByTitle -FilePath 'C:\Path\to\file.xlsx' -UserEmail 'user@example.com' -Domain 'example.com' -UserRole 'NY-IT'
 
     This example removes the user 'user@example.com' from all groups listed in the 'NY-IT' worksheet of 'file.xlsx'.
 
@@ -33,7 +33,7 @@ function Remove-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
-        [String]$ExcelFilePath,
+        [String]$FilePath,
         
         [Parameter(Mandatory)]
         [string]$UserEmail,
@@ -56,12 +56,12 @@ function Remove-CT365GroupByTitle {
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "Group.ReadWrite.All","Directory.AccessAsUser.All"
 
-    if (!(Test-Path $ExcelFilePath)) {
-        Write-Error "Excel file not found at the specified path: $ExcelFilePath"
+    if (!(Test-Path $FilePath)) {
+        Write-Error "Excel file not found at the specified path: $FilePath"
         return
     }
 
-    $excelData = Import-Excel -Path $ExcelFilePath -WorksheetName $UserRole
+    $excelData = Import-Excel -Path $FilePath -WorksheetName $UserRole
 
     if ($PSCmdlet.ShouldProcess("Remove user from groups from Excel file")) {
         foreach ($row in $excelData) {
