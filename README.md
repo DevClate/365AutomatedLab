@@ -18,7 +18,7 @@ Please do not use this module in your production environment until tested in you
   * Microsoft.Graph.Users v1.17.0+
   * Microsoft.Graph.Groups v1.17.0+
   * Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
-  * Microsoft.Graph.Users.Actions'; ModuleVersion v1.17.0+
+  * Microsoft.Graph.Users.Actions v1.17.0+
 
 ### Current Functions
 
