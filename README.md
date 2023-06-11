@@ -44,3 +44,4 @@ In LabSources you can find an excel file named 365DataEnvironment.xlsx that has 
   * If you do not have a UsageLocation set, the licenses will not be added
 * Groups: This will have all the groups you want created
   * I do not have it assigning manager as of yet, but will in the future
+* Location-JobTitle: This will have all the groups that location and jobtitle are suppose to have.
