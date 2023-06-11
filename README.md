@@ -10,6 +10,16 @@ Please do not use this module in your production environment until tested in you
 
 ### Requirements
 
+* PowerShell Version:
+  * 7.1+ (Untested on Mac OSX and Linux)
+* Modules
+  * ImportExcel v7.8.2+
+  * ExchangeOnlineManagement v2.0.6+
+  * Microsoft.Graph.Users v1.17.0+
+  * Microsoft.Graph.Groups v1.17.0+
+  * Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
+  * Microsoft.Graph.Users.Actions'; ModuleVersion v1.17.0+
+
 ### Current Functions
 
 * Create Users and assign license
