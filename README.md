@@ -34,3 +34,5 @@ Please do not use this module in your production environment until tested in you
   * Add-CT365GroupByTitle
 * Remove User from any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
   * Remove-CT365GroupByTitle
+* Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
+  * Copy-WorkSheetName
