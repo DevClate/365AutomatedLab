@@ -39,6 +39,7 @@ function Add-CT365User {
         return
     }
     
+    # Import Required Modules
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Users
     Import-Module Microsoft.Graph.Groups

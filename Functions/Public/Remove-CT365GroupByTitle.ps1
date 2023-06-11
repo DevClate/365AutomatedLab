@@ -56,6 +56,7 @@ function Remove-CT365GroupByTitle {
         [string]$UserRole
     )
 
+    # Import Required Modules
     Import-Module ExchangeOnlineManagement
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Groups
