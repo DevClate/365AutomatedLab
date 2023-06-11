@@ -52,7 +52,6 @@ function Remove-CT365GroupByTitle {
         [string]$Domain,
         
         [Parameter(Mandatory)]
-        [ValidateSet("NY-IT", "NY-HR")]
         [string]$UserRole
     )
 
