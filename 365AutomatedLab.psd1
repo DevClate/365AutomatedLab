@@ -64,6 +64,8 @@ RequiredModules = @(
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
 
+
+
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
 
@@ -83,7 +85,7 @@ FunctionsToExport = @(
     'Add-CT365GroupByTitle',
     'Remove-CT365Group', 
     'Remove-CT365User',
-    'Remove-CT465GroupByTitle',
+    'Remove-CT365GroupByTitle',
     'Copy-WorksheetName'
     )
 

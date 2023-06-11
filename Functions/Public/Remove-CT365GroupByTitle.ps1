@@ -83,7 +83,7 @@ function Remove-CT365GroupByTitle {
                 try {
                     switch ($GroupType) {
                         '365Group' {
-                            Remove-UnifiedGroupLinks -Identity $GroupName -LinkType "Members" -Links $UserEmail
+                            Remove-UnifiedGroupLinks -Identity $GroupName -LinkType "Members" -Links $UserEmail -Confirm:$false
                             Write-Host "User $UserEmail successfully removed from $GroupType group $GroupName"
                         }
                         '365Distribution' {
