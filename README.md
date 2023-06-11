@@ -36,3 +36,11 @@ Please do not use this module in your production environment until tested in you
   * Remove-CT365GroupByTitle
 * Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
   * Copy-WorkSheetName
+
+### Data
+
+In LabSources you can find an excel file named 365DataEnvironment.xlsx that has 4 tabs.
+* Users: This will have all of the user's information you are creating including licensing information
+  * If you do not have a UsageLocation set, the licenses will not be added
+* Groups: This will have all the groups you want created
+  * I do not have it assigning manager as of yet, but will in the future
