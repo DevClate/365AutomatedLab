@@ -14,5 +14,5 @@ I started this module to create a test environment for 365 as there wasn't one f
 * Remove Users
 * Create the 4 types of Office 365 Groups/Distribution Lists
 * Remove the 4 types of Office 365 Groups/Distribution Lists
-* Assign User to their 4 Office 365 Groups/Distribution Lists by Job Title and Location
-* Remove User from their 4 Office 365 Groups/Distribution Lists by Job Title and Location
+* Assign User to any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
+* Remove User from any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
