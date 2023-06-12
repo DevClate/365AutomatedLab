@@ -45,7 +45,7 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
   * If you do not have a UsageLocation set, the licenses will not be added
 * Groups: This will have all the groups you want created
   * I do not have it assigning manager as of yet, but will in the future
-* Location-JobTitle: This will have all the groups that location and jobtitle are suppose to have.
+* Location-JobTitle: This will have all the groups that location and job title are suppose to have.
   * Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
 
 ### Getting Started
@@ -53,9 +53,12 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
 Once you have created your 365 Developer Program Environment, you can start adding users.
 
 1. Install the module by
-2. Save the 365DataEnvironment.xlsx (located in LabSources)) file on to your system
-3. Run the below command to add the users to your environment.
+2. Save the 365DataEnvironment.xlsx (located in LabSources) file on to your system
+3. Run the below command to add users to your environment
    1. ```powershell
       Add-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
-4.
+4. Run the below command to add groups to your environment. The UserPrincipalName will be the email that you created for the admin of the tenant, or a user who has rights to do it.
+   1. ```powershell
+      Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
+      ```
