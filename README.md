@@ -50,15 +50,25 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
 
 ### Getting Started
 
-Once you have created your 365 Developer Program Environment, you can start adding users.
+Once you have created your 365 Developer Program Environment, you can start adding users and groups.
 
 1. Install the module by
 2. Save the 365DataEnvironment.xlsx (located in LabSources) file on to your system
-3. Run the below command to add users to your environment
+3. Run the below command to add users to your environment with their licensing
+
    1. ```powershell
       Add-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
-4. Run the below command to add groups to your environment. The UserPrincipalName will be the email that you created for the admin of the tenant, or a user who has rights to do it.
+4. Run the below command to add groups to your environment.
+
    1. ```powershell
       Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
+      ```
+
+   > The UserPrincipalName will be the email that you created for the admin of the tenant, or an account who has rights to create groups
+   >
+5. Run the below command to add a user to their groups per their location and title.
+
+   1. ```powershell
+      Add-CT365GroupByTitle -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
       ```
