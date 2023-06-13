@@ -48,6 +48,12 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
 * Location-JobTitle: This will have all the groups that location and job title are suppose to have.
   * Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
 
+In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
+
+```
+I need to create a Microsoft 365 test environment with 25 users. There must be a mixture of locations but they can only be in NY, FL, and CA. There must be a mixture of departments, but they can only be IT, HR, Accounting, and Marketing. The fields to create values for are FirstName, LastName, UserName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone. The phone number and mobile number area codes should match the city and state they are in. This should be able to be pasted into an excel document.
+```
+
 ### Getting Started
 
 Once you have created your 365 Developer Program Environment, you can start adding users and groups.
