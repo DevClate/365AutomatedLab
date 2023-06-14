@@ -6,7 +6,7 @@ This module will create a Microsoft 365 Test Environment using an excel workbook
 
 I started this module to create a test environment for 365 as there wasn't one for groups, only users which Microsoft provides in there [365 Developer Program Environment](https://developer.microsoft.com/en-us/microsoft-365/dev-program) . I was tired of having to come up with test user names, their information, and groups each time, or remembering which ones I had already created every time I wanted to do some testing. Let's be honest. we aren't in our test environment every day and all day. This started out as a quick function, then another function, then another....you can see how I quickly determined that this needed to be a module to keep everything organized and easily shareable to others. With that said, I'd love feedback(Create issues) and community help on this to really expand this.
 
-Please do not use this module in your production environment until tested in your test environment. I highly recommend using Microsoft's 365 Developer Program Environment, and use this module with it so you are truly using this in a test environment. It is free to you, and it renews every 90 days as long as you are using it.
+Please do not use this module in your production environment until tested in your test environment. I highly recommend using Microsoft's 365 Developer Program Environment, and use this module with it so you are truly using this in a test environment. Microsoft Developer Program is free to you, and it renews every 90 days as long as you are using it.
 
 ### Requirements
 
@@ -51,14 +51,14 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
 In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
 
 ```
-I need to create a Microsoft 365 test environment with 25 users. There must be a mixture of locations but they can only be in NY, FL, and CA. There must be a mixture of departments, but they can only be IT, HR, Accounting, and Marketing. The fields to create values for are FirstName, LastName, UserName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone. The phone number and mobile number area codes should match the city and state they are in. This should be able to be pasted into an excel document.
+I need to create a Microsoft 365 test environment with 20 users. There must be a mixture of locations but they can only be in NY, FL, and CA. There must be a mixture of departments, but they can only be IT, HR, Accounting, and Marketing. The fields to create values for are FirstName, LastName, UserName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone. The phone number and mobile number area codes should match the city and state they are in. This should be able to be pasted into an excel document.
 ```
 
 ### Getting Started
 
 Once you have created your 365 Developer Program Environment, you can start adding users and groups.
 
-1. Install the module by
+1. Install the module by downloading the repository and copy into your PowerShell modules folder
 2. Save the 365DataEnvironment.xlsx (located in LabSources) file on to your system
 3. Run the below command to add users to your environment with their licensing
 
