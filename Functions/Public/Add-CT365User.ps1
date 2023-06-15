@@ -35,18 +35,21 @@ function Add-CT365User {
         [string]$domain
     )
 
-    # Check if Excel file exists
-    if (!(Test-Path $FilePath)) {
-        Write-Warning "File $FilePath does not exist. Please check the file path and try again."
-        return
-    }
-    
     # Import Required Modules
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Users
     Import-Module Microsoft.Graph.Groups
     Import-Module Microsoft.Graph.Identity.DirectoryManagement
     Import-Module Microsoft.Graph.Users.Actions
+    Import-Module PSFramework
+
+    # Check if Excel file exists
+    if (!(Test-Path $FilePath)) {
+        Write-Warning "File $FilePath does not exist. Please check the file path and try again."
+        return
+    }
+    
+
 
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
     Connect-MgGraph -Scopes "Directory.ReadWrite.All"
