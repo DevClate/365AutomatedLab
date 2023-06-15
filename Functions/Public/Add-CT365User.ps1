@@ -98,7 +98,7 @@ function Add-CT365User {
             'Password'                      = 'P@ssw0rd123'
         }
         
-        Write-PSFMessage -Level Host -Message "Creating user $userPrincipalName@$domain"
+        Write-PSFMessage -Level Host -Message "Creating user $userPrincipalName@$domain" -Target $UserPrincipalName
 
         $createdUser = New-MgUser @NewUserParams -PasswordProfile $PasswordProfile
 
