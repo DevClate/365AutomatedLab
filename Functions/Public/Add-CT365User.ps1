@@ -106,13 +106,13 @@ function Add-CT365User {
         if ($null -ne $createdUser) {
             Write-PSFMessage -Level Verbose -Message "User $userPrincipalName@$domain created successfully" -Target $UserPrincipalName
         } else {
-            Write-PSFMessage -Level Warning -Message "Failed to create user $userPrincipalName@$domain"
+            Write-PSFMessage -Level Warning -Message "Failed to create user $userPrincipalName@$domain" -Target $UserPrincipalName
             }
 
         $licenses = Get-MgSubscribedSku | Where-Object {$_.SkuPartNumber -eq $License }
         $user = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
         
-        Write-Output "Assigning license $License to user $userPrincipalName@$domain"
+        Write-PSFMessage -Level Host -Message "Assigning license $License to user $userPrincipalName@$domain" -Target $UserPrincipalName
 
         Set-MgUserLicense -UserId $user.Id -AddLicenses @{SkuId = ($licenses.SkuId)} -RemoveLicenses @()
 
