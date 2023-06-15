@@ -98,13 +98,13 @@ function Add-CT365User {
             'Password'                      = 'P@ssw0rd123'
         }
         
-        Write-PSFMessage -Level Host -Message "Creating user $userPrincipalName@$domain" -Target $UserPrincipalName
+        Write-PSFMessage -Level Output -Message "Creating user $userPrincipalName@$domain" -Target $UserPrincipalName
 
         $createdUser = New-MgUser @NewUserParams -PasswordProfile $PasswordProfile
 
         # Validate user creation
         if ($null -ne $createdUser) {
-            Write-PSFMessage -Level Verbose -Message "User $userPrincipalName@$domain created successfully" -Target $UserPrincipalName
+            Write-PSFMessage -Level Output -Message "User $userPrincipalName@$domain created successfully" -Target $UserPrincipalName
         } else {
             Write-PSFMessage -Level Warning -Message "Failed to create user $userPrincipalName@$domain" -Target $UserPrincipalName
             }
