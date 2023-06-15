@@ -121,9 +121,9 @@ function Add-CT365User {
 
         # Check if the assigned license ID is in the user's licenses
         if ($assignedLicenses -contains $licenses.SkuId) {
-            Write-Output "License $License successfully assigned to user $userPrincipalName@$domain" 
+            Write-PSFMessage -Level Output -Message "License $License successfully assigned to user $userPrincipalName@$domain" -Target $UserPrincipalName
         } else {
-            Write-Warning "Failed to assign license $License to user $userPrincipalName@$domain"
+            Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user $userPrincipalName@$domain" -Target $UserPrincipalName
         }
     }
 }
