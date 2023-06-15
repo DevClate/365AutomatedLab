@@ -49,8 +49,6 @@ function Add-CT365User {
         return
     }
     
-
-
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
     Connect-MgGraph -Scopes "Directory.ReadWrite.All"
 
@@ -100,15 +98,15 @@ function Add-CT365User {
             'Password'                      = 'P@ssw0rd123'
         }
         
-        Write-Output "Creating user $userPrincipalName@$domain"
+        Write-PSFMessage -Level Host -Message "Creating user $userPrincipalName@$domain"
 
         $createdUser = New-MgUser @NewUserParams -PasswordProfile $PasswordProfile
 
         # Validate user creation
         if ($null -ne $createdUser) {
-            Write-Output "User $userPrincipalName@$domain created successfully"
+            Write-PSFMessage -Level Verbose -Message "User $userPrincipalName@$domain created successfully" -Target $UserPrincipalName
         } else {
-            Write-Warning "Failed to create user $userPrincipalName@$domain"
+            Write-PSFMessage -Level Warning -Message "Failed to create user $userPrincipalName@$domain"
             }
 
         $licenses = Get-MgSubscribedSku | Where-Object {$_.SkuPartNumber -eq $License }
