@@ -73,6 +73,7 @@ function Add-CT365Group {
     Import-Module ExchangeOnlineManagement
     Import-Module Microsoft.Graph.Groups
     Import-Module ImportExcel
+    Import-Module PSFramework
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
