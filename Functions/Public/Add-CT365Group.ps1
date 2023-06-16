@@ -65,7 +65,7 @@ function Add-CT365Group {
 
     # Check if Excel file exists
     if (!(Test-Path $FilePath)) {
-        Write-Warning "File $FilePath does not exist. Please check the file path and try again."
+        Write-PSFMessage -Level Warning -Message "File $FilePath does not exist. Please check the file path and try again." -Target $FilePath
         return
     }
 
