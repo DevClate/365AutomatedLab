@@ -89,22 +89,22 @@ function Add-CT365Group {
         switch ($group.Type) {
             "365Group" {
                 try {
-                    Write-Output "Creating 365 Group $group.DisplayName"
+                    Write-PSFMessage -Level Output -Message "Creating 365 Group $group.DisplayName" -Target $Group.DisplayName
                     Get-UnifiedGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Write-Host "365 Group $($group.DisplayName) already exists" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Warning -Message "365 Group $($group.DisplayName) already exists" -Target $Group.DisplayName
                 } catch {
                     New-UnifiedGroup -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -AccessType Private -Notes $group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-Host "Created 365 Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Created 365 Group $($group.DisplayName)" -Target $Group.DisplayName
                 }
             }
             "365Distribution" {
                 try {
-                    Write-Output "Creating 365 Distribution Group $group.DisplayName"
+                    Write-PSFMessage -Level Output -Message "Creating 365 Distribution Group $group.DisplayName" -Target $Group.DisplayName
                     Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Write-Host "Distribution Group $($group.DisplayName) already exists" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Output -Message "Distribution Group $($group.DisplayName) already exists" -Target $Group.DisplayName
                 } catch {
                     New-DistributionGroup -Name $group.DisplayName -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Description $group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-Host "Created Distribution Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Created Distribution Group $($group.DisplayName)" -Target $Group.DisplayName
                 }
             }
             "365MailEnabledSecurity" {
