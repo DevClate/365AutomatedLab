@@ -118,18 +118,18 @@ function Add-CT365Group {
                 }
             }
             "365Security" {
-                Write-Output "Creating 365 Security Group $Group.DisplayName"
+                Write-PSFMessage -Level Output -Message "Creating 365 Security Group $Group.DisplayName" -Target $Group.DisplayName
                 $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
                 if ($ExistingGroup) {
-                    Write-Host "Security Group $($Group.DisplayName) already exists" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Output -Message "Security Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
                     continue
                 }
                 $mailNickname = $Group.PrimarySMTP.Split('@')[0]
                 New-MgGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailNickName $mailNickname -SecurityEnabled:$true -MailEnabled:$false
-                Write-Host "Created Security Group $($Group.DisplayName)" -ForegroundColor Green
+                Write-PSFMessage -Level Output -Message "Created Security Group $($Group.DisplayName)" -Target $Group.DisplayName
             }
             default {
-                Write-Host "Invalid group type for $($Group.DisplayName)" -ForegroundColor Yellow
+                Write-PSFMessage -Level Warning -Message "Invalid group type for $($Group.DisplayName)" -Target $Group.DisplayName
             }
         }
     }
