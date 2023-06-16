@@ -45,7 +45,7 @@ function Add-CT365User {
 
     # Check if Excel file exists
     if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Warning -Message "File $FilePath does not exist. Please check the file path and try again."
+        Write-PSFMessage -Level Error -Message "File $FilePath does not exist. Please check the file path and try again."
         return
     }
     
