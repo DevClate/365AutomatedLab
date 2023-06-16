@@ -58,52 +58,52 @@ function Remove-CT365Group {
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
 
     # Import data from Excel
-    $groups = Import-Excel -Path $FilePath -WorksheetName Groups
+    $Groups = Import-Excel -Path $FilePath -WorksheetName Groups
 
-    foreach ($group in $groups) {
-        switch ($group.Type) {
+    foreach ($Group in $Groups) {
+        switch ($Group.Type) {
             "365Group" {
                 try {
-                    Write-Output "Removing 365 Group $group.DisplayName"
-                    Get-UnifiedGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Remove-UnifiedGroup -Identity $group.DisplayName -Confirm:$false
-                    Write-Host "Removed 365 Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-Output "Removing 365 Group $Group.DisplayName"
+                    Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Remove-UnifiedGroup -Identity $Group.DisplayName -Confirm:$false
+                    Write-Host "Removed 365 Group $($Group.DisplayName)" -ForegroundColor Green
                 } catch {
-                    Write-Host "365 Group $($group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-Host "365 Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
                 }
             }
             "365Distribution" {
                 try {
-                    Write-Output "Removing 365 Distribution Group $group.DisplayName"
-                    Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Remove-DistributionGroup -Identity $group.DisplayName -Confirm:$false
-                    Write-Host "Removed Distribution Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-Output "Removing 365 Distribution Group $Group.DisplayName"
+                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
+                    Write-Host "Removed Distribution Group $($Group.DisplayName)" -ForegroundColor Green
                 } catch {
-                    Write-Host "Distribution Group $($group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-Host "Distribution Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
                 }
             }
             "365MailEnabledSecurity" {
                 try {
-                    Write-Output "Removing 365 Mail-Enabled Security Group $group.DisplayName"
-                    Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Remove-DistributionGroup -Identity $group.DisplayName -Confirm:$false
-                    Write-Host "Removed Mail-Enabled Security Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-Output "Removing 365 Mail-Enabled Security Group $Group.DisplayName"
+                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
+                    Write-Host "Removed Mail-Enabled Security Group $($Group.DisplayName)" -ForegroundColor Green
                 } catch {
-                    Write-Host "Mail-Enabled Security Group $($group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-Host "Mail-Enabled Security Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
                 }
             }
             "365Security" {
-                Write-Output "Removing 365 Security Group $group.DisplayName"
-                $existingGroup = Get-MgGroup -Filter "DisplayName eq '$($group.DisplayName)'"
+                Write-Output "Removing 365 Security Group $Group.DisplayName"
+                $existingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
                 if ($existingGroup) {
                     Remove-MgGroup -GroupId $existingGroup.Id -Confirm:$false
-                    Write-Host "Removed Security Group $($group.DisplayName)" -ForegroundColor Green
+                    Write-Host "Removed Security Group $($Group.DisplayName)" -ForegroundColor Green
                 } else {
-                    Write-Host "Security Group $($group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-Host "Security Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
                 }
             }
             default {
-                Write-Host "Invalid group type for $($group.DisplayName)" -ForegroundColor Yellow
+                Write-Host "Invalid group type for $($Group.DisplayName)" -ForegroundColor Yellow
             }
         }
     }

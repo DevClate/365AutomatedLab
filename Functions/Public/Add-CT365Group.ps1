@@ -81,55 +81,55 @@ function Add-CT365Group {
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
 
     # Import data from Excel
-    $groups = Import-Excel -Path $FilePath -WorksheetName Groups
+    $Groups = Import-Excel -Path $FilePath -WorksheetName Groups
 
-    foreach ($group in $groups) {
+    foreach ($Group in $Groups) {
         # Append the domain to the PrimarySMTP
-        $group.PrimarySMTP += "@$Domain"
-        switch ($group.Type) {
+        $Group.PrimarySMTP += "@$Domain"
+        switch ($Group.Type) {
             "365Group" {
                 try {
-                    Write-PSFMessage -Level Output -Message "Creating 365 Group $group.DisplayName" -Target $Group.DisplayName
-                    Get-UnifiedGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Write-PSFMessage -Level Warning -Message "365 Group $($group.DisplayName) already exists" -Target $Group.DisplayName
+                    Write-PSFMessage -Level Output -Message "Creating 365 Group $Group.DisplayName" -Target $Group.DisplayName
+                    Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Write-PSFMessage -Level Warning -Message "365 Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
                 } catch {
-                    New-UnifiedGroup -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -AccessType Private -Notes $group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-PSFMessage -Level Output -Message "Created 365 Group $($group.DisplayName)" -Target $Group.DisplayName
+                    New-UnifiedGroup -DisplayName $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -AccessType Private -Notes $Group.Description -RequireSenderAuthenticationEnabled $False
+                    Write-PSFMessage -Level Output -Message "Created 365 Group $($Group.DisplayName)" -Target $Group.DisplayName
                 }
             }
             "365Distribution" {
                 try {
-                    Write-PSFMessage -Level Output -Message "Creating 365 Distribution Group $group.DisplayName" -Target $Group.DisplayName
-                    Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Write-PSFMessage -Level Output -Message "Distribution Group $($group.DisplayName) already exists" -Target $Group.DisplayName
+                    Write-PSFMessage -Level Output -Message "Creating 365 Distribution Group $Group.DisplayName" -Target $Group.DisplayName
+                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Write-PSFMessage -Level Output -Message "Distribution Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
                 } catch {
-                    New-DistributionGroup -Name $group.DisplayName -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Description $group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-PSFMessage -Level Output -Message "Created Distribution Group $($group.DisplayName)" -Target $Group.DisplayName
+                    New-DistributionGroup -Name $Group.DisplayName -DisplayName $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -Description $Group.Description -RequireSenderAuthenticationEnabled $False
+                    Write-PSFMessage -Level Output -Message "Created Distribution Group $($Group.DisplayName)" -Target $Group.DisplayName
                 }
             }
             "365MailEnabledSecurity" {
                 try {
-                    Write-Output "Creating 365 Mail-Enabled Security Group $group.DisplayName"
-                    Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
-                    Write-Host "Mail-Enabled Security Group $($group.DisplayName) already exists" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Output -Message "Creating 365 Mail-Enabled Security Group $Group.DisplayName" -Target $Group.DisplayName
+                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
+                    Write-PSFMessage -Level Output -Message "Mail-Enabled Security Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
                 } catch {
-                    New-DistributionGroup -Name $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Type "Security" -Description $group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-Host "Created Mail-Enabled Security Group $($group.DisplayName)" -ForegroundColor Green
+                    New-DistributionGroup -Name $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -Type "Security" -Description $Group.Description -RequireSenderAuthenticationEnabled $False
+                    Write-PSFMessage -Level Output -Message "Created Mail-Enabled Security Group $($Group.DisplayName)" -Target $Group.DisplayName
                 }
             }
             "365Security" {
-                Write-Output "Creating 365 Security Group $group.DisplayName"
-                $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($group.DisplayName)'"
+                Write-Output "Creating 365 Security Group $Group.DisplayName"
+                $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
                 if ($ExistingGroup) {
-                    Write-Host "Security Group $($group.DisplayName) already exists" -ForegroundColor Yellow
+                    Write-Host "Security Group $($Group.DisplayName) already exists" -ForegroundColor Yellow
                     continue
                 }
-                $mailNickname = $group.PrimarySMTP.Split('@')[0]
-                New-MgGroup -DisplayName $group.DisplayName -Description $group.Description -MailNickName $mailNickname -SecurityEnabled:$true -MailEnabled:$false
-                Write-Host "Created Security Group $($group.DisplayName)" -ForegroundColor Green
+                $mailNickname = $Group.PrimarySMTP.Split('@')[0]
+                New-MgGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailNickName $mailNickname -SecurityEnabled:$true -MailEnabled:$false
+                Write-Host "Created Security Group $($Group.DisplayName)" -ForegroundColor Green
             }
             default {
-                Write-Host "Invalid group type for $($group.DisplayName)" -ForegroundColor Yellow
+                Write-Host "Invalid group type for $($Group.DisplayName)" -ForegroundColor Yellow
             }
         }
     }
