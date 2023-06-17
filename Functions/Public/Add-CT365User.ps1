@@ -126,5 +126,8 @@ function Add-CT365User {
             Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user $userPrincipalName@$domain" -Target $UserPrincipalName
         }
     }
+
+# Disconnect Exchange Online and Microsoft Graph sessions
+Disconnect-MgGraph
 }
 
