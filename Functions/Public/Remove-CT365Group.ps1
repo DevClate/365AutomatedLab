@@ -65,46 +65,52 @@ function Remove-CT365Group {
         switch ($Group.Type) {
             "365Group" {
                 try {
-                    Write-Output "Removing 365 Group $Group.DisplayName"
+                    Write-PSFMessage -Level Output -Message "Removing 365 Group $Group.DisplayName" -Target $Group.DisplayName
                     Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-UnifiedGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-Host "Removed 365 Group $($Group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Removed 365 Group $($Group.DisplayName)" -Target $Group.DisplayName
                 } catch {
-                    Write-Host "365 Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Warning -Message "365 Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
+                    Write-Error $_
+                    Continue
                 }
             }
             "365Distribution" {
                 try {
-                    Write-Output "Removing 365 Distribution Group $Group.DisplayName"
+                    Write-PSFMessage -Level Output "Removing 365 Distribution Group $Group.DisplayName" -Target $Group.DisplayName
                     Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-Host "Removed Distribution Group $($Group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Removed Distribution Group $($Group.DisplayName)" -Target $Group.DisplayName
                 } catch {
-                    Write-Host "Distribution Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Warning -Message "Distribution Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
+                    Write-Error $_
+                    Continue
                 }
             }
             "365MailEnabledSecurity" {
                 try {
-                    Write-Output "Removing 365 Mail-Enabled Security Group $Group.DisplayName"
+                    Write-PSFMessage -Level Output -Message "Removing 365 Mail-Enabled Security Group $Group.DisplayName" -Target $Group.DisplayName
                     Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-Host "Removed Mail-Enabled Security Group $($Group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Removed Mail-Enabled Security Group $($Group.DisplayName)" -Target $Group.DisplayName
                 } catch {
-                    Write-Host "Mail-Enabled Security Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Warning -Message "Mail-Enabled Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
+                    Write-Error $_
+                    Continue
                 }
             }
             "365Security" {
-                Write-Output "Removing 365 Security Group $Group.DisplayName"
+                Write-PSFMessage -Level Output -Message "Removing 365 Security Group $Group.DisplayName" -Target $Group.DisplayName
                 $existingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
                 if ($existingGroup) {
                     Remove-MgGroup -GroupId $existingGroup.Id -Confirm:$false
-                    Write-Host "Removed Security Group $($Group.DisplayName)" -ForegroundColor Green
+                    Write-PSFMessage -Level Output -Message "Removed Security Group $($Group.DisplayName)" -Target $Group.DisplayName
                 } else {
-                    Write-Host "Security Group $($Group.DisplayName) does not exist" -ForegroundColor Yellow
+                    Write-PSFMessage -Level Warning -Message "Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName
                 }
             }
             default {
-                Write-Host "Invalid group type for $($Group.DisplayName)" -ForegroundColor Yellow
+                Write-PSFMessage -Level Warning -Message "Invalid group type for $($Group.DisplayName)" -Target $Group.DisplayName
             }
         }
     }
