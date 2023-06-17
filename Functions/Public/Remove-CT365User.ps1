@@ -83,7 +83,7 @@ function Remove-CT365User {
 
             $userToRemove = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
 
-            Write-Output "Attemping to remove User $($NewUserParams.DisplayName)"
+            Write-PSFMessage -Level Output -Message "Attemping to remove User $($NewUserParams.DisplayName)" -Target $NewUserParams.DisplayName
 
             # Validate if the user exists
             if ($userToRemove) {
@@ -94,13 +94,14 @@ function Remove-CT365User {
                 
                 # Confirm that the user was removed
                 if (-not $removedUser) {
-                    Write-Output "User $($NewUserParams.DisplayName) has been successfully removed."
+                    Write-PSFMessage -Level Output -Message "User $($NewUserParams.DisplayName) has been successfully removed." -Target $NewUserParams.DisplayName
                 } else {
-                    Write-Warning "Failed to remove user $($NewUserParams.DisplayName)."
+                    Write-PSFMessage -Level Warning -Message "Failed to remove user $($NewUserParams.DisplayName)." -Target $NewUserParams.DisplayName
                 }
             } else {
-                Write-Warning "User $($NewUserParams.DisplayName) does not exist."
+                Write-PSFMessage -Level Warning -Message "User $($NewUserParams.DisplayName) does not exist." -Target $NewUserParams.DisplayName
             }
         }
     }
+Disconnect-MgGraph
 }
