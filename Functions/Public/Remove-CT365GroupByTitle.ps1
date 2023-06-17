@@ -62,6 +62,7 @@ function Remove-CT365GroupByTitle {
     Import-Module ImportExcel
     Import-Module Microsoft.Graph.Groups
     Import-Module Microsoft.Graph.Users
+    Import-Module PSFramework
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
