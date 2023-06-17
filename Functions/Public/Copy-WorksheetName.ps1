@@ -38,11 +38,12 @@ function Copy-WorksheetName {
     )
 
 if (!(Test-Path $FilePath)) {
-    Write-Error "Excel file not found at the specified path: $FilePath"
+    Write-PSFMessage -Level Error -Message "Excel file not found at the specified path: $FilePath" -Target $FilePath
     return
 }
 
 Import-Module ImportExcel
+Import-Module PSFramework
 
 # Import Excel file
 $excel = Import-excel -ExcelPackage $FilePath
