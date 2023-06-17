@@ -41,7 +41,7 @@ function Remove-CT365Group {
 
     # Check if Excel file exists
     if (!(Test-Path $FilePath)) {
-        Write-Warning "File $FilePath does not exist. Please check the file path and try again."
+        Write-PSFMessage -Level Error -Message "File $FilePath does not exist. Please check the file path and try again." -Target $FilePath
         return
     }
 
@@ -50,6 +50,7 @@ function Remove-CT365Group {
     Import-Module Microsoft.Graph.Groups
     Import-Module Microsoft.Graph.Users
     Import-Module ImportExcel
+    Import-Module PSFramework
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
