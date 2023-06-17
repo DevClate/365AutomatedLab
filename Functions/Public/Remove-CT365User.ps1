@@ -51,6 +51,7 @@ function Remove-CT365User {
     # Import Required Modules
     Import-Module Microsoft.Graph.Users
     Import-Module ImportExcel
+    Import-Module PSFramework
 
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "User.ReadWrite.All"
