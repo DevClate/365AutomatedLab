@@ -71,8 +71,6 @@ Once you have created your 365 Developer Program Environment, you can start addi
       Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
 
-   > The UserPrincipalName will be the email that you created for the admin of the tenant, or an account who has rights to create groups
-   >
 5. Run the below command to add a user to their groups per their location and title.
 
    1. ```powershell
