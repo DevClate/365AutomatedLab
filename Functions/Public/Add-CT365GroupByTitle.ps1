@@ -70,10 +70,12 @@ function Add-CT365GroupByTitle {
                 try {
                     switch ($GroupType) {
                         '365Group' {
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Group $Group.DisplayName" -Target $UserEmail
                             Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail
                             Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                         }
                         '365Distribution' {
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Distribution Group $Group.DisplayName" -Target $UserEmail
                             Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail
                             Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                         }
