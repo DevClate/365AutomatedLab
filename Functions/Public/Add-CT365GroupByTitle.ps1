@@ -70,20 +70,22 @@ function Add-CT365GroupByTitle {
                 try {
                     switch ($GroupType) {
                         '365Group' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Group $Group.DisplayName" -Target $UserEmail
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Group $GroupName" -Target $UserEmail
                             Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail
                             Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                         }
                         '365Distribution' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Distribution Group $Group.DisplayName" -Target $UserEmail
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Distribution Group $GroupName" -Target $UserEmail
                             Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail
                             Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                         }
                         '365MailEnabledSecurity' {
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Mail-Enabled Security Group $GroupName" -Target $UserEmail
                             Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail
                             Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                         }
                         '365Security' {
+                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Security Group $GroupName" -Target $UserEmail
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
                             $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($DisplayName)'"
                                 if ($ExistingGroup) {
