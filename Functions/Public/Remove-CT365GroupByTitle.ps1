@@ -87,18 +87,27 @@ function Remove-CT365GroupByTitle {
                     switch ($GroupType) {
                         '365Group' {
                             Write-PSFMessage -Level Output -Message "Removing $UserEmail from 365 Group $GroupName" -Target $UserEmail
-                            Remove-UnifiedGroupLinks -Identity $GroupName -LinkType "Members" -Links $UserEmail -Confirm:$false
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail
+                            if ((Remove-UnifiedGroupLinks -Identity $GroupName -LinkType "Members" -Links $UserEmail -Confirm:$false )) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail}
+                            else {
+                            Write-PSFMessage -Level Output -Message "User $UserEmail was not removed from $GroupType group $GroupName" -Target $UserEmail
+                            }
                         }
                         '365Distribution' {
                             Write-PSFMessage -Level Output -Message "Removing $UserEmail from 365 Distribution Group $GroupName" -Target $UserEmail
-                            Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail
+                            if ((Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false )) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail}
+                            else {
+                            Write-PSFMessage -Level Output -Message "User $UserEmail was not removed from $GroupType group $GroupName" -Target $UserEmail
+                            }
                         }
                         '365MailEnabledSecurity' {
                             Write-PSFMessage -Level Output -Message "Removing $UserEmail from 365 Mail-Enabled Security Group $GroupName" -Target $UserEmail
-                            Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail
+                            if ((Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false )) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail}
+                            else {
+                            Write-PSFMessage -Level Output -Message "User $UserEmail was not removed from $GroupType group $GroupName" -Target $UserEmail
+                            }
                         }
                         '365Security' {
                             Write-PSFMessage -Level Output -Message "Removing $UserEmail from 365 Security Group $GroupName" -Target $UserEmail
