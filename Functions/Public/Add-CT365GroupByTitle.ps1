@@ -71,18 +71,33 @@ function Add-CT365GroupByTitle {
                     switch ($GroupType) {
                         '365Group' {
                             Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Group $GroupName" -Target $UserEmail
-                            Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                            if ((Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail)) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                                
+                            }
+                            else {
+                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
+                            }
                         }
                         '365Distribution' {
                             Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Distribution Group $GroupName" -Target $UserEmail
-                            Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                            if ((Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail)) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                                
+                            }
+                            else {
+                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
+                            }
                         }
                         '365MailEnabledSecurity' {
                             Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Mail-Enabled Security Group $GroupName" -Target $UserEmail
-                            Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail
-                            Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                            if ((Add-DistributionGroupMember -Identity $GroupName -Type Security -Member $UserEmail)) {
+                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
+                                
+                            }
+                            else {
+                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
+                            }
                         }
                         '365Security' {
                             Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Security Group $GroupName" -Target $UserEmail
