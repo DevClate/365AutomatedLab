@@ -54,7 +54,13 @@ function Add-CT365User {
 
 
     # Import user data from Excel file
-    $userData = Import-Excel -Path $FilePath -WorksheetName Users
+    $userData = $null
+    try {
+        $userData = Import-Excel -Path $FilePath -WorksheetName Users
+    } catch {
+        Write-PSFMessage -Level Error -Message "Failed to import user data from Excel file."
+        return
+    }
 
     foreach ($user in $userData) {
 
