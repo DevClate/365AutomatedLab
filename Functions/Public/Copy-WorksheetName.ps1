@@ -26,7 +26,7 @@ System.String. You can pipe a string that contains the file path to this cmdlet.
 System.String. This cmdlet outputs a CSV file containing the names of all worksheets in the Excel file.
 
 .LINK
-TBD
+https://github.com/dfinke/ImportExcel
 #>
 function Copy-WorksheetName {
     [CmdletBinding()]
