@@ -23,12 +23,8 @@ Remove-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincipalName "admin@con
 This example removes the Office 365 groups listed in the 'Groups' worksheet of the 'file.xlsx' file, using the 'admin@contoso.com' UPN to connect to Exchange Online and Microsoft Graph.
 
 .NOTES
-1. The function checks if the specified file exists. If it doesn't exist, a warning message is displayed and the function returns.
-2. The function imports the required modules: ExchangeOnlineManagement, Microsoft.Graph.Groups, Microsoft.Graph.Users, and ImportExcel.
-3. The function connects to Exchange Online and Microsoft Graph.
-4. The function imports data from the specified Excel file. It expects to find a worksheet named 'Groups' in the file.
-5. The function iterates over the groups listed in the 'Groups' worksheet and removes them. If a group does not exist, a warning message is displayed. If an invalid group type is specified, a warning message is displayed.
-6. After all groups have been processed, the function disconnects the Exchange Online and Microsoft Graph sessions.
+This function requires modules ExchangeOnlineManagement, Microsoft.Graph.Groups, Microsoft.Graph.Users, and ImportExcel.
+
 #>
 function Remove-CT365Group {
     [CmdletBinding()]
