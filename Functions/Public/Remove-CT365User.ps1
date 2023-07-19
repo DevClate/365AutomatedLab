@@ -58,11 +58,14 @@ function Remove-CT365User {
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "User.ReadWrite.All"
 
-    # Check if the Excel file exists before importing
-    if (Test-Path $FilePath) {
-
-        # Import user data from Excel file
+    # Import user data from Excel file
+    $userData = $null
+    try {
         $userData = Import-Excel -Path $FilePath -WorksheetName Users
+    } catch {
+        Write-PSFMessage -Level Error -Message "Failed to import user data from Excel file."
+        return
+    }
 
         foreach ($user in $userData) {
 
@@ -106,4 +109,3 @@ function Remove-CT365User {
         }
     }
 Disconnect-MgGraph
-}
