@@ -24,14 +24,16 @@ System.String. You can pipe a string that contains the file path and domain to R
 System.String. Outputs a message for each attempted user removal, indicating success or failure.
 
 .NOTES
-This function requires the Microsoft.Graph.Users and ImportExcel modules. Make sure to install them using Install-Module before running this function.
+This function requires the Microsoft.Graph.Users, ImportExcel, and PSFramework modules. Make sure to install them using Install-Module before running this function.
 
 .LINK
 https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.users/?view=graph-powershell-1.0
 
 .LINK
-
 https://www.powershellgallery.com/packages/ImportExcel
+
+.LINK
+https://psframework.org/documentation/commands/PSFramework.html
 #>
 function Remove-CT365User {
     [CmdletBinding()]
