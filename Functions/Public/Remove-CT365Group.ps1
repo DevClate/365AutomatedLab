@@ -30,23 +30,29 @@ function Remove-CT365Group {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
+            switch ($psitem){
+                {-not([System.IO.File]::Exists($psitem))}{
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                }
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls|.csv)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx, .xls, or .csv extension and try again."
+                }
+                Default{
+                    $true
+                }
+            }
+        })]
         [string]$FilePath,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$UserPrincialName
     )
 
-    # Check if Excel file exists
-    if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Error -Message "File $FilePath does not exist. Please check the file path and try again." -Target $FilePath
-        return
-    }
-
     # Import the required modules
-    Import-Module ExchangeOnlineManagement
-    Import-Module Microsoft.Graph.Groups
-    Import-Module Microsoft.Graph.Users
-    Import-Module ImportExcel
-    Import-Module PSFramework
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement","Microsoft.Graph.Users"
+    Import-Module $ModulesToImport
+    
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
@@ -58,57 +64,78 @@ function Remove-CT365Group {
     $Groups = Import-Excel -Path $FilePath -WorksheetName Groups
 
     foreach ($Group in $Groups) {
-        switch ($Group.Type) {
-            "365Group" {
-                try {
-                    Write-PSFMessage -Level Output -Message "Removing 365 Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Remove-UnifiedGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-PSFMessage -Level Output -Message "Removed 365 Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
-                    Write-PSFMessage -Level Warning -Message "365 Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
-                    Write-Error $_
-                    Continue
-                }
-            }
-            "365Distribution" {
-                try {
-                    Write-PSFMessage -Level Output "Removing 365 Distribution Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-PSFMessage -Level Output -Message "Removed Distribution Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
-                    Write-PSFMessage -Level Warning -Message "Distribution Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
-                    Write-Error $_
-                    Continue
-                }
-            }
-            "365MailEnabledSecurity" {
-                try {
-                    Write-PSFMessage -Level Output -Message "Removing 365 Mail-Enabled Security Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
-                    Write-PSFMessage -Level Output -Message "Removed Mail-Enabled Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
-                    Write-PSFMessage -Level Warning -Message "Mail-Enabled Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
-                    Write-Error $_
-                    Continue
-                }
-            }
-            "365Security" {
-                Write-PSFMessage -Level Output -Message "Removing 365 Security Group $Group.DisplayName" -Target $Group.DisplayName
-                $existingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
-                if ($existingGroup) {
-                    Remove-MgGroup -GroupId $existingGroup.Id -Confirm:$false
-                    Write-PSFMessage -Level Output -Message "Removed Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } else {
-                    Write-PSFMessage -Level Warning -Message "Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName
-                }
-            }
-            default {
-                Write-PSFMessage -Level Warning -Message "Invalid group type for $($Group.DisplayName)" -Target $Group.DisplayName
-            }
+        try {
+        $writePSFMessageSplat = @{
+            Level = 'Output'
+            Message = "Removing $($Group.Type):'$($Group.DisplayName)'"
+            Target = $Group.DisplayName
         }
+
+        Write-PSFMessage @writePSFMessageSplat
+
+            switch ($Group.Type) {
+                "365Group" {
+                    $removeUnifiedGroupSplat = @{
+                        Identity = $Group.DisplayName
+                        Confirm = $false
+                        ErrorAction = 'Stop'
+                    }
+
+                    Remove-UnifiedGroup @removeUnifiedGroupSplat
+                }
+                {"365Distribution" -or "365MailEnabledSecurity"} {
+                    $removeDistributionGroupSplat = @{
+                        Identity = $Group.DisplayName
+                        Confirm = $false
+                        ErrorAction = 'Stop'
+                    }
+
+                    Remove-DistributionGroup @removeDistributionGroupSplat
+                }
+                "365Security" {
+                    $getMgGroupSplat = @{
+                        Filter = "DisplayName eq '$($Group.DisplayName)'"
+                        ErrorAction = 'Stop'
+                    }
+
+                    $existingGroup = Get-MgGroup @getMgGroupSplat
+
+                    $removeMgGroupSplat = @{
+                        GroupId = $existingGroup.Id
+                        ErrorAction = 'Stop'
+                    }
+
+                    Remove-MgGroup @removeMgGroupSplat
+                }
+                default {
+                    $writePSFMessageSplat = @{
+                        Level = 'Warning'
+                        Message = "Invalid group type for $($Group.DisplayName)"
+                        Target = $Group.DisplayName
+                    }
+
+                    Write-PSFMessage @writePSFMessageSplat
+                }
+            }
+            $writePSFMessageSplat = @{
+                Level = 'Output'
+                Message = "Removed $($Group.Type):'$($Group.DisplayName)' successfully"
+                Target = $Group.DisplayName
+            }
+
+            Write-PSFMessage @writePSFMessageSplat
+
+        }
+        catch {
+            $writePSFMessageSplat = @{
+                Level = 'Output'
+                Message = "Could not remove $($Group.Type):'$($Group.DisplayName)' - maybe the group already exists"
+                Target = $Group.DisplayName
+            }
+
+            Write-PSFMessage @writePSFMessageSplat
+        }
+
     }
     
 
