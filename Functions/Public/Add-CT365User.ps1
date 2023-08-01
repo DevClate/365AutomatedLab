@@ -29,29 +29,47 @@ function Add-CT365User {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
+            switch ($psitem){
+                {-not([System.IO.File]::Exists($psitem))}{
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                }
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls|.csv)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx, .xls, or .csv extension and try again."
+                }
+                Default{
+                    $true
+                }
+            }
+        })]
         [string]$FilePath,
         
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$domain
+        [ValidateScript({
+            # Check if the domain fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
+                    throw "The provided domain is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
+        [string]$Domain,
+
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
+
     )
 
     # Import Required Modules
-    Import-Module ImportExcel
-    Import-Module Microsoft.Graph.Users
-    Import-Module Microsoft.Graph.Groups
-    Import-Module Microsoft.Graph.Identity.DirectoryManagement
-    Import-Module Microsoft.Graph.Users.Actions
-    Import-Module PSFramework
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Users","Microsoft.Graph.Groups","Microsoft.Graph.Identity.DirectoryManagement","Microsoft.Graph.Users.Actions","PSFramework"
+    Import-Module $ModulesToImport
 
-    # Check if Excel file exists
-    if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Error -Message "File $FilePath does not exist. Please check the file path and try again."
-        return
-    }
-    
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
     Connect-MgGraph -Scopes "Directory.ReadWrite.All"
-
 
     # Import user data from Excel file
     $userData = $null
@@ -62,63 +80,49 @@ function Add-CT365User {
         return
     }
 
+    # Iterate through each user in the Excel file and create them
     foreach ($user in $userData) {
-
-            $UserPrincipalName = $user.UserName
-            $GivenName         = $user.FirstName
-            $Surname           = $user.LastName
-            $MailNickname      = $user.UserName
-            $JobTitle          = $user.Title
-            $Department        = $user.Department
-            $Streetaddress     = $user.StreetAddress
-            $City              = $user.City
-            $State             = $user.State
-            $PostalCode        = $user.PostalCode
-            $Country           = $user.Country
-            $BusinessPhones    = $user.PhoneNumber
-            $MobilePhone       = $user.MobilePhone
-            $UsageLocation     = $user.UsageLocation
-            $License           = $user.License
-            
         $NewUserParams = @{
-            UserPrincipalName = "$userPrincipalName@$domain"
-            GivenName         = $GivenName
-            Surname           = $Surname
-            DisplayName       = "$GivenName $Surname"
-            MailNickname      = $MailNickname
-            JobTitle          = $JobTitle
-            Department        = $Department
-            StreetAddress     = $Streetaddress
-            City              = $City
-            State             = $State
-            PostalCode        = $PostalCode
-            Country           = $Country
-            BusinessPhones    = $BusinessPhones
-            MobilePhone       = $MobilePhone
-            UsageLocation     = $UsageLocation
+            UserPrincipalName = "$($user.UserName)@$domain"
+            GivenName         = $user.FirstName
+            Surname           = $user.LastName
+            DisplayName       = "$($user.FirstName) $($user.LastName)"
+            MailNickname      = $user.UserName
+            JobTitle          = $user.Title
+            Department        = $user.Department
+            StreetAddress     = $user.StreetAddress
+            City              = $user.City
+            State             = $user.State
+            PostalCode        = $user.PostalCode
+            Country           = $user.Country
+            BusinessPhones    = $user.PhoneNumber
+            MobilePhone       = $user.MobilePhone
+            UsageLocation     = $user.UsageLocation
             AccountEnabled    = $true
         }
 
         $PasswordProfile   = @{
             'ForceChangePasswordNextSignIn' = $false
-            'Password'                      = 'P@ssw0rd123'
+            'Password'                      = $password | ConvertFrom-SecureString -AsPlainText
         }
         
-        Write-PSFMessage -Level Output -Message "Creating user $userPrincipalName@$domain" -Target $UserPrincipalName
+        Write-PSFMessage -Level Output -Message "Creating user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
 
         $createdUser = New-MgUser @NewUserParams -PasswordProfile $PasswordProfile
 
         # Validate user creation
         if ($null -ne $createdUser) {
-            Write-PSFMessage -Level Output -Message "User $userPrincipalName@$domain created successfully" -Target $UserPrincipalName
+            Write-PSFMessage -Level Output -Message "User: '$($NewUserParams.UserPrincipalName)' created successfully" -Target $user.UserName
         } else {
-            Write-PSFMessage -Level Warning -Message "Failed to create user $userPrincipalName@$domain" -Target $UserPrincipalName
-            }
+            Write-PSFMessage -Level Warning -Message "Failed to create user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
+            # if the creation failed go ahead with the next user and skip the license part
+            continue
+        }
 
-        $licenses = Get-MgSubscribedSku | Where-Object {$_.SkuPartNumber -eq $License }
-        $user = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
+        $licenses = Get-MgSubscribedSku | Where-Object {$_.SkuPartNumber -eq $user.License }
+        $user = Get-MgUser -Filter "DisplayName eq '$($NewUserParams.DisplayName)'"
         
-        Write-PSFMessage -Level Host -Message "Assigning license $License to user $userPrincipalName@$domain" -Target $UserPrincipalName
+        Write-PSFMessage -Level Host -Message "Assigning license $($user.License) to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
 
         Set-MgUserLicense -UserId $user.Id -AddLicenses @{SkuId = ($licenses.SkuId)} -RemoveLicenses @()
 
@@ -127,13 +131,12 @@ function Add-CT365User {
 
         # Check if the assigned license ID is in the user's licenses
         if ($assignedLicenses -contains $licenses.SkuId) {
-            Write-PSFMessage -Level Output -Message "License $License successfully assigned to user $userPrincipalName@$domain" -Target $UserPrincipalName
+            Write-PSFMessage -Level Output -Message "License $License successfully assigned to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
         } else {
-            Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user $userPrincipalName@$domain" -Target $UserPrincipalName
+            Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
         }
     }
 
-# Disconnect Exchange Online and Microsoft Graph sessions
-Disconnect-MgGraph
+    # Disconnect Exchange Online and Microsoft Graph sessions
+    Disconnect-MgGraph
 }
-
