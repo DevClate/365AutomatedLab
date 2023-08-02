@@ -29,13 +29,38 @@ This function requires the ExchangeOnlineManagement, ImportExcel, and Microsoft.
 function Add-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
+            switch ($psitem){
+                {-not([System.IO.File]::Exists($psitem))}{
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                }
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls|.csv)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx, .xls, or .csv extension and try again."
+                }
+                Default{
+                    $true
+                }
+            }
+        })]
         [string]$FilePath,
         
         [Parameter(Mandatory)]
         [string]$UserEmail,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            # Check if the domain fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
+                    throw "The provided domain is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
         [string]$Domain,
         
         [Parameter(Mandatory)]
@@ -43,20 +68,13 @@ function Add-CT365GroupByTitle {
     )
 
     # Import Required Modules
-    Import-Module ExchangeOnlineManagement
-    Import-Module ImportExcel
-    Import-Module Microsoft.Graph.Groups
-    Import-Module PSFramework
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement"
+    Import-Module $ModulesToImport
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "Group.ReadWrite.All"
-
-    if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Error -Message "Excel file not found at the specified path: $FilePath" -Target $FilePath
-        return
-    }
 
     $excelData = Import-Excel -Path $FilePath -WorksheetName $UserRole
 
@@ -68,43 +86,22 @@ function Add-CT365GroupByTitle {
 
             if ($PSCmdlet.ShouldProcess("Add user $UserEmail to $GroupType group $GroupName")) {
                 try {
+                    Write-PSFMessage -Level Output -Message "Adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
                     switch ($GroupType) {
                         '365Group' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Group $GroupName" -Target $UserEmail
-                            if ((Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail)) {
-                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
-                                
-                            }
-                            else {
-                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
-                            }
+                            Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail -erroraction Stop
                         }
                         '365Distribution' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Distribution Group $GroupName" -Target $UserEmail
-                            if ((Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail)) {
-                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
-                                
-                            }
-                            else {
-                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
-                            }
+                            Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Erroraction Stop
                         }
                         '365MailEnabledSecurity' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Mail-Enabled Security Group $GroupName" -Target $UserEmail
-                            if ((Add-DistributionGroupMember -Identity $GroupName -Type Security -Member $UserEmail)) {
-                                Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
-                                
-                            }
-                            else {
-                                Write-PSFMessage -Level Error -Message "$UserEmail was not added to $GroupName" -Target $FilePath
-                            }
+                            Add-DistributionGroupMember -Identity $GroupName -Type Security -Member $UserEmail -Erroraction Stop
                         }
                         '365Security' {
-                            Write-PSFMessage -Level Output -Message "Adding $UserEmail to 365 Security Group $GroupName" -Target $UserEmail
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
                             $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($DisplayName)'"
-                                if ($ExistingGroup) {
-                                New-MgGroupMember -GroupId $ExistingGroup.Id -DirectoryObjectId $User.Id
+                            if ($ExistingGroup) {
+                                New-MgGroupMember -GroupId $ExistingGroup.Id -DirectoryObjectId $User.Id -ErrorAction Stop
                                 Write-PSFMessage -Level Output -Message "User $UserEmail successfully added to $GroupType group $GroupName" -Target $UserEmail
                             }
                             else {
@@ -114,17 +111,16 @@ function Add-CT365GroupByTitle {
                         }
                         default {
                             Write-PSFMessage -Level Warning -Message "Unknown group type: $GroupType" -Target $GroupType
-                        }
-                        
+                        }  
                     }
+                    Write-PSFMessage -Level Output -Message "Added $UserEmail to $($GroupType):'$GroupName' sucessfully" -Target $UserEmail
                 } catch {
-                    Write-PSFMessage -Level Error -Message "Error adding user $UserEmail to $GroupType group $GroupName $_" -Target $UserEmail
+                    Write-PSFMessage -Level Error -Message "Error adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
                 }
             }
         }
     }
-
-# Disconnect Exchange Online and Microsoft Graph sessions
-Disconnect-ExchangeOnline -Confirm:$false
-Disconnect-MgGraph
+    # Disconnect Exchange Online and Microsoft Graph sessions
+    Disconnect-ExchangeOnline -Confirm:$false
+    Disconnect-MgGraph
 }

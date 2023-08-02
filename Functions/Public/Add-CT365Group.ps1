@@ -56,24 +56,41 @@ function Add-CT365Group {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
+            switch ($psitem){
+                {-not([System.IO.File]::Exists($psitem))}{
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                }
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls|.csv)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx, .xls, or .csv extension and try again."
+                }
+                Default{
+                    $true
+                }
+            }
+        })]
         [string]$FilePath,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$UserPrincialName,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            # Check if the domain fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
+                    throw "The provided domain is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
         [string]$Domain
     )
 
-    # Check if Excel file exists
-    if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Error -Message "File $FilePath does not exist. Please check the file path and try again." -Target $FilePath
-        return
-    }
-
     # Import the required modules
-    Import-Module ExchangeOnlineManagement
-    Import-Module Microsoft.Graph.Groups
-    Import-Module ImportExcel
-    Import-Module PSFramework
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement"
+    Import-Module $ModulesToImport
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
@@ -86,52 +103,56 @@ function Add-CT365Group {
     foreach ($Group in $Groups) {
         # Append the domain to the PrimarySMTP
         $Group.PrimarySMTP += "@$Domain"
-        switch ($Group.Type) {
-            "365Group" {
-                try {
-                    Write-PSFMessage -Level Output -Message "Creating 365 Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Write-PSFMessage -Level Warning -Message "365 Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
-                    New-UnifiedGroup -DisplayName $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -AccessType Private -Notes $Group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-PSFMessage -Level Output -Message "Created 365 Group $($Group.DisplayName)" -Target $Group.DisplayName
+        Write-PSFMessage -Level Output -Message "Creating $($Group.Type):'$($Group.DisplayName)'" -Target $Group.DisplayName
+        try{
+            switch ($Group.Type) {
+                "365Group" {
+                    $newUnifiedGroupSplat = @{
+                        DisplayName = $Group.DisplayName
+                        PrimarySMTPAddress = $Group.PrimarySMTP
+                        AccessType = 'Private'
+                        Notes = $Group.Description
+                        RequireSenderAuthenticationEnabled = $False
+                        ErrorAction = "Stop"
+                    }
+
+                    New-UnifiedGroup @newUnifiedGroupSplat
+                }
+                {"365Distribution" -or "365MailEnabledSecurity"}{
+                    $newDistributionGroupSplat = @{
+                        Name = $Group.DisplayName
+                        DisplayName = $Group.DisplayName
+                        PrimarySMTPAddress = $Group.PrimarySMTP
+                        Description = $Group.Description
+                        RequireSenderAuthenticationEnabled = $False
+                        ErrorAction = "Stop"
+                    }
+                    if($Group.Type -eq "365MailEnabledSecurity" ){
+                        $newDistributionGroupSplat["Type"] = "Security"
+                    }
+
+                    New-DistributionGroup @newDistributionGroupSplat
+                }
+                "365Security" {
+                    $mailNickname = $Group.PrimarySMTP.Split('@')[0]
+                    $newMgGroupSplat = @{
+                        DisplayName = $Group.DisplayName
+                        Description = $Group.Description
+                        MailNickname = $mailNickname
+                        SecurityEnabled = $true
+                        ErrorAction = "Stop"
+                    }
+    
+                    New-MgGroup @newMgGroupSplat
+                }
+                default {
+                    Write-PSFMessage -Level Warning -Message "Invalid group type for $($Group.DisplayName)" -Target $Group.DisplayName
                 }
             }
-            "365Distribution" {
-                try {
-                    Write-PSFMessage -Level Output -Message "Creating 365 Distribution Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Write-PSFMessage -Level Output -Message "Distribution Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
-                    New-DistributionGroup -Name $Group.DisplayName -DisplayName $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -Description $Group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-PSFMessage -Level Output -Message "Created Distribution Group $($Group.DisplayName)" -Target $Group.DisplayName
-                }
-            }
-            "365MailEnabledSecurity" {
-                try {
-                    Write-PSFMessage -Level Output -Message "Creating 365 Mail-Enabled Security Group $Group.DisplayName" -Target $Group.DisplayName
-                    Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
-                    Write-PSFMessage -Level Output -Message "Mail-Enabled Security Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
-                    New-DistributionGroup -Name $Group.DisplayName -PrimarySMTPAddress $Group.PrimarySMTP -Type "Security" -Description $Group.Description -RequireSenderAuthenticationEnabled $False
-                    Write-PSFMessage -Level Output -Message "Created Mail-Enabled Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-                }
-            }
-            "365Security" {
-                Write-PSFMessage -Level Output -Message "Creating 365 Security Group $Group.DisplayName" -Target $Group.DisplayName
-                $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($Group.DisplayName)'"
-                if ($ExistingGroup) {
-                    Write-PSFMessage -Level Output -Message "Security Group $($Group.DisplayName) already exists" -Target $Group.DisplayName
-                    continue
-                }
-                $mailNickname = $Group.PrimarySMTP.Split('@')[0]
-                New-MgGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailNickName $mailNickname -SecurityEnabled:$true -MailEnabled:$false
-                Write-PSFMessage -Level Output -Message "Created Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-            }
-            default {
-                Write-PSFMessage -Level Warning -Message "Invalid group type for $($Group.DisplayName)" -Target $Group.DisplayName
-            }
+        }catch{
+            Write-PSFMessage -Level Output -Message "Could not create $($Group.Type):'$($Group.DisplayName)' - maybe the group already exists" -Target $Group.DisplayName
         }
+        Write-PSFMessage -Level Output -Message "Created $($Group.Type):'$($Group.DisplayName)' successfully" -Target $Group.DisplayName
     }
 
     # Disconnect Exchange Online and Microsoft Graph sessions
