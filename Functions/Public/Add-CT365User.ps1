@@ -137,6 +137,6 @@ function Add-CT365User {
         }
     }
 
-    # Disconnect Exchange Online and Microsoft Graph sessions
+    # Disconnect Microsoft Graph sessions
     Disconnect-MgGraph
 }
