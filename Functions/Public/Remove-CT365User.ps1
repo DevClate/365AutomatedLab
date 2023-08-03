@@ -39,16 +39,40 @@ function Remove-CT365User {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
+            switch ($psitem){
+                {-not([System.IO.File]::Exists($psitem))}{
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                }
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx or .xls extension and try again."
+                }
+                Default{
+                    $true
+                }
+            }
+        })]
         [string]$FilePath,
         
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$domain
-    )
+        [ValidateScript({
+            # Check if the domain fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
+                    throw "The provided domain is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
+        [string]$Domain,
 
-    if (!(Test-Path $FilePath)) {
-        Write-Warning "File $FilePath does not exist. Please check the file path and try again."
-        return
-    }
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
+
+    )
 
     # Import Required Modules
     Import-Module Microsoft.Graph.Users
