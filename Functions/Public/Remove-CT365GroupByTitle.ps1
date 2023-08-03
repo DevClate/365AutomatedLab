@@ -91,11 +91,6 @@ function Remove-CT365GroupByTitle {
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "Group.ReadWrite.All","Directory.AccessAsUser.All"
 
-    if (!(Test-Path $FilePath)) {
-        Write-PSFMessage -Level Error -Message "Excel file not found at the specified path: $FilePath" -Target $FilePath
-        return
-    }
-
     $excelData = Import-Excel -Path $FilePath -WorksheetName $UserRole
 
     if ($PSCmdlet.ShouldProcess("Remove user from groups from Excel file")) {
