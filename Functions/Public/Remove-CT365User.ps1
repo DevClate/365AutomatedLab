@@ -87,45 +87,40 @@ function Remove-CT365User {
         return
     }
 
-        foreach ($user in $userData) {
+    # Iterate through each user in the Excel file and delete them
+    foreach ($user in $userData) {
+        $NewUserParams = @{
+            UserPrincipalName = "$($user.UserName)@$domain"
+            GivenName         = $user.FirstName
+            Surname           = $user.LastName
+            DisplayName       = "$($user.Firstname) $($user.Lastname)"
+            MailNickname      = $user.UserName
+            JobTitle          = $user.Title
+            Department        = $user.Department
+        }
+            
+        Write-PSFMessage -Level Output -Message "Removing user: '$($NewUserParams.UserPrincipalName)'" -Target $NewUserParams.UserName
+            
+        $userToRemove = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
 
-            $UserPrincipalName = $user.MailNickname
-            $GivenName         = $user.FirstName
-            $Surname           = $user.LastName
-            $MailNickname      = $user.MailNickname
-            $JobTitle          = $user.Title
-            $Department        = $user.Department
-
-            $NewUserParams = @{
-                UserPrincipalName = "$userPrincipalName@$domain"
-                GivenName         = $GivenName
-                Surname           = $Surname
-                DisplayName       = "$GivenName $Surname"
-                MailNickname      = $MailNickname
-                JobTitle          = $JobTitle
-                Department        = $Department
-            }
-
-            $userToRemove = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
-
-            Write-PSFMessage -Level Output -Message "Attemping to remove User $($NewUserParams.DisplayName)" -Target $NewUserParams.DisplayName
-
-            # Validate if the user exists
-            if ($userToRemove) {
-                Remove-MgUser -UserId $userToRemove.id
+        # Validate if the user exists
+        if ($userToRemove) {
+            Remove-MgUser -UserId $userToRemove.id
                 
-                # Check the user's existence
-                $removedUser = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
+            # Check the user's existence
+            $removedUser = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
                 
-                # Confirm that the user was removed
-                if (-not $removedUser) {
-                    Write-PSFMessage -Level Output -Message "User $($NewUserParams.DisplayName) has been successfully removed." -Target $NewUserParams.DisplayName
-                } else {
-                    Write-PSFMessage -Level Warning -Message "Failed to remove user $($NewUserParams.DisplayName)." -Target $NewUserParams.DisplayName
-                }
+            # Confirm that the user was removed
+            if (-not $removedUser) {
+                Write-PSFMessage -Level Output -Message "User $($NewUserParams.DisplayName) has been successfully removed." -Target $NewUserParams.DisplayName
             } else {
-                Write-PSFMessage -Level Warning -Message "User $($NewUserParams.DisplayName) does not exist." -Target $NewUserParams.DisplayName
+                Write-PSFMessage -Level Warning -Message "Failed to remove user $($NewUserParams.DisplayName)." -Target $NewUserParams.DisplayName
             }
+        } else {
+            Write-PSFMessage -Level Warning -Message "User $($NewUserParams.DisplayName) does not exist." -Target $NewUserParams.DisplayName
         }
     }
-Disconnect-MgGraph
+    
+    # Disconnect Microsoft Graph Sessions
+    Disconnect-MgGraph
+}
