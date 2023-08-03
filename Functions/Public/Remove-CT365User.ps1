@@ -75,9 +75,8 @@ function Remove-CT365User {
     )
 
     # Import Required Modules
-    Import-Module Microsoft.Graph.Users
-    Import-Module ImportExcel
-    Import-Module PSFramework
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Users","Microsoft.Graph.Groups","Microsoft.Graph.Identity.DirectoryManagement","Microsoft.Graph.Users.Actions","PSFramework"
+    Import-Module $ModulesToImport
 
     # Connect to Microsoft Graph
     Connect-MgGraph -Scopes "User.ReadWrite.All"
