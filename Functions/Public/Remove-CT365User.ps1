@@ -67,10 +67,7 @@ function Remove-CT365User {
                 }
             }
         })]
-        [string]$Domain,
-
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
+        [string]$Domain
 
     )
 
