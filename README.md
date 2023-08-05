@@ -36,6 +36,8 @@ Please do not use this module in your production environment until tested in you
   * Remove-CT365GroupByTitle
 * Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
   * Copy-WorkSheetName
+* Create your own 365DataEnvironment workbook with the job roles for your organization
+  * New-CT365DataEnvironment
 
 ### Data
 
