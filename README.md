@@ -48,7 +48,7 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
   * If you do not have a UsageLocation set, the licenses will not be added
 * Groups: This will have all the groups you want created
   * I do not have it assigning manager as of yet, but will in the future
-* Location-JobTitle: This will have all the groups that location and job title are suppose to have.
+* Location-JobTitle: This will have all the groups that location and job title are suppose to have(Corresponds with JobRole Parameter).
   * Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
 
 In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
