@@ -19,6 +19,7 @@ Please do not use this module in your production environment until tested in you
   * Microsoft.Graph.Groups v1.17.0+
   * Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
   * Microsoft.Graph.Users.Actions v1.17.0+
+  * PSFramework v1.8.289+
 
 ### Current Functions
 
@@ -72,7 +73,6 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
-
 5. Run the below command to add a user to their groups per their location and title.
 
    1. ```powershell
