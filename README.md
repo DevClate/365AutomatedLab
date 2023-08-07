@@ -2,6 +2,14 @@
 
 This module will create a Microsoft 365 Test Environment using an excel workbook
 
+## Table of Contents
+
+- [Project Summary](#project-summary)
+- [Requirements](#requirements)
+- [Current Functions](#current-functions)
+- [Data](#data)
+- [Getting Started](#getting-started)
+
 ## Project Summary
 
 I started this module to create a test environment for 365 as there wasn't one for groups, only users which Microsoft provides in there [365 Developer Program Environment](https://developer.microsoft.com/en-us/microsoft-365/dev-program) . I was tired of having to come up with test user names, their information, and groups each time, or remembering which ones I had already created every time I wanted to do some testing. Let's be honest. we aren't in our test environment every day and all day. This started out as a quick function, then another function, then another....you can see how I quickly determined that this needed to be a module to keep everything organized and easily shareable to others. With that said, I'd love feedback(Create issues) and community help on this to really expand this.
