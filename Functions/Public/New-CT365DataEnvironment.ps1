@@ -81,20 +81,30 @@ function New-CT365DataEnvironment {
 
     process {
         # Define properties for custom objects
-        $propertyNamesUsers = "FirstName", "LastName", "UserName", "Title", "Department", "StreetAddress", "City", "State", "PostalCode", "Country", "PhoneNumber", "MobilePhone", "UsageLocation", "License"
-        $propertyNamesGroups = "DisplayName", "PrimarySMTP", "Description", "Owner", "Type"
-        $propertyJobRole = "DisplayName", "PrimarySMTP", "Description", "Type"
+        $propertyDefinitions = @{
+            Users = @(
+                "FirstName", "LastName", "UserName", "Title", "Department",
+                "StreetAddress", "City", "State", "PostalCode", "Country",
+                "PhoneNumber", "MobilePhone", "UsageLocation", "License"
+            )
+            Groups = @(
+                "DisplayName", "PrimarySMTP", "Description", "Owner", "Type"
+            )
+            JobRole = @(
+                "DisplayName", "PrimarySMTP", "Description", "Type"
+            )
+        }
         
         # Define custom objects for each worksheet
-        $usersObject  = New-EmptyCustomObject -PropertyNames $propertyNamesUsers
-        $groupsObject = New-EmptyCustomObject -PropertyNames $propertyNamesGroups
+        $usersObject  = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Users
+        $groupsObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Groups
 
         # Export each worksheet to the workbook
-        $usersObject | Export-Excel -Path $Path -WorksheetName "Users" -ClearSheet
+        $usersObject  | Export-Excel -Path $Path -WorksheetName "Users" -ClearSheet
         $groupsObject | Export-Excel -Path $Path -WorksheetName "Groups" -Append 
 
         foreach($JobRoleItem in $JobRole){
-            $RoleObject = New-EmptyCustomObject -PropertyNames $propertyJobRole
+            $RoleObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.JobRole
             $RoleObject | Export-Excel -Path $Path -WorksheetName $JobRoleItem -Append
         }
     }
