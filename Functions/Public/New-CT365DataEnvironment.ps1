@@ -67,50 +67,36 @@ function New-CT365DataEnvironment {
         $Path = Join-Path -Path $filepath -ChildPath $workbookname
         
         Write-PSFMessage -Level Output -Message "Creating workbook $WorkbookName" -Target $WorkbookName
+        
+        #helper function
+        function New-EmptyCustomObject {
+            param (
+                [string[]]$PropertyNames
+            )
+            
+            $customObject = [PSCustomObject]@{}
+            $customObject | Select-Object -Property $PropertyNames
+        }
     }
 
     process {
-        # Define a custom object for each worksheet
-        $usersObj = New-Object -TypeName PSCustomObject -Property ([ordered]@{
-            "FirstName" = $null
-            "LastName" = $null
-            "UserName" = $null
-            "Title" = $null
-            "Department" = $null
-            "StreetAddress" = $null
-            "City" = $null
-            "State" = $null
-            "PostalCode" = $null
-            "Country" = $null
-            "PhoneNumber" = $null
-            "MobilePhone" = $null
-            "UsageLocation" = $null
-            "License" = $null
-        })
-
-        $groupsObj = New-Object -TypeName PSCustomObject -Property ([ordered]@{
-            "DisplayName" = $null
-            "PrimarySMTP" = $null
-            "Description" = $null
-            "Owner" = $null
-            "Type" = $null
-        })
+        # Define properties for custom objects
+        $propertyNamesUsers = "FirstName", "LastName", "UserName", "Title", "Department", "StreetAddress", "City", "State", "PostalCode", "Country", "PhoneNumber", "MobilePhone", "UsageLocation", "License"
+        $propertyNamesGroups = "DisplayName", "PrimarySMTP", "Description", "Owner", "Type"
+        $propertyJobRole = "DisplayName", "PrimarySMTP", "Description", "Type"
+        
+        # Define custom objects for each worksheet
+        $usersObject  = New-EmptyCustomObject -PropertyNames $propertyNamesUsers
+        $groupsObject = New-EmptyCustomObject -PropertyNames $propertyNamesGroups
 
         # Export each worksheet to the workbook
-        $usersObj | Export-Excel -Path $Path -WorksheetName "Users" -ClearSheet
-        $groupsObj | Export-Excel -Path $Path -WorksheetName "Groups" -Append 
+        $usersObject | Export-Excel -Path $Path -WorksheetName "Users" -ClearSheet
+        $groupsObject | Export-Excel -Path $Path -WorksheetName "Groups" -Append 
 
         foreach($JobRoleItem in $JobRole){
-            $customObj = New-Object -TypeName PSCustomObject -Property ([ordered]@{
-                "DisplayName" = $null
-                "PrimarySMTP" = $null
-                "Description" = $null
-                "Type" = $null
-            })
-
-            $customObj | Export-Excel -Path $Path -WorksheetName $JobRoleItem -Append
+            $RoleObject = New-EmptyCustomObject -PropertyNames $propertyJobRole
+            $RoleObject | Export-Excel -Path $Path -WorksheetName $JobRoleItem -Append
         }
-
     }
 
     end {
