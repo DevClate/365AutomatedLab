@@ -55,7 +55,7 @@ function Export-CT365ProdUserToExcel {
         [string]$DepartmentFilter,
 
         [Parameter()]
-        [int]$UserLimit
+        [int]$UserLimit = 0
     )
 
     begin {
@@ -80,22 +80,38 @@ function Export-CT365ProdUserToExcel {
         }
 
         # Build the user retrieval command
-        $userCommand = Get-MgUser -Property GivenName, SurName, UserPrincipalName, DisplayName, MailNickname, JobTitle, Department, StreetAddress, City, State, PostalCode, Country, BusinessPhones, MobilePhone, UsageLocation
-
-        # Apply department filter if provided
-        if ($DepartmentFilter) {
-            $userCommand = $userCommand | Where-Object { $_.Department -eq $DepartmentFilter }
+        $getMgUserSplat = @{
+            Property = (
+                'GivenName', 'SurName', 'UserPrincipalName', 
+                'DisplayName', 'MailNickname', 'JobTitle', 
+                'Department', 'StreetAddress', 'City', 
+                'State', 'PostalCode', 'Country', 
+                'BusinessPhones', 'MobilePhone', 'UsageLocation'
+            )
+        }
+        
+        # Apply department filter if provided as parameter
+        if (-not [string]::IsNullOrEmpty($DepartmentFilter)) {
+            #$userCommand = $userCommand | Where-Object { $_.Department -eq $DepartmentFilter }
+            $getMgUserSplat.Add('filter',"Department eq '$DepartmentFilter'")
         }
 
-        # Limit the number of users if specified
-        if ($UserLimit) {
-            $userCommand = $userCommand | Select-Object -First $UserLimit
+        # Limit the number of users if specified else get all users
+        if ($UserLimit-eq 0) {
+            $getMgUserSplat.Add("all",$true)
+        }else{
+            $getMgUserSplat.Add("Top",$UserLimit)
         }
-    
+
+        $userCommand = Get-MgUser @getMgUserSplat | Select-Object -Property $getMgUserSplat.Property
+
+        #alter the Businessphones property so they can be displayed in the excel file correctly
+        foreach($User in $userCommand){
+            $User.BusinessPhones = $User.BusinessPhones -join ", "
+        }
+
         # Fetch and export users to Excel
-        $userCommand | 
-        Select-Object GivenName, SurName, UserPrincipalName, DisplayName, MailNickname, JobTitle, Department, StreetAddress, City, State, PostalCode, Country, @{Name="BusinessPhones"; Expression={$_.BusinessPhones -join ", "}}, MobilePhone, UsageLocation |
-        Export-Excel -Path $Path -WorksheetName "Users" -AutoSize
+        $userCommand | Export-Excel -Path $Path -WorksheetName "Users" -AutoSize
 
 
         # Disconnect from Microsoft Graph
