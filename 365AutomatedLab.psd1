@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.5'
+ModuleVersion = '0.0.6'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -89,6 +89,7 @@ FunctionsToExport = @(
     'Remove-CT365GroupByTitle',
     'Copy-WorksheetName',
     'New-CT365DataEnvironment'
+    'Export-CT365ProdUserToExcel'
     )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
