@@ -88,7 +88,7 @@ FunctionsToExport = @(
     'Remove-CT365User',
     'Remove-CT365GroupByTitle',
     'Copy-WorksheetName',
-    'New-CT365DataEnvironment'
+    'New-CT365DataEnvironment',
     'Export-CT365ProdUserToExcel'
     )
 
