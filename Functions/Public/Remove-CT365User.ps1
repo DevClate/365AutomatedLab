@@ -76,7 +76,12 @@ function Remove-CT365User {
     Import-Module $ModulesToImport
 
     # Connect to Microsoft Graph
-    Connect-MgGraph -Scopes "User.ReadWrite.All"
+    $Scopes = @("User.ReadWrite.All")
+    $Context = Get-MgContext
+
+    if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
+        Connect-MGGraph -Scopes $Scopes
+    }
 
     # Import user data from Excel file
     $userData = $null

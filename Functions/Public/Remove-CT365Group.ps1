@@ -58,7 +58,12 @@ function Remove-CT365Group {
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     
     # Connect to Microsoft Graph - remove when done testing
-    Connect-MgGraph -Scopes "Group.ReadWrite.All"
+    $Scopes = @("Group.ReadWrite.All")
+    $Context = Get-MgContext
+
+    if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
+        Connect-MGGraph -Scopes $Scopes
+    }
 
     # Import data from Excel
     $Groups = Import-Excel -Path $FilePath -WorksheetName Groups
