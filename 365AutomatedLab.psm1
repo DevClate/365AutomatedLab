@@ -9,4 +9,4 @@ foreach($FunctionFile in $FunctionFiles){
     }
 }
 
-Export-ModuleMember -Function $Public.BaseName
+Export-ModuleMember -Function $FunctionFiles.BaseName
