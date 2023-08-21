@@ -1,17 +1,12 @@
-$Public  = @( Get-ChildItem -Path "$PSScriptRoot\Functions\Public\*.ps1" )
-$Private = @( Get-ChildItem -Path "$PSScriptRoot\Functions\Private\*.ps1" )
+$FunctionFiles = $("$PSScriptRoot\Functions\Public\","$PSScriptRoot\Functions\Private\")| Get-Childitem -file -Recurse -Include "*.ps1" -ErrorAction SilentlyContinue
 
-@($Public + $Private) | ForEach-Object {
-
-    Try {
-
-        . $_.FullName
-
-    } Catch {
-
-        Write-Error -Message "Failed to import function $($_.FullName): $_"
-        
+foreach($FunctionFile in $FunctionFiles){
+    try {
+        . $FunctionFile.FullName
+    }
+    catch {
+        Write-Error -Message "Failed to import function: '$($FunctionFile.FullName)': $_"
     }
 }
 
-Export-ModuleMember -Function $Public.BaseName
+Export-ModuleMember -Function $FunctionFiles.BaseName
