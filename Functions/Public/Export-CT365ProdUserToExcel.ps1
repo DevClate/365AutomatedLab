@@ -72,11 +72,11 @@ function Export-CT365ProdUserToExcel {
     process {
         
         # Authenticate to Microsoft Graph
-        $connection = Connect-MgGraph -Scopes "User.Read.All"
-        if (-not $connection) {
-            
-            Write-PSFMessage -Level Warning -Message "Failed to connect to Microsoft Graph. Please ensure you have the necessary permissions."
-            return
+        $Scopes = @("User.Read.All")
+        $Context = Get-MgContext
+    
+        if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
+            Connect-MGGraph -Scopes $Scopes
         }
 
         # Build the user retrieval command

@@ -82,14 +82,20 @@ function Remove-CT365GroupByTitle {
         [string]$UserRole
     )
 
-        # Import Required Modules
-        $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups", "Microsoft.Graph.Users", "PSFramework","ExchangeOnlineManagement"
-        Import-Module $ModulesToImport
+    # Import Required Modules
+    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups", "Microsoft.Graph.Users", "PSFramework","ExchangeOnlineManagement"
+    Import-Module $ModulesToImport
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
+
     # Connect to Microsoft Graph
-    Connect-MgGraph -Scopes "Group.ReadWrite.All","Directory.AccessAsUser.All"
+    $Scopes = @("Group.ReadWrite.All","Directory.AccessAsUser.All")
+    $Context = Get-MgContext
+
+    if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
+        Connect-MGGraph -Scopes $Scopes
+    }
 
     $excelData = Import-Excel -Path $FilePath -WorksheetName $UserRole
 

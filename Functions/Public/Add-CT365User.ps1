@@ -69,7 +69,12 @@ function Add-CT365User {
     Import-Module $ModulesToImport
 
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
-    Connect-MgGraph -Scopes "Directory.ReadWrite.All"
+    $Scopes = @("Directory.ReadWrite.All")
+    $Context = Get-MgContext
+
+    if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
+        Connect-MGGraph -Scopes $Scopes
+    }
 
     # Import user data from Excel file
     $userData = $null
