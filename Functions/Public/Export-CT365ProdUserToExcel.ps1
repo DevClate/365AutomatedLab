@@ -115,7 +115,9 @@ function Export-CT365ProdUserToExcel {
 
 
         # Disconnect from Microsoft Graph
-        Disconnect-MgGraph
+        if (-not [string]::IsNullOrEmpty($(Get-MgContext))) {
+            Disconnect-MgGraph
+        }
     }
 
     end {

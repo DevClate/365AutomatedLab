@@ -89,8 +89,9 @@ FunctionsToExport = @(
     'Remove-CT365GroupByTitle',
     'Copy-WorksheetName',
     'New-CT365DataEnvironment',
-    'Export-CT365ProdUserToExcel',
-    'New-CT365SharePointSite.ps1'
+    'Export-CT365ProdUserToExcel'
+    'New-CT365SharePointSide'
+
     )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

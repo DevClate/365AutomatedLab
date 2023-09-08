@@ -127,5 +127,7 @@ function Remove-CT365User {
     }
     
     # Disconnect Microsoft Graph Sessions
-    Disconnect-MgGraph
+    if (-not [string]::IsNullOrEmpty($(Get-MgContext))) {
+        Disconnect-MgGraph
+    }
 }

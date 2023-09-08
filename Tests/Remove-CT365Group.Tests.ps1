@@ -8,7 +8,7 @@ Describe 'Remove-CT365Group Function' {
             $filePath = "C:\Path\to\file.xlsx"
             $domain = "invalid_domain"
             
-            { Add-CT365User -FilePath $filePath -Domain $domain } | Should -Throw
+            { Remove-CT365Group -FilePath $filePath -Domain $domain } | Should -Throw
         }
     }
 }
