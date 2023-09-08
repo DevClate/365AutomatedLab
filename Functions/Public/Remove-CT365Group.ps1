@@ -146,5 +146,7 @@ function Remove-CT365Group {
 
     # Disconnect Exchange Online and Microsoft Graph sessions
     Disconnect-ExchangeOnline -Confirm:$false
-    Disconnect-MgGraph
+    if (-not [string]::IsNullOrEmpty($(Get-MgContext))) {
+        Disconnect-MgGraph
+    }
 }

@@ -143,5 +143,7 @@ function Add-CT365User {
     }
 
     # Disconnect Microsoft Graph sessions
-    Disconnect-MgGraph
+    if (-not [string]::IsNullOrEmpty($(Get-MgContext))) {
+        Disconnect-MgGraph
+    }
 }
