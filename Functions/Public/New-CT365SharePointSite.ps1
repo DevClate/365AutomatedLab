@@ -3,7 +3,7 @@
 Creates new SharePoint Online sites based on the data from an Excel file.
 
 .DESCRIPTION
-The `New-365SharePointSite` function connects to SharePoint Online(PnP) using the provided admin URL and imports site data from the specified Excel file. It then attempts to create each site based on the data.
+The `New-365CTSharePointSite` function connects to SharePoint Online(PnP) using the provided admin URL and imports site data from the specified Excel file. It then attempts to create each site based on the data.
 
 .PARAMETER FilePath
 The path to the Excel file containing the SharePoint site data. The file must exist and have an .xls or .xlsx extension.
@@ -15,7 +15,7 @@ The SharePoint Online admin URL.
 The domain information required for the SharePoint site creation.
 
 .EXAMPLE
-New-365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://admin.sharepoint.com" -Domain "contoso.com"
+New-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://admin.sharepoint.com" -Domain "contoso.com"
 
 This example creates SharePoint sites using the data from the "file.xlsx" and connects to SharePoint Online using the provided admin URL.
 
@@ -25,7 +25,7 @@ Make sure you have the necessary modules installed: ImportExcel, PnP.PowerShell,
 .LINK
 https://docs.microsoft.com/powershell/module/sharepoint-pnp/new-pnpsite
 #>
-function New-365SharePointSite {
+function New-CT365SharePointSite {
     [CmdletBinding()]
     param (
         # Validate the Excel file path.
