@@ -90,7 +90,7 @@ FunctionsToExport = @(
     'Copy-WorksheetName',
     'New-CT365DataEnvironment',
     'Export-CT365ProdUserToExcel'
-    'New-CT365SharePointSide'
+    'New-CT365SharePointSite'
 
     )
 
