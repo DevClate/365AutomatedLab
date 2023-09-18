@@ -85,13 +85,19 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       Add-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
-4. Run the below command to add groups to your environment.
+4. Run the below command to add groups to your environment
 
    1. ```powershell
       Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
-5. Run the below command to add a user to their groups per their location and title.
+5. Run the below command to add a user to their groups per their location and title
 
    1. ```powershell
       Add-CT365GroupByTitle -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
+      ```
+
+6. Run the below command to add Microsoft Teams and Channels to your environment
+
+   1. ```powershell
+      New-CT365Teams -FilePath "C:\path\to\365DataEnvironment.xlsx" -AdminUrl "https://yourdomain.sharepoint.com"
       ```
