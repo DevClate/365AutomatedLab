@@ -47,6 +47,12 @@ Please do not use this module in your production environment until tested in you
   * Copy-WorkSheetName
 * Create your own 365DataEnvironment workbook with the job roles for your organization
   * New-CT365DataEnvironment
+* Create a new Sharepoint Site
+  * New-CT365SharePointSite
+* Create Teams and channels
+  * New-CT365Teams
+* Remove Teams and channels
+  * Remove-CT365Teams
 
 ### Data
 
@@ -58,6 +64,8 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
   * I do not have it assigning manager as of yet, but will in the future
 * Location-JobTitle: This will have all the groups that location and job title are suppose to have(Corresponds with JobRole Parameter).
   * Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
+* Teams: This will have all the Teams and Channels to be created
+  * I only have it for 2 additional channels, but please let me know if you need more
 
 In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
 
