@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.6'
+ModuleVersion = '0.0.7'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -59,6 +59,7 @@ RequiredModules = @(
     @{ ModuleName='Microsoft.Graph.Identity.DirectoryManagement'; ModuleVersion='1.17.0' }
     @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='1.17.0' }
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
+    @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.2.0' }
 
 )
 
@@ -89,8 +90,10 @@ FunctionsToExport = @(
     'Remove-CT365GroupByTitle',
     'Copy-WorksheetName',
     'New-CT365DataEnvironment',
-    'Export-CT365ProdUserToExcel'
-    'New-CT365SharePointSite'
+    'Export-CT365ProdUserToExcel',
+    'New-CT365SharePointSite',
+    'New-CT365Teams',
+    'Remove-CT365Teams'
 
     )
 
