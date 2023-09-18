@@ -28,6 +28,7 @@ Please do not use this module in your production environment until tested in you
   * Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
   * Microsoft.Graph.Users.Actions v1.17.0+
   * PSFramework v1.8.289+
+  * PnP.PowerShell v2.2.0+
 
 ### Current Functions
 
