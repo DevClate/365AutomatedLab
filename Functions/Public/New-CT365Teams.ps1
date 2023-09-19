@@ -65,7 +65,6 @@ function New-CT365Teams {
             }
         })]
         [string]$AdminUrl,
-
         [Parameter(Mandatory=$false)]
         [ValidateSet("Channel1Name", "Channel2Name")]
         [string[]]$ChannelColumns = @("Channel1Name", "Channel2Name")
@@ -107,51 +106,54 @@ function New-CT365Teams {
             Write-PSFMessage -Message "Processing team: $($team.TeamName)" -Level Host
         
             $existingTeam = Get-PnPTeamsTeam | Where-Object { $_.DisplayName -eq $team.TeamName }
-            
-            if (-not $existingTeam) {
-                try {
-                    # Create the Team
-                    New-PnPTeamsTeam -DisplayName $team.TeamName -Description $team.TeamDescription -Visibility Private
 
-                    Write-PSFMessage -Message "Successfully created Team: $($team.TeamName)" -Level Host
-                    
-                    # Retry mechanism to fetch team details up to 3 times
-                    $retryCount = 0
-                    $maxRetries = 3
-                    $teamResult = $null
-
-                    while ($retryCount -lt $maxRetries -and (-not $teamResult)) {
-                        # Wait for a moment to ensure the team is fully provisioned before fetching
-                        Start-Sleep -Seconds 15
-
-                        # Attempt to fetch the team details after creation
-                        $teamResult = Get-PnPTeamsTeam | Where-Object { $_.DisplayName -eq $team.TeamName }
-
-                        $retryCount++
-                    }
-
-                    # If the team wasn't found after all retry attempts, log a warning and skip further processing
-                    if (-not $teamResult) {
-                        Write-PSFMessage -Message "Team $($team.TeamName) was not found after $maxRetries attempts." -Level Warning
-                        continue
-                    }
-        
-        } catch {
-                    Write-PSFMessage -Message "Failed to create team $($team.TeamName): $_" -Level Error
-                    continue
-                }
-            }
-            else {
+            if($existingTeam){
                 Write-PSFMessage -Message "Team $($team.TeamName) already exists. Fetching team details..." -Level Host
-                $teamResult = $existingTeam
-                Write-PSFMessage -Message "Fetched team details: $($teamResult)" -Level Host  # Diagnostic message
-            }
-        
-            # Check if teamResult is null
-            if (-not $teamResult) {
+                Write-PSFMessage -Message "Fetched team details: $($existingTeam)" -Level Host  # Diagnostic message
                 Write-PSFMessage -Message "Failed to retrieve or create team $($team.TeamName). Skipping channels creation." -Level Error
                 continue
             }
+
+            try {
+                $newPnPTeamsTeamSplat = @{
+                    DisplayName = $team.TeamName
+                    Description = $team.TeamDescription
+                    Visibility = 'Private'
+                    ErrorAction = 'Stop'
+                }
+
+                New-PnPTeamsTeam @newPnPTeamsTeamSplat
+            }
+            catch {
+                Write-PSFMessage -Message "Failed to create team $($team.TeamName): $_" -Level Error
+                continue
+            }
+
+            Write-PSFMessage -Message "Successfully created Team: $($team.TeamName)" -Level Host
+                
+            # Retry mechanism to fetch team details up to 3 times
+            $retryCount = 0
+            $maxRetries = 3
+            $teamResult = $null
+
+            while ($retryCount -lt $maxRetries -and (-not $teamResult)) {
+                # Wait for a moment to ensure the team is fully provisioned before fetching
+                Start-Sleep -Seconds 15
+
+                # Attempt to fetch the team details after creation
+                $teamResult = Get-PnPTeamsTeam | Where-Object { $_.DisplayName -eq $team.TeamName }
+
+                $retryCount++
+            }
+
+            # If the team wasn't found after all retry attempts, log a warning and skip further processing
+            if (-not $teamResult) {
+                Write-PSFMessage -Message "Team $($team.TeamName) was not found after $maxRetries attempts." -Level Warning
+                continue
+            }
+    
+
+
     
             # Create channels based on the provided column names
             foreach ($column in $ChannelColumns) {
