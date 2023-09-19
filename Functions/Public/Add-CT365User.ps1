@@ -59,7 +59,7 @@ function Add-CT365User {
         })]
         [string]$Domain,
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
 
     )
