@@ -7,7 +7,7 @@ The New-CT365DataEnvironment function creates a new Excel workbook with predefin
 The workbook contains a "Users" worksheet and a "Groups" worksheet, and additional worksheets based on the provided JobRole parameter.
 
 .PARAMETER WorkbookName
-The name of the workbook file to be created. It must be a .xls or .xlsx file.
+The name of the workbook file to be created. It must be a .xlsx file.
 
 .PARAMETER FilePath
 The path where the workbook will be created. The provided path must exist.
@@ -41,7 +41,7 @@ function New-CT365DataEnvironment {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [ValidatePattern('^.*\.(xls|xlsx)$')]
+        [ValidatePattern('^.*\.(xlsx)$')]
         [string]$WorkbookName,
 
         [Parameter(Mandatory)]
