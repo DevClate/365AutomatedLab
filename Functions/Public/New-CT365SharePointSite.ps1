@@ -6,7 +6,7 @@ Creates new SharePoint Online sites based on the data from an Excel file.
 The `New-365CTSharePointSite` function connects to SharePoint Online(PnP) using the provided admin URL and imports site data from the specified Excel file. It then attempts to create each site based on the data.
 
 .PARAMETER FilePath
-The path to the Excel file containing the SharePoint site data. The file must exist and have an .xls or .xlsx extension.
+The path to the Excel file containing the SharePoint site data. The file must exist and have an .xlsx extension.
 
 .PARAMETER AdminUrl
 The SharePoint Online admin URL.
@@ -35,8 +35,8 @@ function New-CT365SharePointSite {
                 {-not([System.IO.File]::Exists($psitem))}{
                     throw "Invalid file path: '$PSitem'."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx or .xls."
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
+                    "Invalid file format: '$PSitem'. Use .xlsx"
                 }
                 Default{
                     $true
@@ -45,8 +45,14 @@ function New-CT365SharePointSite {
         })]
         [string]$FilePath,
 
-        # SharePoint Online admin URL.
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$false)]
+        [ValidateScript({
+            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                $true
+            } else {
+                throw "The URL $_ does not match the required format."
+            }
+        })]
         [string]$AdminUrl,
 
         # Domain information.
