@@ -6,13 +6,13 @@ Removes Microsoft 365 Teams based on the provided Excel data.
 The Remove-CT365Teams function connects to SharePoint Online, reads a list of Teams from an Excel file, and then removes each team. The function provides feedback on the process using the Write-PSFMessage cmdlet.
 
 .PARAMETER FilePath
-The path to the Excel file containing the list of Teams to remove. The file should have a worksheet named "Teams" and must be in .xlsx or .xls format.
+The path to the Excel file containing the list of Teams to remove. The file should have a worksheet named "Teams" and must be in .xlsx format.
 
 .PARAMETER AdminUrl
 The URL of the SharePoint Online admin center. This is used for connecting to SharePoint Online.
 
 .PARAMETER ChannelColumns
-Array of channel column names. The default values are "Channel1Name" and "Channel2Name". Only these two values are accepted as valid input.
+Array of channel column names. The default values are "Channel1Name" and "Channel2Name".
 
 .EXAMPLE
 Remove-CT365Teams -FilePath "C:\Path\To\File.xlsx" -AdminUrl "https://yourtenant-admin.sharepoint.com"
@@ -35,8 +35,8 @@ function Remove-CT365Teams {
                 {-not([System.IO.File]::Exists($psitem))}{
                     throw "Invalid file path: '$PSitem'."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx or .xls."
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
+                    "Invalid file format: '$PSitem'. Use .xlsx"
                 }
                 Default{
                     $true
@@ -56,7 +56,6 @@ function Remove-CT365Teams {
         [string]$AdminUrl,
 
         [Parameter(Mandatory=$false)]
-        [ValidateSet("Channel1Name", "Channel2Name")]
         [string[]]$ChannelColumns = @("Channel1Name", "Channel2Name")
     )
 
@@ -92,34 +91,35 @@ function Remove-CT365Teams {
     }
 
     process {
-        # Read the Excel data
-    $SiteData = Import-Excel -Path $FilePath -WorksheetName 'Teams'
-
-    foreach ($team in $SiteData) {
-        # Get the GroupId for the Team based on its name
-        $teamObj = Get-PnPTeamsTeam | Where-Object { $_.DisplayName -eq $team.TeamName }
-        if ($teamObj) {
+        foreach ($team in $SiteData) {
+            # Get the GroupId for the Team based on its name
+            $teamObj = Get-PnPTeamsTeam | Where-Object { $_.DisplayName -eq $team.TeamName }
+            
+            # Continue to the next iteration if no matching team is found
+            if (-not $teamObj) { continue }
+    
             $teamGroupId = $teamObj.GroupId
-
+    
             # Display the team name that's being removed using Write-PSFMessage
             Write-PSFMessage -Message "Removing team: $($team.TeamName) with GroupId: $teamGroupId" -Level Host
-            
+                    
             # Remove the Team using the GroupId
             Remove-PnPTeamsTeam -Identity $teamGroupId -Force
-
+    
             # Introduce a delay of 5 seconds
             Start-Sleep -Seconds 5
-
+    
             # Check if the team still exists
             $teamCheck = Get-PnPTeamsTeam | Where-Object { $_.GroupId -eq $teamGroupId }
-            if (-not $teamCheck) {
-                Write-PSFMessage -Message "Successfully removed team: $($team.TeamName)" -Level Host
-            } else {
-                Write-PSFMessage -Message "Failed to remove team: $($team.TeamName)" -Level Warning
-            }
+            
+            # Provide feedback based on team removal status
+            $messageLevel = if ($teamCheck) { "Warning" } else { "Host" }
+            $messageContent = if ($teamCheck) { "Failed to remove team: $($team.TeamName)" } else { "Successfully removed team: $($team.TeamName)" }
+            
+            Write-PSFMessage -Message $messageContent -Level $messageLevel
         }
     }
-}
+    
 
     end {
         # Disconnect from PnP
