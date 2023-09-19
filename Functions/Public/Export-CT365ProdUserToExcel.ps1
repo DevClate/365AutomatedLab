@@ -6,7 +6,7 @@ Exports Office 365 production user details to an Excel file.
 This function connects to Microsoft Graph to fetch details of Office 365 users based on certain criteria and then exports those details to an Excel file. The exported details include GivenName, SurName, UserPrincipalName, DisplayName, MailNickname, JobTitle, Department, and address-related fields.
 
 .PARAMETER WorkbookName
-The name of the Excel workbook where the user details will be exported. It should have an extension of .xls or .xlsx.
+The name of the Excel workbook where the user details will be exported. It should have an extension of .xlsx.
 
 .PARAMETER FilePath
 The path to the folder where the Excel file will be created or saved.
@@ -38,7 +38,7 @@ function Export-CT365ProdUserToExcel {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [ValidatePattern('^.*\.(xls|xlsx)$')]
+        [ValidatePattern('^.*\.(xlsx)$')]
         [string]$WorkbookName,
 
         [Parameter(Mandatory)]
