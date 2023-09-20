@@ -28,7 +28,6 @@ https://docs.microsoft.com/powershell/module/sharepoint-pnp/new-pnpsite
 function New-CT365SharePointSite {
     [CmdletBinding()]
     param (
-        # Validate the Excel file path.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
             switch ($psitem){
@@ -55,10 +54,8 @@ function New-CT365SharePointSite {
         })]
         [string]$AdminUrl,
 
-        # Domain information.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
             switch ($psitem) {
                 {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
                     throw "The provided domain is not in the correct format."
