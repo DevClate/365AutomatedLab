@@ -48,8 +48,10 @@ Please do not use this module in your production environment until tested in you
   * Copy-WorkSheetName
 * Create your own 365DataEnvironment workbook with the job roles for your organization
   * New-CT365DataEnvironment
-* Create a new Sharepoint Site
+* Create a new SharePoint Site
   * New-CT365SharePointSite
+* Remove a SharePoint Site
+  * Remove-CT365SharePointSite
 * Create Teams and channels
   * New-CT365Teams
 * Remove Teams and channels
@@ -95,7 +97,6 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       Add-CT365GroupByTitle -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
       ```
-
 6. Run the below command to add Microsoft Teams and Channels to your environment
 
    1. ```powershell
