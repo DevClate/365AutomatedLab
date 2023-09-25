@@ -26,7 +26,7 @@ Make sure you have the necessary modules installed: ImportExcel, PnP.PowerShell,
 .LINK
 https://docs.microsoft.com/powershell/module/sharepoint-pnp/new-pnpsite
 #>
-function Remove-CT365SharePointSite3 {
+function Remove-CT365SharePointSite {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
