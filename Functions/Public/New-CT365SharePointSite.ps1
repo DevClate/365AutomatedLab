@@ -107,6 +107,9 @@ function New-CT365SharePointSite {
 
     process {
         foreach ($site in $siteData) {
+            # Join Admin URL and Site Url
+            $siteUrl = "https://$AdminUrl/sites/$($site.Url)"
+            
             # Set the message target to the site's title.
             $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
 
@@ -128,7 +131,7 @@ function New-CT365SharePointSite {
                 }
                 "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                     $newPnPSiteSplat.Type = $PSItem 
-                    $newPnPSiteSplat.add("Url",$site.Url)
+                    $newPnPSiteSplat.add("Url",$siteUrl)
                 }
                 default {
                     # Log an error for unknown site types and skip to the next site.
