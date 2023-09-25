@@ -110,6 +110,10 @@ function Remove-CT365SharePointSite {
 
     process {
         foreach ($site in $siteData) {
+            
+            # Join Admin URL and Site Url
+            $siteUrl = "https://$AdminUrl/sites/$($site.Url)"
+            
             try {
                 # Set the message target to the site's title.
                 $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
@@ -129,39 +133,28 @@ function Remove-CT365SharePointSite {
                                 Identity = $site.Title
                                 ErrorAction = 'Stop'
                             }
-                            <#
-                            $removePnPTenantSiteTeamSplat = @{
-                                Url = $site.url
-                                ErrorAction = 'Stop'
-                                Force = $true
-                                SkipRecycleBin = $true
-                            }
-                            #>
                             $removePnPTenantSiteSplat = @{
-                                Url = $site.url
+                                Url = $siteUrl
                                 ErrorAction = 'Stop'
                                 Force = $true
                             }
                             Remove-PnPMicrosoft365Group @removePnPM365GroupSplat
                             Write-PSFMessage -Message "Soft deletion of Team Group: '$($site.Title)'"
                             Start-Sleep -Seconds 120
-                            #Write-PSFMessage -Message "Permanently deleting Team Site: '$($site.Title)'"
-                            #Remove-PnPTenantSite @removePnPTenantSiteTeamSplat
-                            #Write-PSFMessage -Message "Deleted Team Site: '$($site.Title)'"
                             Remove-PnPDeletedMicrosoft365Group @removePnPM365GroupPermSplat
                             Write-PSFMessage -Message "Permanently deleted Team Group: '$($site.Title)'"
                             Remove-PnPTenantDeletedSite @removePnPTenantSiteSplat
-                            Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($site.Url)'"
+                            Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($siteUrl)'"
                             continue
                         }
                         "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                             $removePnPTenantSiteSplat = @{
-                                Url = $site.url
+                                Url = $siteUrl
                                 ErrorAction = 'Stop'
                                 Force = $true
                             }
                             Remove-PnPTenantDeletedSite @removePnPTenantSiteSplat
-                            Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($site.Url)'"
+                            Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($siteUrl)'"
                             continue
                         }
                         default {
@@ -184,12 +177,12 @@ function Remove-CT365SharePointSite {
                     }
                     "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                         $removePnPSiteSplat = @{
-                            Url = $site.Url
+                            Url = $siteUrl
                             ErrorAction = "Stop"
                             Force = $true
                         }
                         remove-PnPTenantSite @removePnPSiteSplat
-                        Write-PSFMessage -Message "Successfully deleted SharePoint Site: '$($site.Url)'" 
+                        Write-PSFMessage -Message "Successfully deleted SharePoint Site: '$($siteUrl)'" 
                     }
                     default {
                     # Log an error for unknown site types and skip to the next site.
