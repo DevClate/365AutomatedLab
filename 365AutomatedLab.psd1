@@ -93,7 +93,8 @@ FunctionsToExport = @(
     'Export-CT365ProdUserToExcel',
     'New-CT365SharePointSite',
     'New-CT365Teams',
-    'Remove-CT365Teams'
+    'Remove-CT365Teams',
+    'Remove-CT365SharePointSite'
 
     )
 
