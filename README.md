@@ -33,7 +33,7 @@ Please do not use this module in your production environment until tested in you
 ### Current Functions
 
 * Create Users and assign license
-  * Add-CT365User
+  * New-CT365User
 * Remove Users
   * Remove-CT365User
 * Create the 4 types of Office 365 Groups/Distribution Lists
@@ -87,7 +87,7 @@ Once you have created your 365 Developer Program Environment, you can start addi
 3. Run the below command to add users to your environment with their licensing
 
    1. ```powershell
-      Add-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
+      New-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
 4. Run the below command to add groups to your environment
 
