@@ -3,7 +3,7 @@
     This function creates new Microsoft 365 users from data in an Excel file and assigns them a license.
 
 .DESCRIPTION
-    The Add-CT365User function imports user data from an Excel file, creates new users in Microsoft 365, and assigns them a license. 
+    The New-CT365User function imports user data from an Excel file, creates new users in Microsoft 365, and assigns them a license. 
     It performs these tasks using the Microsoft.Graph.Users and Microsoft.Graph.Groups modules.
 
 .PARAMETER FilePath
@@ -15,7 +15,7 @@
     This parameter is mandatory and accepts pipeline input and property names.
 
 .EXAMPLE
-    Add-CT365User -FilePath "C:\Path\to\file.xlsx" -domain "contoso.com"
+    New-CT365User -FilePath "C:\Path\to\file.xlsx" -domain "contoso.com"
     This command imports user data from the 'file.xlsx' file and creates new users in Microsoft 365 under the domain 'contoso.com'.
 
 .NOTES
@@ -25,7 +25,7 @@
 
     Connect-MgGraph -Scopes "Directory.ReadWrite.All" - is needed to connect to Graph
 #>
-function Add-CT365User {
+function New-CT365User {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
