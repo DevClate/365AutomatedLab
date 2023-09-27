@@ -82,9 +82,9 @@ RequiredModules = @(
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'Add-CT365Group', 
+    'New-CT365Group', 
     'New-CT365User',
-    'Add-CT365GroupByTitle',
+    'New-CT365GroupByTitle',
     'Remove-CT365Group', 
     'Remove-CT365User',
     'Remove-CT365GroupByTitle',
