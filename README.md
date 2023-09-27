@@ -37,11 +37,11 @@ Please do not use this module in your production environment until tested in you
 * Remove Users
   * Remove-CT365User
 * Create the 4 types of Office 365 Groups/Distribution Lists
-  * Add-CT365Group
+  * New-CT365Group
 * Remove the 4 types of Office 365 Groups/Distribution Lists
   * Remove-CT365Group
 * Assign User to any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
-  * Add-CT365GroupByTitle
+  * New-CT365GroupByTitle
 * Remove User from any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
   * Remove-CT365GroupByTitle
 * Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
@@ -92,12 +92,12 @@ Once you have created your 365 Developer Program Environment, you can start addi
 4. Run the below command to add groups to your environment
 
    1. ```powershell
-      Add-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
+      New-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
 5. Run the below command to add a user to their groups per their location and title
 
    1. ```powershell
-      Add-CT365GroupByTitle -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
+      New-CT365GroupByTitle -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
       ```
 6. Run the below command to add Microsoft Teams and Channels to your environment
 
