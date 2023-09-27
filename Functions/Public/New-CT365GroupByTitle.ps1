@@ -3,7 +3,7 @@
 This function adds a user to Microsoft 365 groups based on a provided Excel file.
 
 .DESCRIPTION
-The Add-CT365GroupByTitle function uses Microsoft Graph and Exchange Online Management modules to add a user to different types of Microsoft 365 groups. The group details are read from an Excel file. The group's SMTP, type, and display name are extracted from the Excel file and used to add the user to the group.
+The New-CT365GroupByTitle function uses Microsoft Graph and Exchange Online Management modules to add a user to different types of Microsoft 365 groups. The group details are read from an Excel file. The group's SMTP, type, and display name are extracted from the Excel file and used to add the user to the group.
 
 .PARAMETER FilePath
 The path to the Excel file that contains the groups to which the user should be added. The file must contain a worksheet named as per the user role ("NY-IT" or "NY-HR"). The worksheet should contain details about the groups including the primary SMTP, group type, and display name.
@@ -18,7 +18,7 @@ The domain that is appended to the primary SMTP to form the group's email addres
 The role of the user, which is also the name of the worksheet in the Excel file that contains the groups to which the user should be added. The possible values are "NY-IT" and "NY-HR".
 
 .EXAMPLE
-Add-CT365GroupByTitle -FilePath "C:\Users\Username\Documents\Groups.xlsx" -UserEmail "jdoe@example.com" -Domain "example.com" -UserRole "NY-IT"
+New-CT365GroupByTitle -FilePath "C:\Users\Username\Documents\Groups.xlsx" -UserEmail "jdoe@example.com" -Domain "example.com" -UserRole "NY-IT"
 
 This command reads the groups from the "NY-IT" worksheet in the Groups.xlsx file and adds the user "jdoe@example.com" to those groups.
 
@@ -26,7 +26,7 @@ This command reads the groups from the "NY-IT" worksheet in the Groups.xlsx file
 This function requires the ExchangeOnlineManagement, ImportExcel, and Microsoft.Graph.Groups modules to be installed. It will import these modules at the start of the function. The function connects to Exchange Online and Microsoft Graph, and it will disconnect from them at the end of the function.
 
 #>
-function Add-CT365GroupByTitle {
+function New-CT365GroupByTitle {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

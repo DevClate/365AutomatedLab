@@ -3,7 +3,7 @@
 This function creates Office 365 Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups based on the data provided in an Excel file.
 
 .DESCRIPTION
-The function Add-CT365Group takes the path of an Excel file, User Principal Name and a Domain as input. It creates Office 365 Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups based on the data found in the Excel file. If a group already exists, the function will output a message and skip the creation of that group.
+The function New-CT365Group takes the path of an Excel file, User Principal Name and a Domain as input. It creates Office 365 Groups, Distribution Groups, Mail-Enabled Security Groups, and Security Groups based on the data found in the Excel file. If a group already exists, the function will output a message and skip the creation of that group.
 
 .PARAMETER FilePath
 The full path to the Excel file containing the data for the groups to be created. The Excel file should have a worksheet named "Groups". Each row in this worksheet should represent a group to be created. The columns in the worksheet should include the DisplayName, Type (365Group, 365Distribution, 365MailEnabledSecurity, 365Security), PrimarySMTP (without domain), and Description of the group.
@@ -15,7 +15,7 @@ The User Principal Name (UPN) used to connect to Exchange Online.
 The domain to be appended to the PrimarySMTP of each group to form the email address of the group.
 
 .EXAMPLE
-Add-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
+New-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
 
 This will read the Excel file "file.xlsx" located at "C:\Path\to\", use "admin@domain.com" to connect to Exchange Online, and append "@domain.com" to the PrimarySMTP of each group to form the email address of the group.
 
@@ -52,7 +52,7 @@ Get-MgGroup
 
 New-MgGroup
 #>
-function Add-CT365Group {
+function New-CT365Group {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
