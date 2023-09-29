@@ -20,7 +20,7 @@
 
 .NOTES
     The function connects to Microsoft Graph using 'Directory.ReadWrite.All' scope. Make sure the account running this script has the necessary permissions.
-    The function sets the password for each new user to 'P@ssw0rd123' and does not require the user to change the password at the next sign-in. 
+    The function lets you set the password for each new user to what you want it to be and does not require the user to change the password at the next sign-in. 
     Modify the password setting to meet your organization's security requirements.
 
     Connect-MgGraph -Scopes "Directory.ReadWrite.All" - is needed to connect to Graph
