@@ -8,14 +8,14 @@ The function New-CT365Group takes the path of an Excel file, User Principal Name
 .PARAMETER FilePath
 The full path to the Excel file containing the data for the groups to be created. The Excel file should have a worksheet named "Groups". Each row in this worksheet should represent a group to be created. The columns in the worksheet should include the DisplayName, Type (365Group, 365Distribution, 365MailEnabledSecurity, 365Security), PrimarySMTP (without domain), and Description of the group.
 
-.PARAMETER UserPrincialName
+.PARAMETER UserPrincipalName
 The User Principal Name (UPN) used to connect to Exchange Online.
 
 .PARAMETER Domain
 The domain to be appended to the PrimarySMTP of each group to form the email address of the group.
 
 .EXAMPLE
-New-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincialName "admin@domain.com" -Domain "domain.com"
+New-CT365Group -FilePath "C:\Path\to\file.xlsx" -UserPrincipalName "admin@domain.com" -Domain "domain.com"
 
 This will read the Excel file "file.xlsx" located at "C:\Path\to\", use "admin@domain.com" to connect to Exchange Online, and append "@domain.com" to the PrimarySMTP of each group to form the email address of the group.
 
@@ -72,7 +72,7 @@ function New-CT365Group {
         })]
         [string]$FilePath,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$UserPrincialName,
+        [string]$UserPrincipalName,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
             # Check if the domain fits the pattern
