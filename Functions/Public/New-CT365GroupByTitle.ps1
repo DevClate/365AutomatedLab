@@ -87,7 +87,7 @@ function New-CT365GroupByTitle {
     if ($PSCmdlet.ShouldProcess("Add user to groups from Excel file")) {
         foreach ($row in $excelData) {
             $GroupName = $row.PrimarySMTP += "@$domain"
-            $GroupType = $row.GroupType
+            $GroupType = $row.Type
             $DisplayName = $row.DisplayName
 
             if ($PSCmdlet.ShouldProcess("Add user $UserEmail to $GroupType group $GroupName")) {
@@ -101,7 +101,7 @@ function New-CT365GroupByTitle {
                             Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Erroraction Stop
                         }
                         '365MailEnabledSecurity' {
-                            Add-DistributionGroupMember -Identity $GroupName -Type Security -Member $UserEmail -Erroraction Stop
+                            Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Erroraction Stop
                         }
                         '365Security' {
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
