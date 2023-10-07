@@ -34,7 +34,7 @@ function New-CT365GroupByTitle {
             #making sure the Filepath leads to a file and not a folder and has a proper extension
             switch ($psitem){
                 {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
                 {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
                     "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
