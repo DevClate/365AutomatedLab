@@ -22,7 +22,7 @@ This mandatory parameter specifies the domain of the user. The domain is used to
 This mandatory parameter specifies the user's role. It should be either "NY-IT" or "NY-HR". This parameter is used to identify the worksheet in the Excel file to import.
 
 .EXAMPLE
-Remove-CT365GroupByTitle -FilePath "C:\Path\to\file.xlsx" -UserEmail "johndoe@example.com" -Domain "example.com" -UserRole "NY-IT"
+Remove-CT365GroupByUserRole -FilePath "C:\Path\to\file.xlsx" -UserEmail "johndoe@example.com" -Domain "example.com" -UserRole "NY-IT"
 This example removes the user "johndoe@example.com" from the groups specified in the "NY-IT" worksheet of the Excel file at "C:\Path\to\file.xlsx".
 
 .NOTES
@@ -41,7 +41,7 @@ https://docs.microsoft.com/en-us/powershell/module/microsoft.graph.groups/?view=
 https://www.powershellgallery.com/packages/ImportExcel
 
 #>
-function Remove-CT365GroupByTitle {
+function Remove-CT365GroupByUserRole {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -62,6 +62,17 @@ function Remove-CT365GroupByTitle {
         [string]$FilePath,
         
         [Parameter(Mandatory)]
+        [ValidateScript({
+            # Check if the email fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"}{
+                    throw "The provided email is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
         [string]$UserEmail,
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -102,23 +113,20 @@ function Remove-CT365GroupByTitle {
     if ($PSCmdlet.ShouldProcess("Remove user from groups from Excel file")) {
         foreach ($row in $excelData) {
             $GroupName = $row.PrimarySMTP += "@$domain"
-            $GroupType = $row.GroupType
+            $GroupType = $row.Type
             $DisplayName = $row.DisplayName
 
             if ($PSCmdlet.ShouldProcess("Remove user $UserEmail from $GroupType group $GroupName")) {
                 try {
                     Write-PSFMessage -Level Output -Message "Removing $UserEmail from $($GroupType):'$GroupName'" -Target $UserEmail
-                    switch ($GroupType) {
-                        '365Group' {
+                    switch -Regex ($GroupType) {
+                        "^365Group$" {
                             Remove-UnifiedGroupLinks -Identity $GroupName -LinkType "Members" -Links $UserEmail -Confirm:$false
                         }
-                        '365Distribution' {
+                        "^(365Distribution|365MailEnabledSecurity)$" {
                             Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false
                         }
-                        '365MailEnabledSecurity' {
-                            Remove-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Confirm:$false
-                        }
-                        '365Security' {
+                        "^365Security$" {
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
                             $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($DisplayName)'"
                                 if ($ExistingGroup) {
@@ -137,7 +145,7 @@ function Remove-CT365GroupByTitle {
                     }
                     Write-PSFMessage -Level Output -Message "Removed $UserEmail from $($GroupType):'$GroupName' sucessfully" -Target $UserEmail
                 } catch {
-                    Write-PSFMessage -Level Error -Message "Error removing user $UserEmail from $($GroupType):'$GroupName'" -Target $UserEmail
+                    Write-PSFMessage -Level Error -Message "$($_.Exception.Message) - Error removing user $UserEmail from $($GroupType):'$GroupName'" -Target $UserEmail
                 }
             }
         }

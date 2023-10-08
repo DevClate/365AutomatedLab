@@ -3,7 +3,7 @@
 This function adds a user to Microsoft 365 groups based on a provided Excel file.
 
 .DESCRIPTION
-The New-CT365GroupByTitle function uses Microsoft Graph and Exchange Online Management modules to add a user to different types of Microsoft 365 groups. The group details are read from an Excel file. The group's SMTP, type, and display name are extracted from the Excel file and used to add the user to the group.
+The New-CT365GroupByUserRole function uses Microsoft Graph and Exchange Online Management modules to add a user to different types of Microsoft 365 groups. The group details are read from an Excel file. The group's SMTP, type, and display name are extracted from the Excel file and used to add the user to the group.
 
 .PARAMETER FilePath
 The path to the Excel file that contains the groups to which the user should be added. The file must contain a worksheet named as per the user role ("NY-IT" or "NY-HR"). The worksheet should contain details about the groups including the primary SMTP, group type, and display name.
@@ -18,15 +18,15 @@ The domain that is appended to the primary SMTP to form the group's email addres
 The role of the user, which is also the name of the worksheet in the Excel file that contains the groups to which the user should be added. The possible values are "NY-IT" and "NY-HR".
 
 .EXAMPLE
-New-CT365GroupByTitle -FilePath "C:\Users\Username\Documents\Groups.xlsx" -UserEmail "jdoe@example.com" -Domain "example.com" -UserRole "NY-IT"
+New-CT365GroupByUserRole -FilePath "C:\Users\Username\Documents\Groups.xlsx" -UserEmail "jdoe@example.com" -Domain "example.com" -UserRole "NY-IT"
 
 This command reads the groups from the "NY-IT" worksheet in the Groups.xlsx file and adds the user "jdoe@example.com" to those groups.
 
 .NOTES
-This function requires the ExchangeOnlineManagement, ImportExcel, and Microsoft.Graph.Groups modules to be installed. It will import these modules at the start of the function. The function connects to Exchange Online and Microsoft Graph, and it will disconnect from them at the end of the function.
+This function requires the ExchangeOnlineManagement, ImportExcel, PSFramwork, and Microsoft.Graph.Groups modules to be installed. It will import these modules at the start of the function. The function connects to Exchange Online and Microsoft Graph, and it will disconnect from them at the end of the function.
 
 #>
-function New-CT365GroupByTitle {
+function New-CT365GroupByUserRole {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -47,6 +47,17 @@ function New-CT365GroupByTitle {
         [string]$FilePath,
         
         [Parameter(Mandatory)]
+        [ValidateScript({
+            # Check if the email fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"}{
+                    throw "The provided email is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
         [string]$UserEmail,
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -93,17 +104,14 @@ function New-CT365GroupByTitle {
             if ($PSCmdlet.ShouldProcess("Add user $UserEmail to $GroupType group $GroupName")) {
                 try {
                     Write-PSFMessage -Level Output -Message "Adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
-                    switch ($GroupType) {
-                        '365Group' {
-                            Add-UnifiedGroupLinks -Identity $GroupName -LinkType "Members"-Links $UserEmail -erroraction Stop
+                    switch -Regex ($GroupType) {
+                        "^365Group$" {
+                            Add-UnifiedGroupLinks -Identity $GroupName -LinkType Members -Links $UserEmail -ErrorAction Stop
                         }
-                        '365Distribution' {
+                        "^(365Distribution|365MailEnabledSecurity)$" {
                             Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Erroraction Stop
                         }
-                        '365MailEnabledSecurity' {
-                            Add-DistributionGroupMember -Identity $GroupName -Member $UserEmail -Erroraction Stop
-                        }
-                        '365Security' {
+                        "^365Security$" {
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
                             $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($DisplayName)'"
                             if ($ExistingGroup) {
@@ -121,7 +129,7 @@ function New-CT365GroupByTitle {
                     }
                     Write-PSFMessage -Level Output -Message "Added $UserEmail to $($GroupType):'$GroupName' sucessfully" -Target $UserEmail
                 } catch {
-                    Write-PSFMessage -Level Error -Message "Error adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
+                    Write-PSFMessage -Level Error -Message "$($_.Exception.Message) - Error adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
                 }
             }
         }

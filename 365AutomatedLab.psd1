@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.9'
+ModuleVersion = '0.1.0'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -84,10 +84,10 @@ RequiredModules = @(
 FunctionsToExport = @(
     'New-CT365Group', 
     'New-CT365User',
-    'New-CT365GroupByTitle',
+    'New-CT365GroupByUserRole',
     'Remove-CT365Group', 
     'Remove-CT365User',
-    'Remove-CT365GroupByTitle',
+    'Remove-CT365GroupByUserRole',
     'Copy-WorksheetName',
     'New-CT365DataEnvironment',
     'Export-CT365ProdUserToExcel',
@@ -122,7 +122,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('365', 'Office', 'User', 'Group', 'Environment', 'Development', 'Lab')
+        Tags = @('365', 'Office', 'User', 'Group', 'Environment', 'Development', 'Sharepoint', 'Teams', 'Lab')
 
         # A URL to the license for this module.
         # LicenseUri = ''
