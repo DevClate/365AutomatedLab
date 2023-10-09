@@ -131,7 +131,7 @@ PrivateData = @{
         ProjectUri = 'https://github.com/DevClate/365AutomatedLab'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://github.com/DevClate/365AutomatedLab/blob/main/Static/365automatedlabIcon.png'
+        IconUri = 'https://raw.githubusercontent.com/DevClate/365AutomatedLab/78573608de64cefec833d808939fb95edaa456ad/Static/365automatedlabIcon.png'
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''
