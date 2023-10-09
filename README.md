@@ -9,6 +9,7 @@ This module will create a Microsoft 365 Test Environment using an excel workbook
 - [Current Functions](#current-functions)
 - [Data](#data)
 - [Getting Started](#getting-started)
+- [Changelog](https://github.com/DevClate/365AutomatedLab/blob/main/CHANGELOG.md)
 
 ## Project Summary
 
