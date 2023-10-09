@@ -134,7 +134,7 @@ PrivateData = @{
         IconUri = 'https://raw.githubusercontent.com/DevClate/365AutomatedLab/78573608de64cefec833d808939fb95edaa456ad/Static/365automatedlabIcon.png'
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'https://github.com/DevClate/365AutomatedLab/blob/78573608de64cefec833d808939fb95edaa456ad/CHANGELOG.md'
 
         # Prerelease string of this module
         # Prerelease = ''
