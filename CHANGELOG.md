@@ -1,4 +1,4 @@
-### 365AutomatedLab Changelog
+# 365AutomatedLab Changelog
 
 ## 0.1.2
 
