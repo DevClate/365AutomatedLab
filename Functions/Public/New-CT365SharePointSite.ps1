@@ -86,7 +86,7 @@ function New-CT365SharePointSite {
     process {
         foreach ($site in $siteData) {
             
-            $AbsoluteUrl = "https://$AdminUrl/sites/$($site.Url)"
+            $siteurl = "https://$AdminUrl/sites/$($site.Url)"
             $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
             Write-PSFMessage -Message "Creating Sharepoint Site: '$($site.Title)'"
             $newPnPSiteSplat = @{
@@ -103,7 +103,7 @@ function New-CT365SharePointSite {
                 }
                 "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                     $newPnPSiteSplat.Type = $PSItem 
-                    $newPnPSiteSplat.add("Url",$AbsoluteUrl)
+                    $newPnPSiteSplat.add("Url",$siteurl)
                 }
                 default {
                     Write-PSFMessage "Unknown site type: $($site.SiteType) for site $($site.Title). Skipping." -Level Error
