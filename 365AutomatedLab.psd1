@@ -60,6 +60,7 @@ RequiredModules = @(
     @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='1.17.0' }
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
     @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.2.0' }
+    @{ ModuleName='Microsoft.Identity.Client'; ModuleVersion='4.50.0.0' }
 
 )
 
