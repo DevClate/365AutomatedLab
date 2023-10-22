@@ -30,12 +30,13 @@ function New-CT365SharePointSite {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
+            #making sure the Filepath leads to a file and not a folder and has a proper extension
             switch ($psitem){
                 {-not([System.IO.File]::Exists($psitem))}{
-                    throw "Invalid file path: '$PSitem'."
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx"
+                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls)")}{
+                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx or .xls extension and try again."
                 }
                 Default{
                     $true
@@ -44,111 +45,77 @@ function New-CT365SharePointSite {
         })]
         [string]$FilePath,
 
-        [Parameter(Mandatory=$false)]
-        [ValidateScript({
-            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
-                $true
-            } else {
-                throw "The URL $_ does not match the required format."
-            }
-        })]
+        [Parameter(Mandatory)]
         [string]$AdminUrl,
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateScript({
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
-                }
-                Default {
-                    $true
-                }
-            }
-        })]
+        [Parameter(Mandatory)]
         [string]$Domain
     )
-
-    begin {
-        # Set default message parameters.
+    begin{
         $PSDefaultParameterValues = @{
             "Write-PSFMessage:Level"    = "OutPut"
-            "Write-PSFMessage:Target"   = "Preparation"
+            "Write-PSFMessage:Target"   = "Preperation"
         }
 
-        # Import required modules.
+        # Import the required modules
         $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework"
         Import-Module $ModulesToImport
 
         try {
-            # Connect to SharePoint Online.
             $connectPnPOnlineSplat = @{
                 Url = $AdminUrl
                 Interactive = $true
                 ErrorAction = 'Stop'
             }
-            Connect-PnPOnline @connectPnPOnlineSplat
+            Connect-PnPOnline  @connectPnPOnlineSplat
         }
         catch {
-            # Log an error and exit if the connection fails.
-            Write-PSFMessage -Message "Failed to connect to SharePoint Online" -Level Error 
+            Write-PSFMessage -Message "Failed to connect to sharepoint online" -Level Error 
             return 
         }
 
         try {
-            # Import site data from Excel.
             $SiteData = Import-Excel -Path $FilePath -WorksheetName "Sites"
-        }
-        catch {
-            # Log an error and exit if importing site data fails.
-            Write-PSFMessage -Message "Failed to import SharePoint Site data from Excel file." -Level Error 
+        } catch {
+            Write-PSFMessage -Message "Failed to import Sharepoint Site data from Excel file." -Level Error 
             return
         }
+
     }
 
     process {
         foreach ($site in $siteData) {
-            # Join Admin URL and Site Url
-            $siteUrl = "https://$AdminUrl/sites/$($site.Url)"
             
-            # Set the message target to the site's title.
+            $siteurl = "https://$AdminUrl/sites/$($site.Url)"
             $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
-
-            # Log a message indicating site creation.
-            Write-PSFMessage -Message "Creating SharePoint Site: '$($site.Title)'"
-
-            # Initialize parameters for creating a new SharePoint site.
+            Write-PSFMessage -Message "Creating Sharepoint Site: '$($site.Title)'"
             $newPnPSiteSplat = @{
                 Type = $null
                 TimeZone = $site.Timezone
                 Title = $site.Title
                 ErrorAction = "Stop"
             }
-
             switch -Regex ($site.SiteType) {
                 "^TeamSite$" {
                     $newPnPSiteSplat.Type = $PSItem 
                     $newPnPSiteSplat.add("Alias",$site.Alias)
+                    
                 }
                 "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                     $newPnPSiteSplat.Type = $PSItem 
-                    $newPnPSiteSplat.add("Url",$siteUrl)
+                    $newPnPSiteSplat.add("Url",$siteurl)
                 }
                 default {
-                    # Log an error for unknown site types and skip to the next site.
                     Write-PSFMessage "Unknown site type: $($site.SiteType) for site $($site.Title). Skipping." -Level Error
-                    # Continue to the next site in the loop.
                     continue
                 }
             }
-
             try {
-                # Attempt to create a new SharePoint site using specified parameters.
                 New-PnPSite @newPnPSiteSplat 
-                Write-PSFMessage -Message "Created SharePoint Site: '$($site.Title)'"
+                Write-PSFMessage -Message "Created Sharepoint Site: '$($site.Title)'"
             }
             catch {
-                # Log an error message if site creation fails and continue to the next site.
-                Write-PSFMessage -Message "Could not create SharePoint Site: '$($site.Title)' Skipping" -Level Error
+                Write-PSFMessage -Message "Could not create Sharepoint Site: '$($site.Title)' Skipping" -Level Error
                 Write-PSFMessage -Message $Psitem.Exception.Message -Level Error
                 Continue
             }
@@ -156,10 +123,8 @@ function New-CT365SharePointSite {
     }
 
     end {
-        # Log a message indicating completion of the SharePoint site creation process.
         Write-PSFMessage "SharePoint site creation process completed."
-        
-        # Disconnect from SharePoint Online.
+        # Disconnect from SharePoint Online
         Disconnect-PnPOnline
     }
 }

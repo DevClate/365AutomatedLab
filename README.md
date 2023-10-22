@@ -20,7 +20,7 @@ Please do not use this module in your production environment until tested in you
 ### Requirements
 
 * PowerShell Version:
-  * 7.1+ (Untested on Mac OSX and Linux)
+  * 7.1+ Windows and Mac (Untested on Linux)
 * Modules
   * ImportExcel v7.8.2+
   * ExchangeOnlineManagement v2.0.6+
