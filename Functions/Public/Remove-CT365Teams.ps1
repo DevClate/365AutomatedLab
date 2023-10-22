@@ -61,7 +61,7 @@ function Remove-CT365Teams {
 
     begin {
         # Import required modules.
-        $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework"
+        $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework","Microsoft.Identity.Client"
         Import-Module $ModulesToImport
         
         try {
