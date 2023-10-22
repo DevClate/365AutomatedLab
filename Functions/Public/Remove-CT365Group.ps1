@@ -38,7 +38,7 @@ function Remove-CT365Group {
         })]
         [string]$FilePath,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$UserPrincialName
+        [string]$UserPrincipalName
     )
 
     # Import the required modules
