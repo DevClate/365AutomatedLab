@@ -20,7 +20,7 @@ Remove-CT365Teams -FilePath "C:\Path\To\File.xlsx" -AdminUrl "https://yourtenant
 This example will connect to the SharePoint Online admin center using the provided AdminUrl, read the Teams from the specified Excel file, and proceed to remove each team.
 
 .NOTES
-- Ensure you have the necessary modules ("ImportExcel","PnP.PowerShell","PSFramework") installed before running this function.
+- Ensure you have the necessary modules ("ImportExcel","PnP.PowerShell","PSFramework","Microsoft.Identity.Client") installed before running this function.
 - Always backup your Teams data before using this function to avoid unintended data loss.
 - This function has a built-in delay of 5 seconds between team removals to ensure proper deletion.
 
