@@ -48,7 +48,18 @@ function New-CT365SharePointSite {
         [Parameter(Mandatory)]
         [string]$AdminUrl,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateScript({
+            # Check if the domain fits the pattern
+            switch ($psitem) {
+                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
+                    throw "The provided domain is not in the correct format."
+                }
+                Default {
+                    $true
+                }
+            }
+        })]
         [string]$Domain
     )
     begin{
