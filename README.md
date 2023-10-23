@@ -19,59 +19,62 @@ Please do not use this module in your production environment until tested in you
 
 ### Requirements
 
-* PowerShell Version:
-  * 7.1+ Windows and Mac (Untested on Linux)
-* Modules
-  * ImportExcel v7.8.2+
-  * ExchangeOnlineManagement v2.0.6+
-  * Microsoft.Graph.Users v1.17.0+
-  * Microsoft.Graph.Groups v1.17.0+
-  * Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
-  * Microsoft.Graph.Users.Actions v1.17.0+
-  * PSFramework v1.8.289+
-  * PnP.PowerShell v2.2.0+
+- PowerShell Version:
+  - 7.1+ Windows and Mac (Untested on Linux)
+- Modules
+  - ImportExcel v7.8.2+
+  - ExchangeOnlineManagement v2.0.6+
+  - Microsoft.Graph.Users v1.17.0+
+  - Microsoft.Graph.Groups v1.17.0+
+  - Microsoft.Graph.Identity.DirectoryManagement v1.17.0+
+  - Microsoft.Graph.Users.Actions v1.17.0+
+  - PSFramework v1.8.289+
+  - PnP.PowerShell v2.2.0+
+  - Microsoft.Identity.Client v4.50.0.0
 
 ### Current Functions
 
-* Create Users and assign license
-  * New-CT365User
-* Remove Users
-  * Remove-CT365User
-* Create the 4 types of Office 365 Groups/Distribution Lists
-  * New-CT365Group
-* Remove the 4 types of Office 365 Groups/Distribution Lists
-  * Remove-CT365Group
-* Assign User to any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
-  * New-CT365GroupByUserRole
-* Remove User from any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
-  * Remove-CT365GroupByUserRole
-* Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
-  * Copy-WorkSheetName
-* Create your own 365DataEnvironment workbook with the job roles for your organization
-  * New-CT365DataEnvironment
-* Create a new SharePoint Site
-  * New-CT365SharePointSite
-* Remove a SharePoint Site
-  * Remove-CT365SharePointSite
-* Create Teams and channels
-  * New-CT365Teams
-* Remove Teams and channels
-  * Remove-CT365Teams
+- Create Users and assign license
+  - New-CT365User
+- Remove Users
+  - Remove-CT365User
+- Create the 4 types of Office 365 Groups/Distribution Lists
+  - New-CT365Group
+- Remove the 4 types of Office 365 Groups/Distribution Lists
+  - Remove-CT365Group
+- Assign User to any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
+  - New-CT365GroupByUserRole
+- Remove User from any of their 4 Office 365 Groups/Distribution Lists by Job Title and Location
+  - Remove-CT365GroupByUserRole
+- Copy worksheets name to a csv file so you can copy those location-titles into your ValidateSet
+  - Copy-WorkSheetName
+- Create your own 365DataEnvironment workbook with the job roles for your organization
+  - New-CT365DataEnvironment
+- Create a new SharePoint Site
+  - New-CT365SharePointSite
+- Remove a SharePoint Site
+  - Remove-CT365SharePointSite
+- Create Teams and channels
+  - New-CT365Teams
+- Remove Teams and channels
+  - Remove-CT365Teams
+- Export Users from production to import template
+  - Export-CT365ProdUserToExcel
 
 ### Data
 
 In LabSources you will find an excel file named 365DataEnvironment.xlsx that has 3 main tabs. Any additional tabs will be for different location-jobtitle tabs. You can use this workbook as is in your test environment, or use it as a template for your own data.
 
-* Users: This will have all of the user's information you are creating including licensing information
-  * If you do not have a UsageLocation set, the licenses will not be added
-* Groups: This will have all the groups you want created
-  * I do not have it assigning manager as of yet, but will in the future
-* Location-JobTitle: This will have all the groups that location and job title are suppose to have(Corresponds with JobRole Parameter).
-  * Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
-* Teams: This will have all the Teams and Channels to be created
-  * I only have it for 2 additional channels, but please let me know if you need more
-* Sites: This will all of the SharePoint sites you want created
-  * You can create the 4 different types of SharePoint sites as well has select the template you want
+- Users: This will have all of the user's information you are creating including licensing information
+  - If you do not have a UsageLocation set, the licenses will not be added
+- Groups: This will have all the groups you want created
+  - I do not have it assigning manager as of yet, but will in the future
+- Location-JobTitle: This will have all the groups that location and job title are suppose to have(Corresponds with JobRole Parameter).
+  - Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
+- Teams: This will have all the Teams and Channels to be created
+  - I only have it for 2 additional channels, but please let me know if you need more
+- Sites: This will all of the SharePoint sites you want created
+  - You can create the 4 different types of SharePoint sites as well has select the template you want
 
 In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
 
@@ -105,3 +108,5 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       New-CT365Teams -FilePath "C:\path\to\365DataEnvironment.xlsx" -AdminUrl "https://yourdomain.sharepoint.com"
       ```
+
+Also definitely check out my [blog](https://www.clatent.com/) for more info on 365AutomatedLab and other projects I'm working on.

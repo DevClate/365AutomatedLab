@@ -2,13 +2,17 @@
 
 ## 0.1.4
 
-Added microsoft.identity.client v4.50.0.0 into required modules
+Confirmed working on Mac OS
 
-Fixed spelling error for UserPrincipalName on New-CT365Teams
+Added microsoft.identity.client v4.50.0.0 into required modules
 
 Added microsoft.identity.client module to import for New-CT365Teams
 
 Added microsoft.identity.client module to import for Remove-CT365Teams
+
+Fixed spelling error for UserPrincipalName on New-CT365Teams
+
+Export-CT365ProdUserToExcel now matches exactly for importing into Dev(only need to add licensing)
 
 ## 0.1.3
 
