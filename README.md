@@ -1,3 +1,5 @@
+![Alt 365AutomatedLab Logo](https://github.com/DevClate/365AutomatedLab/blob/main/Static/365automatedlabIcon.png?raw=true)
+
 # 365AutomatedLab
 
 This module will create a Microsoft 365 Test Environment using an excel workbook
