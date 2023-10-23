@@ -33,7 +33,7 @@ This example uses pipeline input to provide the file path to the New-365Teams fu
 
 .NOTES
 Please submit any feedback and/or recommendations
-Prerequisite   : PnP.PowerShell, ImportExcel, PSFramework modules should be installed.
+Prerequisite   : PnP.PowerShell, ImportExcel, PSFramework, Microsoft.Identity.Client modules should be installed.
 
 #>
 function New-CT365Teams {
