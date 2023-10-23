@@ -43,12 +43,13 @@ function Export-CT365ProdUserToExcel {
 
         [Parameter(Mandatory)]
         [ValidateScript({
-            if (Test-Path -Path $_ -PathType Container) {
-                $true
-            } else {
-                throw "Folder path $_ does not exist, please confirm path does exist"
-            }
-        })]
+                if (Test-Path -Path $_ -PathType Container) {
+                    $true
+                }
+                else {
+                    throw "Folder path $_ does not exist, please confirm path does exist"
+                }
+            })]
         [string]$FilePath,
 
         [Parameter()]
@@ -61,7 +62,7 @@ function Export-CT365ProdUserToExcel {
     begin {
         
         # Import Required Modules
-        $ModulesToImport = "Microsoft.Graph.Authentication","Microsoft.Graph.Users","ImportExcel","PSFramework"
+        $ModulesToImport = "Microsoft.Graph.Authentication", "Microsoft.Graph.Users", "ImportExcel", "PSFramework"
         Import-Module $ModulesToImport
     
         $Path = Join-Path -Path $filepath -ChildPath $workbookname
@@ -93,20 +94,32 @@ function Export-CT365ProdUserToExcel {
         # Apply department filter if provided as parameter
         if (-not [string]::IsNullOrEmpty($DepartmentFilter)) {
             #$userCommand = $userCommand | Where-Object { $_.Department -eq $DepartmentFilter }
-            $getMgUserSplat.Add('filter',"Department eq '$DepartmentFilter'")
+            $getMgUserSplat.Add('filter', "Department eq '$DepartmentFilter'")
         }
 
         # Limit the number of users if specified else get all users
-        if ($UserLimit-eq 0) {
-            $getMgUserSplat.Add("all",$true)
-        }else{
-            $getMgUserSplat.Add("Top",$UserLimit)
+        if ($UserLimit -eq 0) {
+            $getMgUserSplat.Add("all", $true)
+        }
+        else {
+            $getMgUserSplat.Add("Top", $UserLimit)
         }
 
-        $userCommand = Get-MgUser @getMgUserSplat | Select-Object -Property $getMgUserSplat.Property
-
+        $selectProperties = @{
+            Property = @(
+                @{Name='FirstName'; Expression={$_.GivenName}},
+                @{Name='LastName'; Expression={$_.SurName}},
+                @{Name='UserName'; Expression={$_.UserPrincipalName -replace '@.*'}},
+                @{Name='Title'; Expression={$_.JobTitle}},
+                'Department', 'StreetAddress', 'City', 'State', 'PostalCode', 'Country',
+                @{Name='PhoneNumber'; Expression={$_.BusinessPhones}},
+                'MobilePhone', 'UsageLocation'
+            )
+        }
+        $userCommand = Get-MgUser @getMgUserSplat | Select-Object @selectProperties
+        
         #alter the Businessphones property so they can be displayed in the excel file correctly
-        foreach($User in $userCommand){
+        foreach ($User in $userCommand) {
             $User.BusinessPhones = $User.BusinessPhones -join ", "
         }
 
