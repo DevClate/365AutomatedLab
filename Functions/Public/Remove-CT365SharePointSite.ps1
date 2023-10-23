@@ -20,7 +20,7 @@ Remove-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://d
 This example removes SharePoint sites using the data from the "file.xlsx" and connects to SharePoint Online using the provided admin URL.
 
 .NOTES
-To use this, please make sure that you the sites have been created at least 6 minutes prior, or it won't work. Also it will say "Group not found" but still work as of 9/25/2023. 
+To use this, please make sure that you the sites have been created at least 6 minutes prior, or it won't work. Also it will say "Group not found" but still works as of 10/23/2023. Open issue in GitHub for more information. 
 Make sure you have the necessary modules installed: ImportExcel, PnP.PowerShell, and PSFramework.
 
 .LINK
