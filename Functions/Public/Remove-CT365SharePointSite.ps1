@@ -14,6 +14,9 @@ The SharePoint Online admin URL.
 .PARAMETER Domain
 The domain information required for the SharePoint site creation.
 
+.PARAMETER PermanentlyDelete
+This will completely delete the SharePoint site so you can reuse that site address again.
+
 .EXAMPLE
 Remove-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://domainname.sharepoint.com" -Domain "contoso.com"
 
