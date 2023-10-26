@@ -4,12 +4,16 @@ on:
     branches: [ main ]
 jobs:
   test-pwsh:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Run Pester tests
+    - uses: actions/checkout@v2
+    - name: Run Pester tests (pwsh)
       run: |
+        Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
+        Install-Module -Name Pester -RequiredVersion 5.0.4 -confirm:$false -Force
         Invoke-Pester -Path "tests"        
       shell: pwsh
