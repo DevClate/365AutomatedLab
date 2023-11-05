@@ -14,4 +14,4 @@ jobs:
           NUGET_KEY: ${{ secrets.PSGALLERYAPI }}
         shell: pwsh
         run: |
-          Publish-Module -Path ./365AutomatedLab -NuGetApiKey $env:NUGET_KEY -Verbose
+          Publish-Module -Path ./ -NuGetApiKey $env:NUGET_KEY -Verbose
