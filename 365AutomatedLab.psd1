@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.4'
+ModuleVersion = '0.1.5'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -61,13 +61,10 @@ RequiredModules = @(
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
     @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.2.0' }
     @{ ModuleName='Microsoft.Identity.Client'; ModuleVersion='4.50.0.0' }
-
 )
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
-
-
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
@@ -123,7 +120,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('365', 'Office', 'User', 'Group', 'Environment', 'Development', 'Sharepoint', 'Teams', 'Lab')
+        Tags = @('Office365', 'Automation', 'MSGraph', 'Cloud', 'Teams', 'Configuration', 'Sharepoint', 'Excel', 'Exchange', 'MacOS', 'Windows', 'PSEdition_Core')
 
         # A URL to the license for this module.
         # LicenseUri = ''
