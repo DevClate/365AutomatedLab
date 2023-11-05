@@ -61,13 +61,10 @@ RequiredModules = @(
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
     @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.2.0' }
     @{ ModuleName='Microsoft.Identity.Client'; ModuleVersion='4.50.0.0' }
-
 )
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
-
-
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
