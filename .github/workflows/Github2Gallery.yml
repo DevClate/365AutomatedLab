@@ -1,0 +1,17 @@
+name: Publish to PowerShell Gallery
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  publish-to-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish
+        env:
+          NUGET_KEY: ${{ secrets.PSGALLERYAPI }}
+        shell: pwsh
+        run: |
+          Publish-Module -Path .\365AutomatedLab\ -NuGetApiKey $env:NUGET_KEY -Verbose
