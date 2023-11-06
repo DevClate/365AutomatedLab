@@ -1,5 +1,15 @@
 # 365AutomatedLab Changelog
 
+## 0.1.6
+
+Minor formatting
+
+Confirmed working upload to PowerShell Gallery GitHub Action
+
+## 0.1.5
+
+Added better tags and added tag to show it works on MacOS in PowerShell Gallery
+
 ## 0.1.4
 
 Confirmed working on Mac OS
