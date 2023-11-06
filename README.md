@@ -8,6 +8,7 @@ This module will create a Microsoft 365 Test Environment using an excel workbook
 
 - [Project Summary](#project-summary)
 - [Requirements](#requirements)
+- [Installer](#installer)
 - [Current Functions](#current-functions)
 - [Data](#data)
 - [Getting Started](#getting-started)
@@ -33,6 +34,20 @@ Please do not use this module in your production environment until tested in you
   - PSFramework v1.8.289+
   - PnP.PowerShell v2.2.0+
   - Microsoft.Identity.Client v4.50.0.0
+
+### Installer
+
+365AutomatedLab works on Windows and MacOS (M1+ and Intel)
+
+Run the below command to install 365AutomatedLab from the PowerShell Gallery. If you are running it on a server remove the -Scope parameter and run in an elevated session.
+
+```PowerShell
+# Run first if you need to set Execution Policy
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Install 365AutomatedLab
+Install-Module -Name 365AutomatedLab -Scope CurrentUser
+```
 
 ### Current Functions
 
@@ -95,16 +110,19 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       New-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
+
 4. Run the below command to add groups to your environment
 
    1. ```powershell
       New-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
+
 5. Run the below command to add a user to their groups per their location and title
 
    1. ```powershell
       New-CT365GroupByUserRole -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
       ```
+
 6. Run the below command to add Microsoft Teams and Channels to your environment
 
    1. ```powershell
