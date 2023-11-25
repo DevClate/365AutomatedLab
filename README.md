@@ -77,6 +77,8 @@ Install-Module -Name 365AutomatedLab -Scope CurrentUser
   - Remove-CT365Teams
 - Export Users from production to import template
   - Export-CT365ProdUserToExcel
+- Replace distinct number for sharepoint site names
+  - Set-CT365SPDistinctNumber
 
 ### Data
 
@@ -90,7 +92,7 @@ In LabSources you will find an excel file named 365DataEnvironment.xlsx that has
   - Originally I had these in a validateset, but opted out. Let me know in the issues if they should be brought back
 - Teams: This will have all the Teams and Channels to be created
   - I only have it for 2 additional channels, but please let me know if you need more
-- Sites: This will all of the SharePoint sites you want created
+- Sites: This will have all of the SharePoint sites you want created
   - You can create the 4 different types of SharePoint sites as well has select the template you want
 
 In the future, I will have it so you can create random users using Doug Finke's PowerShellAI module and his ImportExcel module. Eventually, it will create the whole workbook! For now you can use ChatGPT with the prompt below to create your users. Feel free to customize the prompt for locations and departments that more match your environment if needed.
@@ -110,19 +112,16 @@ Once you have created your 365 Developer Program Environment, you can start addi
    1. ```powershell
       New-CT365User -FilePath "C:\Path\to\365DataEnvironment.xlsx" -Domain "yourdomain.onmicrosoft.com"
       ```
-
 4. Run the below command to add groups to your environment
 
    1. ```powershell
       New-CT365Group -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserPrincialName "user@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com"
       ```
-
 5. Run the below command to add a user to their groups per their location and title
 
    1. ```powershell
       New-CT365GroupByUserRole -FilePath "C:\Path\to\365DataEnvironment.xlsx" -UserEmail "jdoe@yourdomain.onmicrosoft.com" -Domain "yourdomain.onmicrosoft.com" -UserRole "NY-IT"
       ```
-
 6. Run the below command to add Microsoft Teams and Channels to your environment
 
    1. ```powershell

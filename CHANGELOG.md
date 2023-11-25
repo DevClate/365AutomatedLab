@@ -1,5 +1,9 @@
 # 365AutomatedLab Changelog
 
+## 0.1.7
+
+Added Set-CT365SPDistinctNumber. Currently I have it so Sharepoint Sites have a number after them for testing so I know which ones I'm working on and not having to create "real" names for each. This allows you to easily rename the site names in one quick line. I do this as SharePoint Team sites never can fully delete fast as I want while testing. 
+
 ## 0.1.6
 
 Minor formatting

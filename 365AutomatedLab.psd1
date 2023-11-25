@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.6'
+ModuleVersion = '0.1.7'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -92,7 +92,8 @@ FunctionsToExport = @(
     'New-CT365SharePointSite',
     'New-CT365Teams',
     'Remove-CT365Teams',
-    'Remove-CT365SharePointSite'
+    'Remove-CT365SharePointSite',
+    'Set-CT365SPDistinctNumber'
 
     )
 
