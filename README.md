@@ -79,6 +79,8 @@ Install-Module -Name 365AutomatedLab -Scope CurrentUser
   - Export-CT365ProdUserToExcel
 - Replace distinct number for sharepoint site names
   - Set-CT365SPDistinctNumber
+- Delete all deleted Modern Microsoft 365 Groups
+  - Remove-CT365AllDeletedM365Groups
 
 ### Data
 
