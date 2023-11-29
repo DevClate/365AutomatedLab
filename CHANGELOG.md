@@ -1,5 +1,11 @@
 # 365AutomatedLab Changelog
 
+## 1.0.0
+
+Fixed Issues:
+
+    Remove-CT365SharePointSite now behaves correctly. If you only want to delete the sites, run Remove-CT365SharePointSite, and if you want to permanently delete them, you have to run previous command, wait till SharePoint processes(10-20 minutes), then run Remove-CT365SharePointSite -PermanentlyDelete.
+
 ## 0.1.8
 
 Added Remove-CT365AllDeletedM365Groups. This will permanently delete all deleted Modern Microsoft 365 Groups.
