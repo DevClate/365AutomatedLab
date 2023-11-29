@@ -34,41 +34,42 @@ function Remove-CT365SharePointSite {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "Invalid file path: '$PSitem'."
+                switch ($psitem) {
+                    { -not([System.IO.File]::Exists($psitem)) } {
+                        throw "Invalid file path: '$PSitem'."
+                    }
+                    { -not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)") } {
+                        "Invalid file format: '$PSitem'. Use .xlsx"
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx"
-                }
-                Default{
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$FilePath,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [ValidateScript({
-            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
-                $true
-            } else {
-                throw "The URL $_ does not match the required format."
-            }
-        })]
+                if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                    $true
+                }
+                else {
+                    throw "The URL $_ does not match the required format."
+                }
+            })]
         [string]$AdminUrl,
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain,
 
         [switch]$PermanentlyDelete
@@ -77,18 +78,18 @@ function Remove-CT365SharePointSite {
     begin {
         # Set default message parameters.
         $PSDefaultParameterValues = @{
-            "Write-PSFMessage:Level"    = "OutPut"
-            "Write-PSFMessage:Target"   = "Preparation"
+            "Write-PSFMessage:Level"  = "OutPut"
+            "Write-PSFMessage:Target" = "Preparation"
         }
 
         # Import required modules.
-        $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework"
+        $ModulesToImport = "ImportExcel", "PnP.PowerShell", "PSFramework"
         Import-Module $ModulesToImport
 
         try {
             # Connect to SharePoint Online.
             $connectPnPOnlineSplat = @{
-                Url = $AdminUrl
+                Url         = $AdminUrl
                 Interactive = $true
                 ErrorAction = 'Stop'
             }
@@ -121,7 +122,7 @@ function Remove-CT365SharePointSite {
                 # Set the message target to the site's title.
                 $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
 
-                # Log a message indicating site creation.
+                # Log a message indicating site deletion.
                 Write-PSFMessage -Message "Deleting SharePoint Site: '$($site.Title)'"
 
                 # If PermanentlyDelete switch is set, prioritize those actions
@@ -129,32 +130,28 @@ function Remove-CT365SharePointSite {
                     switch -Regex ($site.SiteType) {
                         "^TeamSite$" {
                             $removePnPM365GroupPermSplat = @{
-                                Identity = $site.Title
+                                Identity    = $site.Title
                                 ErrorAction = 'Stop'
                             }
-                            $removePnPM365GroupSplat = @{
-                                Identity = $site.Title
-                                ErrorAction = 'Stop'
-                            }
+
                             $removePnPTenantSiteSplat = @{
-                                Url = $siteUrl
-                                ErrorAction = 'Stop'
-                                Force = $true
+                                Url            = $siteUrl
+                                ErrorAction    = 'Stop'
+                                Force          = $true
+                                FromRecycleBin = $true
                             }
-                            Remove-PnPMicrosoft365Group @removePnPM365GroupSplat
-                            Write-PSFMessage -Message "Soft deletion of Team Group: '$($site.Title)'"
-                            Start-Sleep -Seconds 120
+
                             Remove-PnPDeletedMicrosoft365Group @removePnPM365GroupPermSplat
-                            Write-PSFMessage -Message "Permanently deleted Team Group: '$($site.Title)'"
-                            Remove-PnPTenantDeletedSite @removePnPTenantSiteSplat
+                            Write-PSFMessage -Message "Group'$($Site.Title)' Deleted from Recycle Bin Successfully!"
+                            Remove-PnPTenantSite @removePnPTenantSiteSplat
                             Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($siteUrl)'"
                             continue
                         }
                         "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                             $removePnPTenantSiteSplat = @{
-                                Url = $siteUrl
+                                Url         = $siteUrl
                                 ErrorAction = 'Stop'
-                                Force = $true
+                                Force       = $true
                             }
                             Remove-PnPTenantDeletedSite @removePnPTenantSiteSplat
                             Write-PSFMessage -Message "Permanently deleted SharePoint Site: '$($siteUrl)'"
@@ -167,48 +164,48 @@ function Remove-CT365SharePointSite {
                     }
                 }
                 
-                # If not permanently deleting, proceed with regular deletion
-                switch -Regex ($site.SiteType) {
-                    "^TeamSite$" {
-                        $removePnPM365GroupSplat = @{
-                            Identity = $site.Title
-                            ErrorAction = 'Stop'
-                        }
-                        Remove-PnPMicrosoft365Group @removePnPM365GroupSplat
-                        Write-PSFMessage -Message "Successfully deleted Group Site: '$($site.Title)'"
+                else {
+                    # If not permanently deleting, proceed with regular deletion
+                    switch -Regex ($site.SiteType) {
+                        "^TeamSite$" {
+                            $removePnPM365GroupSplat = @{
+                                Identity    = $site.Title
+                                ErrorAction = 'Stop'
+                            }
+                            Remove-PnPMicrosoft365Group @removePnPM365GroupSplat
+                            Write-PSFMessage -Message "Successfully deleted Group Site: '$($site.Title)'"
 
-                    }
-                    "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
-                        $removePnPSiteSplat = @{
-                            Url = $siteUrl
-                            ErrorAction = "Stop"
-                            Force = $true
                         }
-                        remove-PnPTenantSite @removePnPSiteSplat
-                        Write-PSFMessage -Message "Successfully deleted SharePoint Site: '$($siteUrl)'" 
+                        "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
+                            $removePnPSiteSplat = @{
+                                Url         = $siteUrl
+                                ErrorAction = "Stop"
+                                Force       = $true
+                            }
+                            remove-PnPTenantSite @removePnPSiteSplat
+                            Write-PSFMessage -Message "Successfully deleted SharePoint Site: '$($siteUrl)'" 
+                        }
+                        default {
+                            Write-PSFMessage "Unknown site type: $($site.SiteType) for site $($site.Title). Skipping." -Level Error
+                            continue
+                        }
                     }
-                    default {
-                    # Log an error for unknown site types and skip to the next site.
-                    Write-PSFMessage "Unknown site type: $($site.SiteType) for site $($site.Title). Skipping." -Level Error
-                    # Continue to the next site in the loop.
-                    continue
                 }
             }
-        }
-        catch {
-            # Log an error message if site removal fails and continue to the next site.
-            Write-PSFMessage -Message "Could not delete SharePoint Site: '$($site.Title)' Skipping" -Level Error
-            Write-PSFMessage -Message $Psitem.Exception.Message -Level Error
-            Continue
+            catch [System.Net.WebException], [Microsoft.SharePoint.Client.ClientRequestException] {
+                Write-PSFMessage -Message "Network or SharePoint client error occurred for site: '$($site.Title)'" -Level Error
+                Write-PSFMessage -Message "Error details: $($_.Exception.Message)" -Level Error
+            }
+            catch {
+                Write-PSFMessage -Message "An unexpected error occurred for site: '$($site.Title)'" -Level Error
+                Write-PSFMessage -Message "Error details: $($_.Exception.Message)" -Level Error
+                Write-PSFMessage -Message "Stack Trace: $($_.Exception.StackTrace)" -Level Error
+            }
         }
     }
-}
 
     end {
-        # Log a message indicating completion of the SharePoint site creation process.
         Write-PSFMessage "SharePoint site deletion process completed."
-            
-        # Disconnect from SharePoint Online.
         Disconnect-PnPOnline
     }
 }
