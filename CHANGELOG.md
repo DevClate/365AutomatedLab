@@ -1,4 +1,7 @@
 # 365AutomatedLab Changelog
+## 1.1.0
+
+Export-CT365ProdUserToExcel function added to enable you to export your production groups to a template that is easily imported into your dev tenant.
 
 ## 1.0.0
 
