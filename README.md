@@ -81,7 +81,9 @@ Install-Module -Name 365AutomatedLab -Scope CurrentUser
   - Set-CT365SPDistinctNumber
 - Delete all deleted Modern Microsoft 365 Groups
   - Remove-CT365AllDeletedM365Groups
-
+- Export Groups from production to import template
+  - Export-CT365ProdGroupToExcel
+    
 ### Data
 
 In LabSources you will find an excel file named 365DataEnvironment.xlsx that has 3 main tabs. Any additional tabs will be for different location-jobtitle tabs. You can use this workbook as is in your test environment, or use it as a template for your own data.
