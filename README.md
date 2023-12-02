@@ -1,4 +1,4 @@
-![Alt 365AutomatedLab Logo](https://github.com/DevClate/365AutomatedLab/blob/main/Static/365automatedlabIcon.png?raw=true)
+![Alt 365AutomatedLab Logo](https://github.com/DevClate/365AutomatedLab/blob/main/Static/365automatedlab.png?raw=true)
 
 # 365AutomatedLab
 
