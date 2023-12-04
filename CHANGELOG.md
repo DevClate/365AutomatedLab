@@ -10,9 +10,9 @@ Export-CT365Teams - This will export the teams from your production tenant to an
 
 For the 3 functions below, there will no longer be the parameter for WorkbookName, it will only be filepath going forward. This is to keep it consistent with the other functions. If you would rather have the WorkbookName, please let me know and if there is enough interest, I'll change that to the standard.
 
-Export-CT365ProdGroupToExcel
-Export-CT365ProdUserToExcel
-New-CT365DataEnvironment
+- Export-CT365ProdGroupToExcel
+- Export-CT365ProdUserToExcel
+- New-CT365DataEnvironment
 
 ## 1.1.0
 
