@@ -5,17 +5,14 @@ Exports Office 365 production group details to an Excel file.
 .DESCRIPTION
 This function connects to Microsoft Graph to fetch details of Office 365 groups based on certain criteria and then exports those details to an Excel file. The exported details include DisplayName, PrimarySMTP, Description, and Type.
 
-.PARAMETER WorkbookName
-The name of the Excel workbook where the group details will be exported. It should have an extension of .xlsx.
-
 .PARAMETER FilePath
-The path to the folder where the Excel file will be created or saved.
+The full path to the Excel file where the group details will be exported, including the file name and .xlsx extension.
 
 .PARAMETER GroupLimit
 (Optional) Specifies the maximum number of groups to export. If not provided, all groups will be exported.
 
 .EXAMPLE
-Export-CT365ProdGroupToExcel -WorkbookName 'Groups.xlsx' -FilePath 'C:\Exports' -GroupLimit 100
+Export-CT365ProdGroupToExcel -FilePath 'C:\Exports\Groups.xlsx' -GroupLimit 100
 This example exports the first 100 groups to an Excel file named 'Groups.xlsx' located at 'C:\Exports'.
 
 .NOTES
@@ -31,27 +28,35 @@ The user executing this function should have the necessary permissions to read g
 [Microsoft Graph PowerShell SDK](https://github.com/microsoftgraph/msgraph-sdk-powershell)
 
 #>
-function Export-CT365ProdGroupToExcel {
+function Export-CT365GroupToExcel {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
-        [ValidatePattern('^.*\.(xlsx)$')]
-        [string]$WorkbookName,
-
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-                Test-Path -Path $_ -PathType Container
+                $isValid = $false
+                $extension = [System.IO.Path]::GetExtension($_)
+                $directory = [System.IO.Path]::GetDirectoryName($_)
+
+                if ($extension -ne '.xlsx') {
+                    throw "The file $_ is not an Excel file (.xlsx). Please specify a file with the .xlsx extension."
+                }
+                elseif (-not (Test-Path -Path $directory -PathType Container)) {
+                    throw "The directory $directory does not exist. Please specify a valid directory."
+                }
+                else {
+                    $isValid = $true
+                }
+                return $isValid
             })]
         [string]$FilePath,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter()]
         [int]$GroupLimit = 0
     )
 
     begin {
         Import-Module Microsoft.Graph.Authentication, Microsoft.Graph.Groups, ImportExcel, PSFramework
-        $Path = Join-Path -Path $FilePath -ChildPath $WorkbookName
-        Write-PSFMessage -Level Output -Message "Preparing to export to $WorkbookName" -Target $WorkbookName
+        Write-PSFMessage -Level Output -Message "Preparing to export to $FilePath" -Target $FilePath
     }
 
     process {
@@ -93,12 +98,12 @@ function Export-CT365ProdGroupToExcel {
             )
         }
         
-        Get-MgGroup @getMgGroupSplat | Select-Object @selectProperties | Export-Excel -Path $Path -WorksheetName "Groups" -AutoSize
+        Get-MgGroup @getMgGroupSplat | Select-Object @selectProperties | Export-Excel -Path $FilePath -WorksheetName "Groups" -AutoSize
 
         Disconnect-MgGraph -ErrorAction SilentlyContinue
     }
 
     end {
-        Write-PSFMessage -Level Output -Message "Export completed. Check the file at $Path for the group details."
+        Write-PSFMessage -Level Output -Message "Export completed. Check the file at $FilePath for the group details."
     }
 }
