@@ -1,74 +1,75 @@
 <#
 .SYNOPSIS
-Creates a new Excel workbook with predefined worksheets for Office 365 data.
+    Creates a new Office 365 data environment template in an Excel workbook.
 
 .DESCRIPTION
-The New-CT365DataEnvironment function creates a new Excel workbook with predefined worksheets. 
-The workbook contains a "Users" worksheet and a "Groups" worksheet, and additional worksheets based on the provided JobRole parameter.
-
-.PARAMETER WorkbookName
-The name of the workbook file to be created. It must be a .xlsx file.
+    The New-CT365DataEnvironment function creates a new Excel workbook with multiple worksheets 
+    for Users, Groups, Teams, Sites, and specified Job Roles. Each worksheet is formatted 
+    with predefined columns relevant to its content.
 
 .PARAMETER FilePath
-The path where the workbook will be created. The provided path must exist.
+    Specifies the path to the Excel file (.xlsx) where the data environment will be created.
+    The function checks if the file already exists, if it's a valid .xlsx file, and if the 
+    folder path exists.
 
 .PARAMETER JobRole
-An array of strings specifying additional worksheets to be created in the workbook. 
-Each string will be used as the name of a new worksheet.
+    An array of job roles to create individual worksheets for each role in the Excel workbook.
+    Each job role will have a worksheet with predefined columns.
 
 .EXAMPLE
-New-CT365DataEnvironment -WorkbookName "myworkbook.xlsx" -FilePath "C:\temp" -JobRole "Manager","Employee"
-
-This command creates an Excel workbook named "myworkbook.xlsx" in the "C:\temp" directory.
-The workbook will contain the "Users" and "Groups" worksheets, as well as a "Manager" and "Employee" worksheet.
+    PS> New-CT365DataEnvironment -FilePath "C:\Data\O365Environment.xlsx" -JobRole "HR", "IT"
+    This command creates an Excel workbook at the specified path with worksheets for Users, 
+    Groups, Teams, Sites, and additional worksheets for 'HR' and 'IT' job roles.
 
 .EXAMPLE
-New-CT365DataEnvironment -WorkbookName "365DataEnvironment.xlsx" -FilePath "C:\365DevEnvironment" -JobRole "NY-ITManager","CA-AccountsPayable","FL-HumanResources"
-
-This command creates an Excel workbook named "365DataEnvironment.xlsx" in the "C:\365DevEnvironment" directory.
-The workbook will contain the "Users" and "Groups" worksheets, as well as a "NY-ITManager", "CA-AccountsPayable", and "FL-HumanResources" worksheet.
+    PS> New-CT365DataEnvironment -FilePath "C:\Data\NewEnvironment.xlsx" -JobRole "Finance"
+    This command creates an Excel workbook at the specified path with a worksheet for the 
+    'Finance' job role, along with the standard Users, Groups, Teams, and Sites worksheets.
 
 .INPUTS
-System.String
+    None. You cannot pipe objects to New-CT365DataEnvironment.
 
 .OUTPUTS
-None. This cmdlet does not return any output.
+    None. This function does not generate any output.
 
 .NOTES
-The JobRole Parameter can be a single job role or a location and job role. If you are a company with only one location, you do not need to put a location in.
+    Requires the modules ImportExcel and PSFramework to be installed.
+
+.LINK
+    https://www.powershellgallery.com/packages/ImportExcel
+    https://www.powershellgallery.com/packages/PSFramework
+
 #>
-function New-CT365DataEnvironment {
+
+function New-1DataEnvironment {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [ValidatePattern('^.*\.(xlsx)$')]
-        [string]$WorkbookName,
-
-        [Parameter(Mandatory)]
         [ValidateScript({
-            if (Test-Path -Path $_ -PathType Container) {
-                $true
+            if (Test-Path -Path $_ -PathType Leaf) {
+                throw "File $_ already exists, please provide a new file path"
+            } elseif (-not $_ -match '^.*\.(xlsx)$') {
+                throw "File path $_ is not a valid .xlsx file, please provide a valid .xlsx file path"
+            } elseif (-not (Test-Path -Path (Split-Path $_) -PathType Container)) {
+                throw "Folder path for $_ does not exist, please confirm path does exist"
             } else {
-                throw "Folder path $_ does not exist, please confirm path does exist"
+                $true
             }
         })]
         [string]$FilePath,
 
         [Parameter(Mandatory)]
         [string[]]$JobRole
-
     )
 
     begin {
         # Import Required Modules
         $ModulesToImport = "ImportExcel","PSFramework"
         Import-Module $ModulesToImport
-        
-        $Path = Join-Path -Path $filepath -ChildPath $workbookname
-        
-        Write-PSFMessage -Level Output -Message "Creating workbook $WorkbookName" -Target $WorkbookName
-        
-        #helper function
+
+        Write-PSFMessage -Level Output -Message "Creating workbook at $FilePath"
+
+        # Helper function
         function New-EmptyCustomObject {
             param (
                 [string[]]$PropertyNames
@@ -93,23 +94,33 @@ function New-CT365DataEnvironment {
             JobRole = @(
                 "DisplayName", "PrimarySMTP", "Description", "Type"
             )
+            Teams = @(
+                "TeamName", "TeamDescription", "Channel1Name", "Channel1Type", "Channel2Name", "Channel2Type"
+            )
+            Sites = @(
+                "Url", "Template", "TimeZone", "Title", "Alias", "SiteType"
+            )
         }
         
         # Define custom objects for each worksheet
         $usersObject  = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Users
         $groupsObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Groups
+        $teamsObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Teams
+        $sitesObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.Sites
 
         # Export each worksheet to the workbook
-        $usersObject  | Export-Excel -Path $Path -WorksheetName "Users" -ClearSheet
-        $groupsObject | Export-Excel -Path $Path -WorksheetName "Groups" -Append 
+        $usersObject  | Export-Excel -Path $FilePath -WorksheetName "Users" -ClearSheet -AutoSize
+        $groupsObject | Export-Excel -Path $FilePath -WorksheetName "Groups" -Append -AutoSize
+        $teamsObject | Export-Excel -Path $FilePath -WorksheetName "Teams" -Append -AutoSize
+        $sitesObject | Export-Excel -Path $FilePath -WorksheetName "Sites" -Append -AutoSize
 
         foreach($JobRoleItem in $JobRole){
             $RoleObject = New-EmptyCustomObject -PropertyNames $propertyDefinitions.JobRole
-            $RoleObject | Export-Excel -Path $Path -WorksheetName $JobRoleItem -Append
+            $RoleObject | Export-Excel -Path $FilePath -WorksheetName $JobRoleItem -Append -AutoSize
         }
     }
 
     end {
-        Write-PSFMessage -Level Output -Message "Workbook $WorkbookName created successfully" -Target $WorkbookName
+        Write-PSFMessage -Level Output -Message "Workbook created successfully at $FilePath"
     }
 }
