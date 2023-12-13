@@ -28,7 +28,7 @@ The user executing this function should have the necessary permissions to read g
 [Microsoft Graph PowerShell SDK](https://github.com/microsoftgraph/msgraph-sdk-powershell)
 
 #>
-function Export-CT365GroupToExcel {
+function Export-CT365ProdGroupToExcel {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
