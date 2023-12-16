@@ -1,5 +1,20 @@
 # 365AutomatedLab Changelog
 
+## 2.2.0
+
+**New Features**
+New-CT365Teams - added functionality to create channels and their descriptions. Currently you’ll set one owner for all Teams. Please create an issue if you would like to see the option for owners per Teams and Channels.
+
+Verify-CT365VerifyTeamsCreation - internal cmdlet to verify Teams creation
+
+**Breaking Changes**
+None
+
+## 2.1.0
+
+**Fixed:** 
+Changed function name inside code from Export-CT365GroupToExcel to Export-CT365ProdGroupToExcel.
+
 ## 2.0.0
 
 **New Features**
