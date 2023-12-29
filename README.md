@@ -86,7 +86,7 @@ Install-Module -Name 365AutomatedLab -Scope CurrentUser
     
 ### Data
 
-In LabSources you will find an excel file named 365DataEnvironment.xlsx that has 3 main tabs. Any additional tabs will be for different location-jobtitle tabs. You can use this workbook as is in your test environment, or use it as a template for your own data.
+In LabSources you will find an excel file named 365DataEnvironment.xlsx that has 5 main tabs. Any additional tabs will be for different location-jobtitle tabs. You can use this workbook as is in your test environment, or use it as a template for your own data.
 
 - Users: This will have all of the user's information you are creating including licensing information
   - If you do not have a UsageLocation set, the licenses will not be added
