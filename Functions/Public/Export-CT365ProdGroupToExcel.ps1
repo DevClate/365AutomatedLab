@@ -1,31 +1,33 @@
 <#
 .SYNOPSIS
-Exports Office 365 production group details to an Excel file.
+    Exports Office 365 group data to an Excel file.
 
 .DESCRIPTION
-This function connects to Microsoft Graph to fetch details of Office 365 groups based on certain criteria and then exports those details to an Excel file. The exported details include DisplayName, PrimarySMTP, Description, and Type.
+    The Export-CT365ProdGroupToExcel function connects to Microsoft Graph, retrieves Office 365 group data based on specified filters, and exports the data to an Excel file. It supports limiting the number of groups to be retrieved.
 
 .PARAMETER FilePath
-The full path to the Excel file where the group details will be exported, including the file name and .xlsx extension.
+    Specifies the path to the Excel file (.xlsx) where the group data will be exported. The directory must exist, and the file must have a .xlsx extension.
 
 .PARAMETER GroupLimit
-(Optional) Specifies the maximum number of groups to export. If not provided, all groups will be exported.
+    Limits the number of groups to retrieve. If set to 0 (default), there is no limit.
 
 .EXAMPLE
-Export-CT365ProdGroupToExcel -FilePath 'C:\Exports\Groups.xlsx' -GroupLimit 100
-This example exports the first 100 groups to an Excel file named 'Groups.xlsx' located at 'C:\Exports'.
+    Export-CT365ProdGroupToExcel -FilePath "C:\Groups\Groups.xlsx"
+
+    Exports all Office 365 groups to the specified Excel file.
+
+.EXAMPLE
+    Export-CT365ProdGroupToExcel -FilePath "C:\Groups\LimitedGroups.xlsx" -GroupLimit 50
+
+    Exports the first 50 Office 365 groups to the specified Excel file.
 
 .NOTES
-This function requires the following modules to be installed:
-- Microsoft.Graph.Authentication
-- Microsoft.Graph.Groups
-- ImportExcel
-- PSFramework
+    Requires the Microsoft.Graph.Authentication, Microsoft.Graph.Groups, ImportExcel, and PSFramework modules.
 
-The user executing this function should have the necessary permissions to read group details from Microsoft Graph.
+    The user executing this script must have permissions to access group data via Microsoft Graph.
 
 .LINK
-[Microsoft Graph PowerShell SDK](https://github.com/microsoftgraph/msgraph-sdk-powershell)
+    https://docs.microsoft.com/en-us/graph/api/resources/groups-overview?view=graph-rest-1.0
 
 #>
 function Export-CT365ProdGroupToExcel {
