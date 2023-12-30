@@ -1,5 +1,30 @@
 # 365AutomatedLab Changelog
 
+## 2.3.0
+
+
+### 2.3.0
+
+************************New Features************************
+
+*Export-CT365ProdUserToExcel*
+
+* Default now includes Developer License
+  * Use -NoLicense to remove
+
+************Export-CT365ProdTeamsToExcel************
+
+- Exports Channel Type now
+- Exports Channel Descriptions now
+
+**********Fixes**********
+
+Updated function name for New-CT365DataEnvironment within ps1 file
+
+Updated headers in New-CT365DataEnvironment to include Sites and Channels description.
+
+Updated formatting of README
+
 ## 2.2.0
 
 **New Features**
