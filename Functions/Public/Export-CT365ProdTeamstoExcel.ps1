@@ -1,28 +1,30 @@
 <#
 .SYNOPSIS
-Exports Microsoft Teams and their channels to an Excel file, excluding the 'General' channel, and includes the type of each team and channel.
+    Exports Microsoft Teams and their channels to an Excel file.
 
 .DESCRIPTION
-This function connects to Microsoft 365 to fetch details of Microsoft Teams and their channels, then exports those details to an Excel file, excluding the 'General' channel. The exported details include Team Name, Team Description, Team Type, Channel Names with count numbers, and Channel Types.
+    The Export-CT365ProdTeamsToExcel function connects to SharePoint Online and retrieves information about Microsoft Teams and their channels. It then exports this data to an Excel file. The function requires a valid SharePoint admin URL and the path to an Excel file for exporting the data.
 
 .PARAMETER FilePath
-The full path to the Excel workbook where the Teams and Channels details will be exported, including the workbook name with an extension of .xlsx.
+    Specifies the path to the Excel file (.xlsx) where the Teams and Channels data will be exported.
 
 .PARAMETER AdminUrl
-The URL of the SharePoint Online admin center.
+    Specifies the SharePoint admin URL for connecting to Microsoft Teams. The URL should match the format 'tenant.sharepoint.com'.
 
 .EXAMPLE
-Export-CT365ProdTeamsToExcel -FilePath 'C:\Exports\Teams.xlsx' -AdminUrl 'https://yourtenant-admin.sharepoint.com'
-This example exports Teams and their channels (excluding 'General') to an Excel file named 'Teams.xlsx' located at 'C:\Exports'.
+    Export-CT365ProdTeamsToExcel -FilePath "C:\Teams\TeamsData.xlsx" -AdminUrl "contoso.sharepoint.com"
+
+    Exports Microsoft Teams and their channels information to the specified Excel file for the given SharePoint admin URL.
 
 .NOTES
-This function requires the PnP.PowerShell, ImportExcel, and PSFramework modules to be installed.
-The user executing this function should have the necessary permissions to read Teams and Channels details from Microsoft 365.
+    Requires the PnP.PowerShell, ImportExcel, and PSFramework modules.
+
+    The user executing this script must have SharePoint Online administration permissions.
+
+    The function handles multiple channels per team and exports them in a structured format in the Excel file.
 
 .LINK
-[PnP PowerShell](https://pnp.github.io/powershell/)
-[ImportExcel Module](https://github.com/dfinke/ImportExcel)
-[PSFramework](https://psframework.org/)
+    https://docs.microsoft.com/en-us/powershell/module/sharepoint-pnp/connect-pnponline?view=sharepoint-ps
 
 #>
 function Export-CT365ProdTeamsToExcel {
@@ -88,9 +90,15 @@ function Export-CT365ProdTeamsToExcel {
                 $channelCount = 1
                 foreach ($channel in $channels) {
                     $channelPropertyName = "Channel${channelCount}Name"
+                    $channelDescriptionPropertyName = "Channel${channelCount}Description"
                     $channelTypePropertyName = "Channel${channelCount}Type"
+
+                    # Check if the channel type is 'unknownfuturevalue' and convert it to 'shared'
+                    $channelType = if ($channel.MembershipType -eq 'unknownfuturevalue') { 'shared' } else { $channel.MembershipType }
+
                     $teamObject | Add-Member -NotePropertyName $channelPropertyName -NotePropertyValue $channel.DisplayName
-                    $teamObject | Add-Member -NotePropertyName $channelTypePropertyName -NotePropertyValue $channel.MembershipType
+                    $teamObject | Add-Member -NotePropertyName $channelDescriptionPropertyName -NotePropertyValue $channel.Description
+                    $teamObject | Add-Member -NotePropertyName $channelTypePropertyName -NotePropertyValue $channelType
                     $channelCount++
                 }
 
