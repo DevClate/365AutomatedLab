@@ -1,34 +1,44 @@
 <#
 .SYNOPSIS
-Exports Office 365 production user details to an Excel file.
+    Exports Office 365 production user data to an Excel file.
 
 .DESCRIPTION
-This function connects to Microsoft Graph to fetch details of Office 365 users based on certain criteria and then exports those details to an Excel file. The exported details include GivenName, SurName, UserPrincipalName, DisplayName, MailNickname, JobTitle, Department, and address-related fields.
+    The Export-CT365ProdUserToExcel function connects to Microsoft Graph, retrieves user data based on specified filters, and exports the data to an Excel file. It supports filtering by department, limiting the number of users, and an option to exclude license information.
 
 .PARAMETER FilePath
-The full path to the Excel file where the user details will be exported, including the file name with an .xlsx extension.
+    Specifies the path to the Excel file (.xlsx) where the user data will be exported. The directory must exist, and the file must have a .xlsx extension.
 
 .PARAMETER DepartmentFilter
-(Optional) Filters users based on the specified department. If not provided, all users will be fetched.
+    Filters users by their department. If not specified, users from all departments are retrieved.
 
 .PARAMETER UserLimit
-(Optional) Specifies the maximum number of users to export. If not provided, all users will be exported.
+    Limits the number of users to retrieve. If set to 0 (default), there is no limit.
+
+.PARAMETER NoLicense
+    If specified, the exported data will not include license information for the users.
 
 .EXAMPLE
-Export-CT365ProdUserToExcel -FilePath 'C:\Exports\Users.xlsx' -DepartmentFilter 'IT' -UserLimit 100
-This example exports the first 100 users from the IT department to an Excel file named 'Users.xlsx' located at 'C:\Exports'.
+    Export-CT365ProdUserToExcel -FilePath "C:\Users\Export\Users.xlsx"
+
+    Exports all Office 365 production users to the specified Excel file.
+
+.EXAMPLE
+    Export-CT365ProdUserToExcel -FilePath "C:\Users\Export\DeptUsers.xlsx" -DepartmentFilter "IT"
+
+    Exports Office 365 production users from the IT department to the specified Excel file.
+
+.EXAMPLE
+    Export-CT365ProdUserToExcel -FilePath "C:\Users\Export\Users.xlsx" -UserLimit 100
+
+    Exports the first 100 Office 365 production users to the specified Excel file.
 
 .NOTES
-This function requires the following modules to be installed:
-- Microsoft.Graph.Authentication
-- Microsoft.Graph.Users
-- ImportExcel
-- PSFramework
+    Requires the Microsoft.Graph.Authentication, Microsoft.Graph.Users, ImportExcel, and PSFramework modules.
 
-The user executing this function should have the necessary permissions to read user details from Microsoft Graph.
+    The user executing this script must have permissions to access user data via Microsoft Graph.
 
 .LINK
-[Microsoft Graph PowerShell SDK](https://github.com/microsoftgraph/msgraph-sdk-powershell)
+    https://docs.microsoft.com/en-us/graph/api/resources/users?view=graph-rest-1.0
 
 #>
 function Export-CT365ProdUserToExcel {
@@ -57,7 +67,10 @@ function Export-CT365ProdUserToExcel {
         [string]$DepartmentFilter,
 
         [Parameter()]
-        [int]$UserLimit = 0
+        [int]$UserLimit = 0,
+
+        [Parameter()]
+        [switch]$NoLicense
     )
 
     begin {
@@ -79,39 +92,37 @@ function Export-CT365ProdUserToExcel {
 
         # Build the user retrieval command
         $getMgUserSplat = @{
-            Property = (
-                'GivenName', 'SurName', 'UserPrincipalName', 
-                'DisplayName', 'MailNickname', 'JobTitle', 
-                'Department', 'StreetAddress', 'City', 
-                'State', 'PostalCode', 'Country', 
-                'BusinessPhones', 'MobilePhone', 'UsageLocation'
-            )
+            Property = 'GivenName', 'SurName', 'UserPrincipalName', 
+            'DisplayName', 'MailNickname', 'JobTitle', 
+            'Department', 'StreetAddress', 'City', 
+            'State', 'PostalCode', 'Country', 
+            'BusinessPhones', 'MobilePhone', 'UsageLocation'
         }
         
-        # Apply department filter if provided as parameter
         if (-not [string]::IsNullOrEmpty($DepartmentFilter)) {
-            $getMgUserSplat.Add('filter', "Department eq '$DepartmentFilter'")
+            $getMgUserSplat['Filter'] = "Department eq '$DepartmentFilter'"
         }
 
-        # Limit the number of users if specified else get all users
-        if ($UserLimit -eq 0) {
-            $getMgUserSplat.Add("all", $true)
+        if ($UserLimit -gt 0) {
+            $getMgUserSplat['Top'] = $UserLimit
         }
         else {
-            $getMgUserSplat.Add("Top", $UserLimit)
+            $getMgUserSplat['All'] = $true
         }
 
         $selectProperties = @{
             Property = @(
-                @{Name='FirstName'; Expression={$_.GivenName}},
-                @{Name='LastName'; Expression={$_.SurName}},
-                @{Name='UserName'; Expression={$_.UserPrincipalName -replace '@.*'}},
-                @{Name='Title'; Expression={$_.JobTitle}},
+                @{Name = 'FirstName'; Expression = { $_.GivenName } },
+                @{Name = 'LastName'; Expression = { $_.SurName } },
+                @{Name = 'UserName'; Expression = { $_.UserPrincipalName -replace '@.*' } },
+                @{Name = 'Title'; Expression = { $_.JobTitle } },
                 'Department', 'StreetAddress', 'City', 'State', 'PostalCode', 'Country',
-                @{Name='PhoneNumber'; Expression={$_.BusinessPhones}},
-                'MobilePhone', 'UsageLocation'
+                @{Name = 'PhoneNumber'; Expression = { $_.BusinessPhones } },
+                'MobilePhone', 'UsageLocation',
+                @{Name = 'License'; Expression = { if ($NoLicense) { "" } else { "DEVELOPERPACK_E5" } } }
             )
         }
+
         $userCommand = Get-MgUser @getMgUserSplat | Select-Object @selectProperties
         
         # Fetch and export users to Excel
