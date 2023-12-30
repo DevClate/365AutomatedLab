@@ -41,7 +41,7 @@
 
 #>
 
-function New-1DataEnvironment {
+function New-CT365DataEnvironment {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
@@ -89,13 +89,13 @@ function New-1DataEnvironment {
                 "PhoneNumber", "MobilePhone", "UsageLocation", "License"
             )
             Groups = @(
-                "DisplayName", "PrimarySMTP", "Description", "Owner", "Type"
+                "DisplayName", "PrimarySMTP", "Description", "Type"
             )
             JobRole = @(
                 "DisplayName", "PrimarySMTP", "Description", "Type"
             )
             Teams = @(
-                "TeamName", "TeamDescription", "Channel1Name", "Channel1Type", "Channel2Name", "Channel2Type"
+                "TeamName", "TeamDescription", "TeamType", "Channel1Name", "Channel1Description", "Channel1Type", "Channel2Name", "Channel2Description", "Channel2Type"
             )
             Sites = @(
                 "Url", "Template", "TimeZone", "Title", "Alias", "SiteType"
