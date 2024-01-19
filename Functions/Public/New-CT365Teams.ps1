@@ -43,7 +43,7 @@ function New-CT365Teams {
 
         [Parameter(Mandatory)]
         [ValidateScript({
-                if ($_ -match '^(https://)?[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
                     $true
                 }
                 else {
