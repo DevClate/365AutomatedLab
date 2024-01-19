@@ -50,7 +50,7 @@ function Remove-CT365SharePointSite {
 
         [Parameter(Mandatory = $false)]
         [ValidateScript({
-                if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                if ($_ -match '^(https://)?[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
                     $true
                 }
                 else {
@@ -58,6 +58,7 @@ function Remove-CT365SharePointSite {
                 }
             })]
         [string]$AdminUrl,
+
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({

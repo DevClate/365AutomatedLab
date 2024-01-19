@@ -46,7 +46,16 @@ function New-CT365SharePointSite {
         [string]$FilePath,
 
         [Parameter(Mandatory)]
+        [ValidateScript({
+                if ($_ -match '^(https://)?[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                    $true
+                }
+                else {
+                    throw "The URL $_ does not match the required format."
+                }
+            })]
         [string]$AdminUrl,
+        
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({

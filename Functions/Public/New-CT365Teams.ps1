@@ -30,20 +30,20 @@ function New-CT365Teams {
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            switch ($psitem){
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx"
+                switch ($psitem) {
+                    { -not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)") } {
+                        "Invalid file format: '$PSitem'. Use .xlsx"
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$FilePath,
 
         [Parameter(Mandatory)]
         [ValidateScript({
-                if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                if ($_ -match '^(https://)?[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
                     $true
                 }
                 else {
@@ -51,6 +51,7 @@ function New-CT365Teams {
                 }
             })]
         [string]$AdminUrl,
+
 
         [Parameter(Mandatory)]
         [string]$DefaultOwnerUPN
@@ -64,7 +65,8 @@ function New-CT365Teams {
                 throw "Module $module is not installed."
             }
             Import-Module $module
-        } catch {
+        }
+        catch {
             Write-PSFMessage -Level Warning -Message "[$(Get-Date -Format 'u')] $_.Exception.Message"
             return
         }
@@ -72,7 +74,8 @@ function New-CT365Teams {
 
     try {
         Connect-PnPOnline -Url $AdminUrl -Interactive
-    } catch {
+    }
+    catch {
         Write-PSFMessage -Level Error -Message "[$(Get-Date -Format 'u')] Failed to connect to PnP Online: $($_.Exception.Message)"
         return
     }
@@ -80,7 +83,8 @@ function New-CT365Teams {
     try {
         $teamsData = Import-Excel -Path $FilePath -WorksheetName "teams"
         $existingTeams = Get-PnPTeamsTeam
-    } catch {
+    }
+    catch {
         Write-PSFMessage -Level Error -Message "[$(Get-Date -Format 'u')] Failed to import data from Excel or retrieve existing teams: $($_.Exception.Message)"
         return
     }
@@ -104,10 +108,12 @@ function New-CT365Teams {
                         Write-PSFMessage -Level Host -Message "[$(Get-Date -Format 'u')] Verified creation of Team: $($teamRow.TeamName)"
                         $teamCreationSuccess = $true
                         break
-                    } else {
+                    }
+                    else {
                         Write-PSFMessage -Level Warning -Message "[$(Get-Date -Format 'u')] Team $($teamRow.TeamName) creation reported but not verified. Retrying..."
                     }
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Warning -Message "[$(Get-Date -Format 'u')] Attempt $retryCount to create team $($teamRow.TeamName) failed: $($_.Exception.Message)"
                 }
                 $retryCount++
@@ -134,7 +140,8 @@ function New-CT365Teams {
                             Write-PSFMessage -Level Host -Message "[$(Get-Date -Format 'u')] Created Channel: $channelName in Team: $($teamRow.TeamName) with Type: $channelType and Description: $channelDescription"
                             $channelCreationSuccess = $true
                             break
-                        } catch {
+                        }
+                        catch {
                             Write-PSFMessage -Level Warning -Message "[$(Get-Date -Format 'u')] Attempt $retryCount to create channel $channelName in Team: $($teamRow.TeamName) failed: $($_.Exception.Message)"
                             $retryCount++
                             Start-Sleep -Seconds 10
@@ -146,14 +153,16 @@ function New-CT365Teams {
                     }
                 }
             }
-        } catch {
+        }
+        catch {
             Write-PSFMessage -Level Error -Message "[$(Get-Date -Format 'u')] Error processing team $($teamRow.TeamName): $($_.Exception.Message)"
         }
     }
 
     try {
         Disconnect-PnPOnline
-    } catch {
+    }
+    catch {
         Write-PSFMessage -Level Error -Message "[$(Get-Date -Format 'u')] Error disconnecting PnP Online: $($_.Exception.Message)"
     }
 }

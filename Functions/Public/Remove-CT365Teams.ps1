@@ -31,43 +31,45 @@ function Remove-CT365Teams {
         # Validate the Excel file path.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "Invalid file path: '$PSitem'."
+                switch ($psitem) {
+                    { -not([System.IO.File]::Exists($psitem)) } {
+                        throw "Invalid file path: '$PSitem'."
+                    }
+                    { -not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)") } {
+                        "Invalid file format: '$PSitem'. Use .xlsx"
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "Invalid file format: '$PSitem'. Use .xlsx"
-                }
-                Default{
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$FilePath,
 
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [ValidateScript({
-            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
-                $true
-            } else {
-                throw "The URL $_ does not match the required format."
-            }
-        })]
+                if ($_ -match '^(https://)?[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                    $true
+                }
+                else {
+                    throw "The URL $_ does not match the required format."
+                }
+            })]
         [string]$AdminUrl,
 
-        [Parameter(Mandatory=$false)]
+
+        [Parameter(Mandatory = $false)]
         [string[]]$ChannelColumns = @("Channel1Name", "Channel2Name")
     )
 
     begin {
         # Import required modules.
-        $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework","Microsoft.Identity.Client"
+        $ModulesToImport = "ImportExcel", "PnP.PowerShell", "PSFramework", "Microsoft.Identity.Client"
         Import-Module $ModulesToImport
         
         try {
             # Connect to SharePoint Online.
             $connectPnPOnlineSplat = @{
-                Url = $AdminUrl
+                Url         = $AdminUrl
                 Interactive = $true
                 ErrorAction = 'Stop'
             }
