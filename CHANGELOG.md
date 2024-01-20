@@ -1,5 +1,13 @@
 # 365AutomatedLab Changelog
 
+## 2.4.0
+
+****************New Features****************
+
+*Remove-CT365AllSitesFromRecycleBin*
+
+* Deletes all SharePoint sites from the recycle Bin
+
 ## 2.3.0
 
 ************************New Features************************
