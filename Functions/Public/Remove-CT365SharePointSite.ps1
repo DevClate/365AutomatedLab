@@ -18,7 +18,7 @@ The domain information required for the SharePoint site creation.
 This will completely delete the SharePoint site so you can reuse that site address again.
 
 .EXAMPLE
-Remove-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://domainname.sharepoint.com" -Domain "contoso.com"
+Remove-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "domainname.sharepoint.com" -Domain "contoso.com"
 
 This example removes SharePoint sites using the data from the "file.xlsx" and connects to SharePoint Online using the provided admin URL.
 

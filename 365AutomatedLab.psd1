@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.3.0'
+ModuleVersion = '2.4.0'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -97,7 +97,8 @@ FunctionsToExport = @(
     'Remove-CT365AllDeletedM365Groups',
     'Export-CT365ProdGroupToExcel',
     'Export-CT365ProdTeamsToExcel',
-    'Verify-CT365TeamsCreation'
+    'Verify-CT365TeamsCreation',
+    'Remove-CT365AllSitesFromRecycleBin'
 
     )
 

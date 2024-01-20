@@ -15,7 +15,7 @@ The URL of the SharePoint Online admin center. This is used for connecting to Sh
 Array of channel column names. The default values are "Channel1Name" and "Channel2Name".
 
 .EXAMPLE
-Remove-CT365Teams -FilePath "C:\Path\To\File.xlsx" -AdminUrl "https://yourtenant-admin.sharepoint.com"
+Remove-CT365Teams -FilePath "C:\Path\To\File.xlsx" -AdminUrl "yourtenant-admin.sharepoint.com"
 
 This example will connect to the SharePoint Online admin center using the provided AdminUrl, read the Teams from the specified Excel file, and proceed to remove each team.
 

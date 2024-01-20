@@ -9,7 +9,7 @@
     The URL of the Microsoft 365 admin center. This parameter is mandatory and specifies the tenant to connect to.
 
 .EXAMPLE
-    PS C:\> Remove-CT365AllDeletedM365Groups -AdminUrl "https://contoso-admin.sharepoint.com"
+    PS C:\> Remove-CT365AllDeletedM365Groups -AdminUrl "contoso-admin.sharepoint.com"
 
     This example connects to the Microsoft 365 tenant at contoso-admin.sharepoint.com and removes all deleted Microsoft 365 groups.
 

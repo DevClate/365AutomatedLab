@@ -15,7 +15,7 @@ The SharePoint Online admin URL.
 The domain information required for the SharePoint site creation.
 
 .EXAMPLE
-New-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "https://admin.sharepoint.com" -Domain "contoso.com"
+New-CT365SharePointSite -FilePath "C:\path\to\file.xlsx" -AdminUrl "admin.sharepoint.com" -Domain "contoso.com"
 
 This example creates SharePoint sites using the data from the "file.xlsx" and connects to SharePoint Online using the provided admin URL.
 
