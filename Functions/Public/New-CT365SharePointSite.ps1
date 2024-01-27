@@ -30,24 +30,24 @@ function New-CT365SharePointSite {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx|.xls)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx or .xls extension and try again."
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
 
         [Parameter(Mandatory)]
         [ValidateScript({
-            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
                     $true
                 }
                 else {
@@ -59,31 +59,31 @@ function New-CT365SharePointSite {
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain
     )
-    begin{
+    begin {
         $PSDefaultParameterValues = @{
-            "Write-PSFMessage:Level"    = "OutPut"
-            "Write-PSFMessage:Target"   = "Preperation"
+            "Write-PSFMessage:Level"  = "OutPut"
+            "Write-PSFMessage:Target" = "Preperation"
         }
 
         # Import the required modules
-        $ModulesToImport = "ImportExcel","PnP.PowerShell","PSFramework"
+        $ModulesToImport = "ImportExcel", "PnP.PowerShell", "PSFramework"
         Import-Module $ModulesToImport
 
         try {
             $connectPnPOnlineSplat = @{
-                Url = $AdminUrl
+                Url         = $AdminUrl
                 Interactive = $true
                 ErrorAction = 'Stop'
             }
@@ -96,7 +96,8 @@ function New-CT365SharePointSite {
 
         try {
             $SiteData = Import-Excel -Path $FilePath -WorksheetName "Sites"
-        } catch {
+        }
+        catch {
             Write-PSFMessage -Message "Failed to import Sharepoint Site data from Excel file." -Level Error 
             return
         }
@@ -110,20 +111,20 @@ function New-CT365SharePointSite {
             $PSDefaultParameterValues["Write-PSFMessage:Target"] = $site.Title
             Write-PSFMessage -Message "Creating Sharepoint Site: '$($site.Title)'"
             $newPnPSiteSplat = @{
-                Type = $null
-                TimeZone = $site.Timezone
-                Title = $site.Title
+                Type        = $null
+                TimeZone    = $site.Timezone
+                Title       = $site.Title
                 ErrorAction = "Stop"
             }
             switch -Regex ($site.SiteType) {
                 "^TeamSite$" {
                     $newPnPSiteSplat.Type = $PSItem 
-                    $newPnPSiteSplat.add("Alias",$site.Alias)
+                    $newPnPSiteSplat.add("Alias", $site.Alias)
                     
                 }
                 "^(CommunicationSite|TeamSiteWithoutMicrosoft365Group)$" {
                     $newPnPSiteSplat.Type = $PSItem 
-                    $newPnPSiteSplat.add("Url",$siteurl)
+                    $newPnPSiteSplat.add("Url", $siteurl)
                 }
                 default {
                     Write-PSFMessage "Unknown site type: $($site.SiteType) for site $($site.Title). Skipping." -Level Error

@@ -37,40 +37,41 @@ function New-CT365Group {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+                }
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
                     throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
-                }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
+
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$UserPrincipalName,
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain
     )
     
 
     # Import the required modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Groups", "PSFramework", "ExchangeOnlineManagement"
     Import-Module $ModulesToImport
     
     # Connect to Exchange Online
@@ -91,7 +92,8 @@ function New-CT365Group {
                     Write-PSFMessage -Level Output -Message "Creating 365 Group: $($group.DisplayName)" -Target $Group.DisplayName
                     Get-UnifiedGroup -Identity $group.DisplayName -ErrorAction Stop
                     Write-PSFMessage -Level Warning -Message "365 Group: $($group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     New-UnifiedGroup -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -AccessType Private -Notes $group.Description -RequireSenderAuthenticationEnabled $False
                     Write-PSFMessage -Level Output -Message "Created 365 Group: $($Group.DisplayName) successfully" -Target $Group.DisplayName
                 }
@@ -101,7 +103,8 @@ function New-CT365Group {
                     Write-PSFMessage -Level Output -Message "Creating 365 Distribution Group: $($group.DisplayName)" -Target $Group.DisplayName
                     Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
                     Write-PSFMessage -Level Warning -Message "365 Distribution Group $($group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     New-DistributionGroup -Name $group.DisplayName -DisplayName $($group.DisplayName) -PrimarySMTPAddress $group.PrimarySMTP -Description $group.Description -RequireSenderAuthenticationEnabled $False
                     Write-PSFMessage -Level Output -Message "Created 365 Distribution Group: $($group.DisplayName)"  -Target $Group.DisplayName
                 }
@@ -111,7 +114,8 @@ function New-CT365Group {
                     Write-PSFMessage -Level Output -Message "Creating 365 Mail-Enabled Security Group: $($group.DisplayName)" -Target $Group.DisplayName
                     Get-DistributionGroup -Identity $group.DisplayName -ErrorAction Stop
                     Write-PSFMessage -Level Warning -Message "365 Mail-Enabled Security Group: $($group.DisplayName) already exists" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     New-DistributionGroup -Name $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Type "Security" -Description $group.Description -RequireSenderAuthenticationEnabled $False
                     Write-PSFMessage -Level Output -Message "Created 365 Mail-Enabled Security Group: $($group.DisplayName)" -Target $Group.DisplayName
                 }

@@ -30,33 +30,33 @@ function New-CT365User {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
         
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain,
 
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -65,7 +65,7 @@ function New-CT365User {
     )
 
     # Import Required Modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Users","Microsoft.Graph.Groups","Microsoft.Graph.Identity.DirectoryManagement","Microsoft.Graph.Users.Actions","PSFramework"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Users", "Microsoft.Graph.Groups", "Microsoft.Graph.Identity.DirectoryManagement", "Microsoft.Graph.Users.Actions", "PSFramework"
     Import-Module $ModulesToImport
 
     # Connect to Microsoft Graph - Pull these out eventually still in here for testing
@@ -80,7 +80,8 @@ function New-CT365User {
     $userData = $null
     try {
         $userData = Import-Excel -Path $FilePath -WorksheetName Users
-    } catch {
+    }
+    catch {
         Write-PSFMessage -Level Error -Message "Failed to import user data from Excel file."
         return
     }
@@ -106,7 +107,7 @@ function New-CT365User {
             AccountEnabled    = $true
         }
 
-        $PasswordProfile   = @{
+        $PasswordProfile = @{
             'ForceChangePasswordNextSignIn' = $false
             'Password'                      = $password | ConvertFrom-SecureString -AsPlainText
         }
@@ -118,18 +119,19 @@ function New-CT365User {
         # Validate user creation
         if ($null -ne $createdUser) {
             Write-PSFMessage -Level Output -Message "User: '$($NewUserParams.UserPrincipalName)' created successfully" -Target $user.UserName
-        } else {
+        }
+        else {
             Write-PSFMessage -Level Warning -Message "Failed to create user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
             # if the creation failed go ahead with the next user and skip the license part
             continue
         }
 
-        $licenses = Get-MgSubscribedSku | Where-Object {$_.SkuPartNumber -eq $user.License }
+        $licenses = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq $user.License }
         $user = Get-MgUser -Filter "DisplayName eq '$($NewUserParams.DisplayName)'"
         
         Write-PSFMessage -Level Host -Message "Assigning license $($user.License) to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
 
-        Set-MgUserLicense -UserId $user.Id -AddLicenses @{SkuId = ($licenses.SkuId)} -RemoveLicenses @()
+        Set-MgUserLicense -UserId $user.Id -AddLicenses @{SkuId = ($licenses.SkuId) } -RemoveLicenses @()
 
         # Retrieve the user's licenses after assignment
         $assignedLicenses = Get-MgUserLicenseDetail -UserId $user.Id | Select-Object -ExpandProperty SkuId
@@ -137,7 +139,8 @@ function New-CT365User {
         # Check if the assigned license ID is in the user's licenses
         if ($assignedLicenses -contains $licenses.SkuId) {
             Write-PSFMessage -Level Output -Message "License $License successfully assigned to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
-        } else {
+        }
+        else {
             Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
         }
     }

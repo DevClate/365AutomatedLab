@@ -23,26 +23,27 @@ function Remove-CT365Group {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
+
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$UserPrincipalName
     )
 
     # Import the required modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement","Microsoft.Graph.Users"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Groups", "PSFramework", "ExchangeOnlineManagement", "Microsoft.Graph.Users"
     Import-Module $ModulesToImport
 
     # Connect to Exchange Online
@@ -61,7 +62,8 @@ function Remove-CT365Group {
                     Get-UnifiedGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-UnifiedGroup -Identity $Group.DisplayName -Confirm:$false
                     Write-PSFMessage -Level Output -Message "Removed 365 Group: $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Warning -Message "365 Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
                     Continue
                 }
@@ -72,7 +74,8 @@ function Remove-CT365Group {
                     Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
                     Write-PSFMessage -Level Output -Message "Removed Distribution Group: $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Warning -Message "Distribution Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
                     Continue
                 }
@@ -83,7 +86,8 @@ function Remove-CT365Group {
                     Get-DistributionGroup -Identity $Group.DisplayName -ErrorAction Stop
                     Remove-DistributionGroup -Identity $Group.DisplayName -Confirm:$false
                     Write-PSFMessage -Level Output -Message "Removed Mail-Enabled Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Warning -Message "Mail-Enabled Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName -ErrorRecord $_
                     Continue
                 }
@@ -94,7 +98,8 @@ function Remove-CT365Group {
                 if ($existingGroup) {
                     Remove-MgGroup -GroupId $existingGroup.Id -Confirm:$false
                     Write-PSFMessage -Level Output -Message "Removed Security Group $($Group.DisplayName)" -Target $Group.DisplayName
-                } else {
+                }
+                else {
                     Write-PSFMessage -Level Warning -Message "Security Group $($Group.DisplayName) does not exist" -Target $Group.DisplayName
                 }
             }

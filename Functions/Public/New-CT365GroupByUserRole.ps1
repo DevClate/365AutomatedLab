@@ -28,50 +28,50 @@ This function requires the ExchangeOnlineManagement, ImportExcel, PSFramwork, an
 #>
 function New-CT365GroupByUserRole {
     [CmdletBinding(SupportsShouldProcess)]
-    param(
+    param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+                }
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
                     throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
-                }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
         
         [Parameter(Mandatory)]
         [ValidateScript({
-            # Check if the email fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"}{
-                    throw "The provided email is not in the correct format."
+                # Check if the email fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$" } {
+                        throw "The provided email is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$UserEmail,
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain,
         
         [Parameter(Mandatory)]
@@ -79,7 +79,7 @@ function New-CT365GroupByUserRole {
     )
 
     # Import Required Modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups","PSFramework","ExchangeOnlineManagement"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Groups", "PSFramework", "ExchangeOnlineManagement"
     Import-Module $ModulesToImport
 
     # Connect to Exchange Online
@@ -128,7 +128,8 @@ function New-CT365GroupByUserRole {
                         }  
                     }
                     Write-PSFMessage -Level Output -Message "Added $UserEmail to $($GroupType):'$GroupName' sucessfully" -Target $UserEmail
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Error -Message "$($_.Exception.Message) - Error adding $UserEmail to $($GroupType):'$GroupName'" -Target $UserEmail
                 }
             }

@@ -40,39 +40,39 @@ function Remove-CT365User {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
         
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain
 
     )
 
     # Import Required Modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Users","Microsoft.Graph.Groups","Microsoft.Graph.Identity.DirectoryManagement","Microsoft.Graph.Users.Actions","PSFramework"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Users", "Microsoft.Graph.Groups", "Microsoft.Graph.Identity.DirectoryManagement", "Microsoft.Graph.Users.Actions", "PSFramework"
     Import-Module $ModulesToImport
 
     # Connect to Microsoft Graph
@@ -87,7 +87,8 @@ function Remove-CT365User {
     $userData = $null
     try {
         $userData = Import-Excel -Path $FilePath -WorksheetName Users
-    } catch {
+    }
+    catch {
         Write-PSFMessage -Level Error -Message "Failed to import user data from Excel file."
         return
     }
@@ -106,22 +107,24 @@ function Remove-CT365User {
             
         Write-PSFMessage -Level Output -Message "Removing user: '$($NewUserParams.UserPrincipalName)'" -Target $NewUserParams.UserName
             
-        $userToRemove = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
+        $userToRemove = Get-MgUser | Where-Object { $_.DisplayName -eq $NewUserParams.DisplayName }
 
         # Validate if the user exists
         if ($userToRemove) {
             Remove-MgUser -UserId $userToRemove.id
                 
             # Check the user's existence
-            $removedUser = Get-MgUser | Where-Object {$_.DisplayName -eq $NewUserParams.DisplayName}
+            $removedUser = Get-MgUser | Where-Object { $_.DisplayName -eq $NewUserParams.DisplayName }
                 
             # Confirm that the user was removed
             if (-not $removedUser) {
                 Write-PSFMessage -Level Output -Message "User $($NewUserParams.DisplayName) has been successfully removed." -Target $NewUserParams.DisplayName
-            } else {
+            }
+            else {
                 Write-PSFMessage -Level Warning -Message "Failed to remove user $($NewUserParams.DisplayName)." -Target $NewUserParams.DisplayName
             }
-        } else {
+        }
+        else {
             Write-PSFMessage -Level Warning -Message "User $($NewUserParams.DisplayName) does not exist." -Target $NewUserParams.DisplayName
         }
     }

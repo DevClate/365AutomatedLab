@@ -30,20 +30,24 @@ function New-CT365Teams {
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-                switch ($psitem) {
-                    { -not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)") } {
-                        "Invalid file format: '$PSitem'. Use .xlsx"
-                    }
-                    Default {
-                        $true
-                    }
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
+                }
+        
+                # Return true if both conditions are met
+                $true
             })]
         [string]$FilePath,
 
         [Parameter(Mandatory)]
         [ValidateScript({
-            if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
+                if ($_ -match '^[a-zA-Z0-9]+\.sharepoint\.[a-zA-Z0-9]+$') {
                     $true
                 }
                 else {

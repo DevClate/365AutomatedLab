@@ -46,47 +46,47 @@ function Remove-CT365GroupByUserRole {
     param(
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            #making sure the Filepath leads to a file and not a folder and has a proper extension
-            switch ($psitem){
-                {-not([System.IO.File]::Exists($psitem))}{
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed).                "
+                # First, check if the file has a valid Excel extension (.xlsx)
+                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
+                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
                 }
-                {-not(([System.IO.Path]::GetExtension($psitem)) -match "(.xlsx)")}{
-                    "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
+        
+                # Then, check if the file exists
+                if (-not([System.IO.File]::Exists($psitem))) {
+                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
                 }
-                Default{
-                    $true
-                }
-            }
-        })]
+        
+                # Return true if both conditions are met
+                $true
+            })]
         [string]$FilePath,
         
         [Parameter(Mandatory)]
         [ValidateScript({
-            # Check if the email fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"}{
-                    throw "The provided email is not in the correct format."
+                # Check if the email fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch "^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$" } {
+                        throw "The provided email is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$UserEmail,
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-            # Check if the domain fits the pattern
-            switch ($psitem) {
-                {$psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$'}{
-                    throw "The provided domain is not in the correct format."
+                # Check if the domain fits the pattern
+                switch ($psitem) {
+                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
+                        throw "The provided domain is not in the correct format."
+                    }
+                    Default {
+                        $true
+                    }
                 }
-                Default {
-                    $true
-                }
-            }
-        })]
+            })]
         [string]$Domain,
         
         [Parameter(Mandatory)]
@@ -94,14 +94,14 @@ function Remove-CT365GroupByUserRole {
     )
 
     # Import Required Modules
-    $ModulesToImport = "ImportExcel","Microsoft.Graph.Groups", "Microsoft.Graph.Users", "PSFramework","ExchangeOnlineManagement"
+    $ModulesToImport = "ImportExcel", "Microsoft.Graph.Groups", "Microsoft.Graph.Users", "PSFramework", "ExchangeOnlineManagement"
     Import-Module $ModulesToImport
 
     # Connect to Exchange Online
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
 
     # Connect to Microsoft Graph
-    $Scopes = @("Group.ReadWrite.All","Directory.AccessAsUser.All")
+    $Scopes = @("Group.ReadWrite.All", "Directory.AccessAsUser.All")
     $Context = Get-MgContext
 
     if ([string]::IsNullOrEmpty($Context) -or ($Context.Scopes -notmatch [string]::Join('|', $Scopes))) {
@@ -129,7 +129,7 @@ function Remove-CT365GroupByUserRole {
                         "^365Security$" {
                             $user = Get-MgUser -Filter "userPrincipalName eq '$UserEmail'"
                             $ExistingGroup = Get-MgGroup -Filter "DisplayName eq '$($DisplayName)'"
-                                if ($ExistingGroup) {
+                            if ($ExistingGroup) {
                                 Remove-MgGroupMemberByRef -GroupId $ExistingGroup.Id -DirectoryObjectId $User.Id
                                 Write-PSFMessage -Level Output -Message "User $UserEmail successfully removed from $GroupType group $GroupName" -Target $UserEmail
                             }
@@ -144,7 +144,8 @@ function Remove-CT365GroupByUserRole {
                         
                     }
                     Write-PSFMessage -Level Output -Message "Removed $UserEmail from $($GroupType):'$GroupName' sucessfully" -Target $UserEmail
-                } catch {
+                }
+                catch {
                     Write-PSFMessage -Level Error -Message "$($_.Exception.Message) - Error removing user $UserEmail from $($GroupType):'$GroupName'" -Target $UserEmail
                 }
             }
