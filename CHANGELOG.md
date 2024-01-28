@@ -1,5 +1,61 @@
 # 365AutomatedLab Changelog
 
+### 2.5.0
+
+**Updated Features**
+
+*New-CT365DataEnvironment*
+
+* Will now only allow .xlsx files, and will confirm that the path of where you want to save it is correct.
+
+*New-CT365User*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*New-CT365Group*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*New-CT365GroupByUserRole*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*New-CT365SharePointSite*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*New-CT365Teams*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Remove-CT365Group*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Remove-CT365GroupByUserRole*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Remove-CT365SharePointSite*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Remove-CT365Teams*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Remove-CT365User*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+*Export-CT365ProdUserToExcel*
+
+* Will now only allow .xlsx files first, then check if the path is correct
+
+Export-CT365ProdTeamsToExcel
+
+* Will now only allow .xlsx files first, then check if path is correct
+
 ## 2.4.0
 
 ****************New Features****************
