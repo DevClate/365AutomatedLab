@@ -1,5 +1,13 @@
 # 365AutomatedLab Changelog
 
+### 2.6.0
+
+**Fixed**
+
+*New-CT365DataEnvironment*
+
+* Didn’t always handle creating new files correctly, and changed it so it doesn’t ask you if you want to create file, as it wasn’t consistent. Looking into adding the feature back later once it is more stable.
+
 ### 2.5.0
 
 **Updated Features**
