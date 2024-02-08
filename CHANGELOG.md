@@ -1,5 +1,11 @@
 # 365AutomatedLab Changelog
 
+### 2.7.0
+
+**Fixed**
+
+There was an issue using PnP.PowerShell 2.3 and anything newer than 4.50.0 for the Microsoft Identity Client module. Also Microsoft Identity Client was 4.50.0.0 and was changed back to 4.50.0. I made PnP.PowerShell 2.2 and Microsoft Identity Client 4.50.0 as the required versions for now until more testing. It does seem like a known issue with PnP.PowerShell 2.3. Please let me know if you run into any issues.
+
 ### 2.6.0
 
 **Fixed**
