@@ -78,7 +78,7 @@ function New-CT365Group {
     Connect-ExchangeOnline -UserPrincipalName $UserPrincipalName -ShowProgress $true
     
     # Connect to Microsoft Graph
-    Connect-MgGraph -Scopes "Group.ReadWrite.All"
+    Connect-MgGraph -Scopes "Group.ReadWrite.All", "User.Read.All"
     
     # Import data from Excel
     $groups = Import-Excel -Path $FilePath -WorksheetName Groups
@@ -86,6 +86,9 @@ function New-CT365Group {
     foreach ($group in $groups) {
         # Append the domain to the PrimarySMTP
         $group.PrimarySMTP += "@$Domain"
+        if (-not [string]::IsNullOrEmpty($group.ManagedBy)) {
+            $group.ManagedBy += "@$Domain"
+        }
         switch -Regex ($group.Type) {
             "^365Group$" {
                 try {
@@ -94,7 +97,11 @@ function New-CT365Group {
                     Write-PSFMessage -Level Warning -Message "365 Group: $($group.DisplayName) already exists" -Target $Group.DisplayName
                 }
                 catch {
-                    New-UnifiedGroup -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -AccessType Private -Notes $group.Description -RequireSenderAuthenticationEnabled $False
+                    $ManagedBy = $group.ManagedBy
+                    if ([string]::IsNullOrEmpty($ManagedBy)) {
+                        $ManagedBy = $UserPrincipalName
+                    }
+                    New-UnifiedGroup -DisplayName $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -AccessType Private -Notes $group.Description -RequireSenderAuthenticationEnabled $False -Owner $ManagedBy
                     Write-PSFMessage -Level Output -Message "Created 365 Group: $($Group.DisplayName) successfully" -Target $Group.DisplayName
                 }
             }
@@ -105,7 +112,11 @@ function New-CT365Group {
                     Write-PSFMessage -Level Warning -Message "365 Distribution Group $($group.DisplayName) already exists" -Target $Group.DisplayName
                 }
                 catch {
-                    New-DistributionGroup -Name $group.DisplayName -DisplayName $($group.DisplayName) -PrimarySMTPAddress $group.PrimarySMTP -Description $group.Description -RequireSenderAuthenticationEnabled $False
+                    $ManagedBy = $group.ManagedBy
+                    if ([string]::IsNullOrEmpty($ManagedBy)) {
+                        $ManagedBy = $UserPrincipalName
+                    }
+                    New-DistributionGroup -Name $group.DisplayName -DisplayName $($group.DisplayName) -PrimarySMTPAddress $group.PrimarySMTP -Description $group.Description -ManagedBy $ManagedBy -RequireSenderAuthenticationEnabled $False
                     Write-PSFMessage -Level Output -Message "Created 365 Distribution Group: $($group.DisplayName)"  -Target $Group.DisplayName
                 }
             }
@@ -116,7 +127,11 @@ function New-CT365Group {
                     Write-PSFMessage -Level Warning -Message "365 Mail-Enabled Security Group: $($group.DisplayName) already exists" -Target $Group.DisplayName
                 }
                 catch {
-                    New-DistributionGroup -Name $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Type "Security" -Description $group.Description -RequireSenderAuthenticationEnabled $False
+                    $ManagedBy = $group.ManagedBy
+                    if ([string]::IsNullOrEmpty($ManagedBy)) {
+                        $ManagedBy = $UserPrincipalName
+                    }
+                    New-DistributionGroup -Name $group.DisplayName -PrimarySMTPAddress $group.PrimarySMTP -Type "Security" -Description $group.Description -ManagedBy $ManagedBy -RequireSenderAuthenticationEnabled $False
                     Write-PSFMessage -Level Output -Message "Created 365 Mail-Enabled Security Group: $($group.DisplayName)" -Target $Group.DisplayName
                 }
             }
@@ -127,8 +142,20 @@ function New-CT365Group {
                     Write-PSFMessage -Level Warning -Message "365 Security Group: $($group.DisplayName) already exists" -Target $Group.DisplayName
                     continue
                 }
+                $ManagedBy = $group.ManagedBy
+                if ([string]::IsNullOrEmpty($ManagedBy)) {
+                    $ManagedBy = $UserPrincipalName
+                }
+                $GroupOwner = Get-MgUser -Filter "UserPrincipalName eq '$ManagedBy'"
+                if ($null -eq $GroupOwner) {
+                    Write-PSFMessage -Level Error -Message "User with UserPrincipalName '$ManagedBy' not found"
+                    continue
+                }
+
                 $mailNickname = $group.PrimarySMTP.Split('@')[0]
                 New-MgGroup -DisplayName $group.DisplayName -Description $group.Description -MailNickName $mailNickname -SecurityEnabled:$true -MailEnabled:$false
+                $365group = Get-MgGroup -Filter "DisplayName eq '$($group.DisplayName)'"
+                New-MgGroupOwner -GroupId $365group.Id -DirectoryObjectId $GroupOwner.Id
                 Write-PSFMessage -Level Output -Message "Created 365 Security Group: $($group.DisplayName)" -Target $Group.DisplayName
             }
             default {
