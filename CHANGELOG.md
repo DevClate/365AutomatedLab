@@ -1,4 +1,11 @@
 # 365AutomatedLab Changelog
+### 2.8.0
+
+**Updated Feature**
+
+*New-CT365Group*
+
+* Can now add a owner to each group, if you don't it will default to User Principal Name parameter
 
 ### 2.7.0
 
