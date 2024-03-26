@@ -48,13 +48,14 @@ function New-CT365DataEnvironment {
         [ValidateScript({
             if (Test-Path -Path $_ -PathType Leaf) {
                 throw "File $_ already exists, please provide a new file path"
-            } elseif (-not $_ -match '^.*\.(xlsx)$') {
-                throw "File path $_ is not a valid .xlsx file, please provide a valid .xlsx file path"
-            } elseif (-not (Test-Path -Path (Split-Path $_) -PathType Container)) {
-                throw "Folder path for $_ does not exist, please confirm path does exist"
-            } else {
-                $true
             }
+            if (-not $_ -match '^.*\.(xlsx)$') {
+                throw "File path $_ is not a valid .xlsx file, please provide a valid .xlsx file path"
+            }
+            if (-not (Test-Path -Path (Split-Path $_) -PathType Container)) {
+                throw "Folder path for $_ does not exist, please confirm path does exist"
+            } 
+            return $true
         })]
         [string]$FilePath,
 
