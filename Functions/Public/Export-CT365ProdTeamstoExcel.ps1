@@ -32,20 +32,16 @@ function Export-CT365ProdTeamsToExcel {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-                $isValid = $false
                 $extension = [System.IO.Path]::GetExtension($_)
                 $directory = [System.IO.Path]::GetDirectoryName($_)
 
                 if ($extension -ne '.xlsx') {
                     throw "The file $_ is not an Excel file (.xlsx). Please specify a file with the .xlsx extension."
                 }
-                elseif (-not (Test-Path -Path $directory -PathType Container)) {
+                if (-not (Test-Path -Path $directory -PathType Container)) {
                     throw "The directory $directory does not exist. Please specify a valid directory."
                 }
-                else {
-                    $isValid = $true
-                }
-                return $isValid
+                return $true
             })]
         [string]$FilePath,
 
@@ -80,10 +76,7 @@ function Export-CT365ProdTeamsToExcel {
             $teams = Get-PnPTeamsTeam
             Write-PSFMessage -Level Verbose -Message "Retrieved Microsoft Teams information"
 
-            # Create an array to hold team and channel information
-            $exportData = @()
-
-            foreach ($team in $teams) {
+            $exportData = foreach ($team in $teams) {
                 # Fetch channels for the team, excluding 'General'
                 $channels = Get-PnPTeamsChannel -Team $team.DisplayName | Where-Object { $_.DisplayName -ne 'General' }
 
@@ -108,7 +101,7 @@ function Export-CT365ProdTeamsToExcel {
                     $channelCount++
                 }
 
-                $exportData += $teamObject
+                $teamObject
             }
 
             # Export data to Excel
