@@ -35,20 +35,16 @@ function Export-CT365ProdGroupToExcel {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
-                $isValid = $false
                 $extension = [System.IO.Path]::GetExtension($_)
                 $directory = [System.IO.Path]::GetDirectoryName($_)
 
                 if ($extension -ne '.xlsx') {
                     throw "The file $_ is not an Excel file (.xlsx). Please specify a file with the .xlsx extension."
                 }
-                elseif (-not (Test-Path -Path $directory -PathType Container)) {
+                if (-not (Test-Path -Path $directory -PathType Container)) {
                     throw "The directory $directory does not exist. Please specify a valid directory."
                 }
-                else {
-                    $isValid = $true
-                }
-                return $isValid
+                return $true
             })]
         [string]$FilePath,
 
