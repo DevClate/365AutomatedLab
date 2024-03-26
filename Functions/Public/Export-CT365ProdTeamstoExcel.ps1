@@ -76,10 +76,7 @@ function Export-CT365ProdTeamsToExcel {
             $teams = Get-PnPTeamsTeam
             Write-PSFMessage -Level Verbose -Message "Retrieved Microsoft Teams information"
 
-            # Create an array to hold team and channel information
-            $exportData = @()
-
-            foreach ($team in $teams) {
+            $exportData = foreach ($team in $teams) {
                 # Fetch channels for the team, excluding 'General'
                 $channels = Get-PnPTeamsChannel -Team $team.DisplayName | Where-Object { $_.DisplayName -ne 'General' }
 
@@ -104,7 +101,7 @@ function Export-CT365ProdTeamsToExcel {
                     $channelCount++
                 }
 
-                $exportData += $teamObject
+                $teamObject
             }
 
             # Export data to Excel
