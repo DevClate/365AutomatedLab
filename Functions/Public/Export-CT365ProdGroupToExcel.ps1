@@ -87,10 +87,12 @@ function Export-CT365ProdGroupToExcel {
                 @{Name = 'PrimarySMTP'; Expression = { $_.MailNickname } },
                 'Description',
                 @{Name = 'Type'; Expression = {
-                        if ($_.GroupTypes -contains "Unified") { "365Group" }
-                        elseif ($_.MailEnabled -and -not $_.SecurityEnabled) { "365Distribution" }
-                        elseif ($_.MailEnabled -and $_.SecurityEnabled) { "365MailEnabledSecurity" }
-                        else { "365Security" }
+                        switch ($_) {
+                            { $_.GroupTypes -contains "Unified" } { "365Group" }
+                            { $_.MailEnabled -and -not $_.SecurityEnabled } { "365Distribution" }
+                            { $_.MailEnabled -and $_.SecurityEnabled } { "365MailEnabledSecurity" }
+                            default { "365Security" }
+                        }
                     }
                 }
             )
