@@ -86,7 +86,7 @@ function New-CT365DataEnvironment {
             Users   = @(
                 "FirstName", "LastName", "UserName", "Title", "Department",
                 "StreetAddress", "City", "State", "PostalCode", "Country",
-                "PhoneNumber", "MobilePhone", "UsageLocation", "License"
+                "PhoneNumber", "MobilePhone", "FaxNumber", "UsageLocation", "CompanyName", "EmployeeHireDate", "EmployeeId", "EmployeeType", "License"
             )
             Groups  = @(
                 "DisplayName", "PrimarySMTP", "Description", "Type"
