@@ -96,7 +96,8 @@ function Export-CT365ProdUserToExcel {
             'DisplayName', 'MailNickname', 'JobTitle', 
             'Department', 'StreetAddress', 'City', 
             'State', 'PostalCode', 'Country', 
-            'BusinessPhones', 'MobilePhone', 'UsageLocation'
+            'BusinessPhones', 'MobilePhone', 'FaxNumber', 'UsageLocation',
+            'CompanyName', 'EmployeeHireDate', 'EmployeeId', 'EmployeeType'
         }
         
         if (-not [string]::IsNullOrEmpty($DepartmentFilter)) {
@@ -118,7 +119,8 @@ function Export-CT365ProdUserToExcel {
                 @{Name = 'Title'; Expression = { $_.JobTitle } },
                 'Department', 'StreetAddress', 'City', 'State', 'PostalCode', 'Country',
                 @{Name = 'PhoneNumber'; Expression = { $_.BusinessPhones } },
-                'MobilePhone', 'UsageLocation',
+                'MobilePhone', 'FaxNumber', 'UsageLocation', 'CompanyName',
+                'EmployeeHireDate', 'EmployeeId', 'EmployeeType',
                 @{Name = 'License'; Expression = { if ($NoLicense) { "" } else { "DEVELOPERPACK_E5" } } }
             )
         }
