@@ -1,4 +1,46 @@
 # 365AutomatedLab Changelog
+
+### 2.9.0
+
+**Brief Summary**
+
+Added new parameters to cmdlets and cleaned up some formatting.
+
+**Updated Features**
+
+*New-CT365User*
+
+* CompanyName
+* EmployeeHireDate
+* EmplyeeId
+* EmployeeType
+  * Employee, Contractor, Consultant, or Vendor.
+* FaxNumber
+
+*New-CT365DataEnvironment*
+
+* CompanyName
+* EmployeeHireDate
+* EmplyeeId
+* EmployeeType
+* FaxNumber
+
+*Export-CT365ProdUserToExcel*
+
+* CompanyName
+* EmployeeHireDate
+* EmplyeeId
+* EmployeeType
+* FaxNumber
+
+*365DataEnvironment.xlsx*
+
+* CompanyName
+* EmployeeHireDate
+* EmplyeeId
+* EmployeeType
+* FaxNumber
+
 ### 2.8.0
 
 **Updated Feature**
@@ -19,7 +61,7 @@ There was an issue using PnP.PowerShell 2.3 and anything newer than 4.50.0 for t
 
 *New-CT365DataEnvironment*
 
-* Didn’t always handle creating new files correctly, and changed it so it doesn’t ask you if you want to create file, as it wasn’t consistent. Looking into adding the feature back later once it is more stable.
+* Didn't always handle creating new files correctly, and changed it so it doesn’t ask you if you want to create file, as it wasn’t consistent. Looking into adding the feature back later once it is more stable.
 
 ### 2.5.0
 
