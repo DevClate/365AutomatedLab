@@ -10,7 +10,7 @@
     The path of the Excel file containing user data. The file should have a worksheet named 'Users' with columns for UserName, FirstName, LastName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone, UsageLocation, and License. 
     This parameter is mandatory and accepts pipeline input and property names.
 
-.PARAMETER domain
+.PARAMETER Domain
     The domain to be appended to the UserName to create the UserPrincipalName for each user.
     This parameter is mandatory and accepts pipeline input and property names.
 
@@ -103,7 +103,12 @@ function New-CT365User {
             Country           = $user.Country
             BusinessPhones    = $user.PhoneNumber
             MobilePhone       = $user.MobilePhone
+            FaxNumber         = $user.FaxNumber
             UsageLocation     = $user.UsageLocation
+            CompanyName       = $user.CompanyName
+            EmployeeHireDate  = $user.EmployeeHireDate
+            EmployeeId        = $user.EmployeeId
+            EmployeeType      = $user.EmployeeType
             AccountEnabled    = $true
         }
 
