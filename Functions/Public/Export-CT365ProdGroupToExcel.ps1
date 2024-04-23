@@ -35,16 +35,20 @@ function Export-CT365ProdGroupToExcel {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateScript({
+                $isValid = $false
                 $extension = [System.IO.Path]::GetExtension($_)
                 $directory = [System.IO.Path]::GetDirectoryName($_)
 
                 if ($extension -ne '.xlsx') {
                     throw "The file $_ is not an Excel file (.xlsx). Please specify a file with the .xlsx extension."
                 }
-                if (-not (Test-Path -Path $directory -PathType Container)) {
+                elseif (-not (Test-Path -Path $directory -PathType Container)) {
                     throw "The directory $directory does not exist. Please specify a valid directory."
                 }
-                return $true
+                else {
+                    $isValid = $true
+                }
+                return $isValid
             })]
         [string]$FilePath,
 
@@ -87,12 +91,10 @@ function Export-CT365ProdGroupToExcel {
                 @{Name = 'PrimarySMTP'; Expression = { $_.MailNickname } },
                 'Description',
                 @{Name = 'Type'; Expression = {
-                        switch ($_) {
-                            { $_.GroupTypes -contains "Unified" } { "365Group" }
-                            { $_.MailEnabled -and -not $_.SecurityEnabled } { "365Distribution" }
-                            { $_.MailEnabled -and $_.SecurityEnabled } { "365MailEnabledSecurity" }
-                            default { "365Security" }
-                        }
+                        if ($_.GroupTypes -contains "Unified") { "365Group" }
+                        elseif ($_.MailEnabled -and -not $_.SecurityEnabled) { "365Distribution" }
+                        elseif ($_.MailEnabled -and $_.SecurityEnabled) { "365MailEnabledSecurity" }
+                        else { "365Security" }
                     }
                 }
             )
