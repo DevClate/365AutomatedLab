@@ -1,5 +1,11 @@
 # 365AutomatedLab Changelog
 
+### 2.10.1
+
+**Brief Summary**
+
+Fixed the code that outputs into the console confirming which manager was added
+
 ### 2.10.0
 
 **Brief Summary**
