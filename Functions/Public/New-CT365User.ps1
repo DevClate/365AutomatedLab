@@ -1,74 +1,58 @@
 <#
 .SYNOPSIS
-    This function creates new Microsoft 365 users from data in an Excel file and assigns them a license.
+Creates a new user in Office 365.
 
 .DESCRIPTION
-    The New-CT365User function imports user data from an Excel file, creates new users in Microsoft 365, and assigns them a license. 
-    It performs these tasks using the Microsoft.Graph.Users and Microsoft.Graph.Groups modules.
+The New-CT365User function creates a new user in Office 365 using the Microsoft Graph API. 
+It imports user data from an Excel file and assigns licenses based on the user data. 
+If the UseDeveloperPackE5 switch is set, it assigns the DEVELOPERPACK_E5 license to all users.
 
 .PARAMETER FilePath
-    The path of the Excel file containing user data. The file should have a worksheet named 'Users' with columns for UserName, FirstName, LastName, Title, Department, StreetAddress, City, State, PostalCode, Country, PhoneNumber, MobilePhone, UsageLocation, and License. 
-    This parameter is mandatory and accepts pipeline input and property names.
+The path to the Excel file that contains the user data. This parameter is mandatory.
 
 .PARAMETER Domain
-    The domain to be appended to the UserName to create the UserPrincipalName for each user.
-    This parameter is mandatory and accepts pipeline input and property names.
+The domain for the new users. This parameter is mandatory.
+
+.PARAMETER UseDeveloperPackE5
+A switch that, if set, assigns the DEVELOPERPACK_E5 license to all users.
+
+.PARAMETER Password
+The password for the new users. If not provided, the function will prompt for the password.
 
 .EXAMPLE
-    New-CT365User -FilePath "C:\Path\to\file.xlsx" -domain "contoso.com"
-    This command imports user data from the 'file.xlsx' file and creates new users in Microsoft 365 under the domain 'contoso.com'.
+New-CT365User -FilePath "C:\Users\admin\Documents\user_data.xlsx" -Domain "contoso.com" -UseDeveloperPackE5
+
+This command creates new users in Office 365 using the user data in the "user_data.xlsx" file, assigns the DEVELOPERPACK_E5 license to all users, and prompts for the password.
+
+.EXAMPLE
+New-CT365User -FilePath "C:\Users\admin\Documents\user_data.xlsx" -Domain "contoso.com"
+
+This command creates new users in Office 365 using the user data in the "user_data.xlsx" file, assigns named license from excel worksheet, and prompts for the password.
 
 .NOTES
-    The function connects to Microsoft Graph using 'Directory.ReadWrite.All' scope. Make sure the account running this script has the necessary permissions.
-    The function lets you set the password for each new user to what you want it to be and does not require the user to change the password at the next sign-in. 
-    Modify the password setting to meet your organization's security requirements.
-
-    Connect-MgGraph -Scopes "Directory.ReadWrite.All" - is needed to connect to Graph
+You need to have the necessary permissions to create users and assign licenses in Office 365.
 #>
 function New-CT365User {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateScript({
-                # First, check if the file has a valid Excel extension (.xlsx)
-                if (-not(([System.IO.Path]::GetExtension($psitem)) -match "\.(xlsx)$")) {
-                    throw "The file path '$PSitem' does not have a valid Excel format. Please make sure to specify a valid file with a .xlsx extension and try again."
-                }
-        
-                # Then, check if the file exists
-                if (-not([System.IO.File]::Exists($psitem))) {
-                    throw "The file path '$PSitem' does not lead to an existing file. Please verify the 'FilePath' parameter and ensure that it points to a valid file (folders are not allowed)."
-                }
-        
-                # Return true if both conditions are met
-                $true
-            })]
+        [Parameter(Mandatory, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [string]$FilePath,
         
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateScript({
-                # Check if the domain fits the pattern
-                switch ($psitem) {
-                    { $psitem -notmatch '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?[a-z]{2,}(?:\.[a-z]{2,})+$' } {
-                        throw "The provided domain is not in the correct format."
-                    }
-                    Default {
-                        $true
-                    }
-                }
-            })]
+        [Parameter(Mandatory, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [string]$Domain,
 
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
+        [Parameter()]
+        [switch]$UseDeveloperPackE5,
 
+        [Parameter(ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [Security.SecureString]$Password = $(Read-Host -Prompt "Enter the password" -AsSecureString)
     )
 
     # Import Required Modules
     $ModulesToImport = "ImportExcel", "Microsoft.Graph.Users", "Microsoft.Graph.Groups", "Microsoft.Graph.Identity.DirectoryManagement", "Microsoft.Graph.Users.Actions", "PSFramework"
     Import-Module $ModulesToImport
 
-    # Connect to Microsoft Graph - Pull these out eventually still in here for testing
+    # Scopes
     $Scopes = @("Directory.ReadWrite.All")
     $Context = Get-MgContext
 
@@ -86,10 +70,10 @@ function New-CT365User {
         return
     }
 
-    # Iterate through each user in the Excel file and create them
     foreach ($user in $userData) {
-        $NewUserParams = @{
-            UserPrincipalName = "$($user.UserName)@$domain"
+        # Prepare user parameters for creation
+        $userParams = @{
+            UserPrincipalName = "$($user.UserName)@$Domain"
             GivenName         = $user.FirstName
             Surname           = $user.LastName
             DisplayName       = "$($user.FirstName) $($user.LastName)"
@@ -101,57 +85,71 @@ function New-CT365User {
             State             = $user.State
             PostalCode        = $user.PostalCode
             Country           = $user.Country
-            BusinessPhones    = $user.PhoneNumber
-            MobilePhone       = $user.MobilePhone
-            FaxNumber         = $user.FaxNumber
             UsageLocation     = $user.UsageLocation
             CompanyName       = $user.CompanyName
-            EmployeeHireDate  = $user.EmployeeHireDate
-            EmployeeId        = $user.EmployeeId
-            EmployeeType      = $user.EmployeeType
             AccountEnabled    = $true
+            PasswordProfile   = @{
+                ForceChangePasswordNextSignIn = $false
+                Password                      = $Password | ConvertFrom-SecureString -AsPlainText
+            }
         }
 
-        $PasswordProfile = @{
-            'ForceChangePasswordNextSignIn' = $false
-            'Password'                      = $password | ConvertFrom-SecureString -AsPlainText
+        # Add optional properties if they exist
+        foreach ($prop in @('MobilePhone', 'FaxNumber', 'EmployeeHireDate', 'EmployeeId', 'EmployeeType')) {
+            if (-not [string]::IsNullOrEmpty($user.$prop)) {
+                $userParams[$prop] = $user.$prop
+            }
         }
-        
-        Write-PSFMessage -Level Output -Message "Creating user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
 
-        $createdUser = New-MgUser @NewUserParams -PasswordProfile $PasswordProfile
+        if (-not [string]::IsNullOrEmpty($user.PhoneNumber)) {
+            $UserParams.BusinessPhones = @($user.PhoneNumber)
+        }
 
-        # Validate user creation
+        # Create the new user
+        $createdUser = New-MgUser @userParams
         if ($null -ne $createdUser) {
-            Write-PSFMessage -Level Output -Message "User: '$($NewUserParams.UserPrincipalName)' created successfully" -Target $user.UserName
-        }
-        else {
-            Write-PSFMessage -Level Warning -Message "Failed to create user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
-            # if the creation failed go ahead with the next user and skip the license part
+            Write-PSFMessage -Level Host -Message "User created: $($userParams.UserPrincipalName)" -Target $user.UserName
+        } else {
+            Write-PSFMessage -Level Warning -Message "Failed to create user: $($userParams.UserPrincipalName)" -Target $user.UserName
             continue
         }
 
-        $licenses = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq $user.License }
-        $user = Get-MgUser -Filter "DisplayName eq '$($NewUserParams.DisplayName)'"
+        # License assignment logic
+        $licenseType = $UseDeveloperPackE5 ? 'DEVELOPERPACK_E5' : $user.License
+        $licenses = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq $licenseType }
         
-        Write-PSFMessage -Level Host -Message "Assigning license $($user.License) to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
-
-        Set-MgUserLicense -UserId $user.Id -AddLicenses @{SkuId = ($licenses.SkuId) } -RemoveLicenses @()
-
-        # Retrieve the user's licenses after assignment
-        $assignedLicenses = Get-MgUserLicenseDetail -UserId $user.Id | Select-Object -ExpandProperty SkuId
-
-        # Check if the assigned license ID is in the user's licenses
-        if ($assignedLicenses -contains $licenses.SkuId) {
-            Write-PSFMessage -Level Output -Message "License $License successfully assigned to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
+        if ($licenses) {
+            Set-MgUserLicense -UserId $createdUser.Id -AddLicenses @{ SkuId = $licenses.SkuId } -RemoveLicenses @()
+            Write-PSFMessage -Level Host -Message "License assigned: $($licenses.SkuPartNumber) to user: $($userParams.UserPrincipalName)" -Target $user.UserName
+        } else {
+            Write-PSFMessage -Level Warning -Message "Failed to assign license: $licenseType to user: $($userParams.UserPrincipalName)" -Target $user.UserName
         }
-        else {
-            Write-PSFMessage -Level Warning -Message "Failed to assign license $License to user: '$($NewUserParams.UserPrincipalName)'" -Target $user.UserName
+
+        # Manager assignment if applicable
+        if ($null -ne $user.ManagerUPN) {
+            $managerUPNData = "$($user.ManagerUPN)@$Domain"
+            $manager = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/users/$($managerUPNData)" }
+        
+            $assigningManagerMessage = "Assigning manager $($managerUPNData) to user: '$($UserParams.UserPrincipalName)'"
+            Write-PSFMessage -Level Host -Message $assigningManagerMessage -Target $user.UserName
+        
+            Set-MgUserManagerByRef -UserId $createdUser.Id -BodyParameter $manager
+        
+            # Confirm manager assignment
+            $managerDirectoryObject = Get-MgUserManager -UserId $createdUser.Id
+            if ($null -ne $managerDirectoryObject) {
+                $managerUser = Get-MgUser -UserId $managerDirectoryObject.Id
+        
+                $assignedManagerMessage = "Assigned manager $($managerUser.UserPrincipalName) to user: '$($NewUserParams.UserPrincipalName)'"
+                Write-PSFMessage -Level Host -Message $assignedManagerMessage -Target $user.UserName
+            }
+            else {
+                $failedToAssignManagerMessage = "Failed to assign manager $($user.Manager) to user: '$($NewUserParams.UserPrincipalName)'"
+                Write-PSFMessage -Level Warning -Message $failedToAssignManagerMessage -Target $user.UserName
+            }
         }
     }
 
-    # Disconnect Microsoft Graph sessions
-    if (-not [string]::IsNullOrEmpty($(Get-MgContext))) {
-        Disconnect-MgGraph
-    }
+    # Close the Microsoft Graph connection
+    Disconnect-MgGraph
 }
