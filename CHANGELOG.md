@@ -1,5 +1,22 @@
 # 365AutomatedLab Changelog
 
+### 2.10.0
+
+**Brief Summary**
+
+Added new manager and added a swtich named UseDeveloperPackE5 to add the developer licenses to all added users.
+
+**Updated Features**
+
+New-CTUser
+
+* Added Manager
+* Add only Dev licenses option
+* Updated help
+* Allow optional parameters to be empty
+
+Added "Discussions" for feature requests and general discussions
+
 ### 2.9.0
 
 **Brief Summary**
