@@ -140,11 +140,11 @@ function New-CT365User {
             if ($null -ne $managerDirectoryObject) {
                 $managerUser = Get-MgUser -UserId $managerDirectoryObject.Id
         
-                $assignedManagerMessage = "Assigned manager $($managerUser.UserPrincipalName) to user: '$($NewUserParams.UserPrincipalName)'"
+                $assignedManagerMessage = "Assigned manager $($managerUser.UserPrincipalName) to user: '$($UserParams.UserPrincipalName)'"
                 Write-PSFMessage -Level Host -Message $assignedManagerMessage -Target $user.UserName
             }
             else {
-                $failedToAssignManagerMessage = "Failed to assign manager $($user.Manager) to user: '$($NewUserParams.UserPrincipalName)'"
+                $failedToAssignManagerMessage = "Failed to assign manager $($user.Manager) to user: '$($UserParams.UserPrincipalName)'"
                 Write-PSFMessage -Level Warning -Message $failedToAssignManagerMessage -Target $user.UserName
             }
         }
