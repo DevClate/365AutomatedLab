@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.10.0'
+ModuleVersion = '2.10.1'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
