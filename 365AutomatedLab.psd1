@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.10.1'
+ModuleVersion = '2.10.2'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -60,7 +60,7 @@ RequiredModules = @(
     @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='1.17.0' }
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
     @{ ModuleName='PnP.PowerShell'; RequiredVersion='2.2.0' }
-    @{ ModuleName='Microsoft.Identity.Client'; RequiredVersion='4.50.0' }
+    #@{ ModuleName='Microsoft.Identity.Client'; RequiredVersion='4.50.0' }
 )
 
 # Assemblies that must be loaded prior to importing this module

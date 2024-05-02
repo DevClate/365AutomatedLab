@@ -1,5 +1,11 @@
 # 365AutomatedLab Changelog
 
+### 2.10.2
+
+**Brief Summary**
+
+Removed required Microsoft.Identity.Client as causing issues on Mac
+
 ### 2.10.1
 
 **Brief Summary**
