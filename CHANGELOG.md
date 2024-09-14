@@ -1,5 +1,30 @@
 # 365AutomatedLab Changelog
 
+### 2.11.0 
+
+**Brief Summary**
+
+This is a quick update to remove `Connect-PnP` directly in the modules so that you can choose the way you want to connect now since their update. I’ll be adding ways to connect in the future, but want to look at the best way to give everyone options.
+
+### New Features
+
+- Adding documentation for Connecting to PnP module now.
+  - [PnP PowerShell Documentation](https://pnp.github.io/powershell/)
+
+### Breaking Changes
+
+- Removed `Connect-PNP`
+  - Removed `Connect-PNP` till I/we can setup multiple ways to offer to connect to PNP with the new mandated way.
+    - `New-CT365SharePointSite`
+    - `New-CT365Teams`
+    - `Export-CT365ProdTeamstoExcel`
+    - `Remove-CT365AllDeletedM365Groups`
+    - `Remove-CT365AllSitesFromRecycleBin`
+    - `Remove-CT365SharePointSite`
+    - `Remove-CT365Teams`
+- Change `RequiredVersion PnP.PowerShell 2.2` to `ModuleVersion 2.2.0`
+  - In the future, I will update to require a higher version, but do not want to break change. I have confirmed it works on 2.2.0 and 2.12.
+  
 ### 2.10.2
 
 **Brief Summary**

@@ -33,6 +33,7 @@ Due to the 365 Developer Program being on hold, I know it's not easy to get a te
   - Microsoft.Graph.Users.Actions v1.17.0+
   - PSFramework v1.8.289+
   - PnP.PowerShell v2.2.0+
+    - Please read https://pnp.github.io/powershell/ if having issues with connecting
   - Microsoft.Identity.Client v4.50.0.0
 
 ### Installer
