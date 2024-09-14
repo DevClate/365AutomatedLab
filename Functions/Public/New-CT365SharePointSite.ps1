@@ -82,19 +82,6 @@ function New-CT365SharePointSite {
         Import-Module $ModulesToImport
 
         try {
-            $connectPnPOnlineSplat = @{
-                Url         = $AdminUrl
-                Interactive = $true
-                ErrorAction = 'Stop'
-            }
-            Connect-PnPOnline  @connectPnPOnlineSplat
-        }
-        catch {
-            Write-PSFMessage -Message "Failed to connect to sharepoint online" -Level Error 
-            return 
-        }
-
-        try {
             $SiteData = Import-Excel -Path $FilePath -WorksheetName "Sites"
         }
         catch {
