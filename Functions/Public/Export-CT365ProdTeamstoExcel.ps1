@@ -99,14 +99,10 @@ function Export-CT365ProdTeamsToExcel {
             $exportData | Export-Excel -Path $FilePath -WorksheetName "Teams" -AutoSize
             Write-PSFMessage -Level Host -Message "Data exported to Excel successfully"
 
-        } catch {
-            Write-PSFMessage -Message "Failed to connect to SharePoint Online" -Level Error 
-            return 
-        } finally {
             # Disconnect the PnP session
             Disconnect-PnPOnline
             Write-PSFMessage -Level Verbose -Message "Disconnected from Microsoft 365"
-        }
+        
     }
 
     end {
