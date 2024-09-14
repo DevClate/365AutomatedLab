@@ -63,15 +63,6 @@ function Export-CT365ProdTeamsToExcel {
     }
 
     process {
-        try {
-            $connectPnPOnlineSplat = @{
-                Url = $AdminUrl
-                Interactive = $true
-                ErrorAction = 'Stop'
-            }
-            Connect-PnPOnline @connectPnPOnlineSplat
-            Write-PSFMessage -Level Verbose -Message "Connected to SharePoint Online"
-
             # Fetch all teams
             $teams = Get-PnPTeamsTeam
             Write-PSFMessage -Level Verbose -Message "Retrieved Microsoft Teams information"
