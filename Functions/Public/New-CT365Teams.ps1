@@ -77,14 +77,6 @@ function New-CT365Teams {
     }
 
     try {
-        Connect-PnPOnline -Url $AdminUrl -Interactive
-    }
-    catch {
-        Write-PSFMessage -Level Error -Message "[$(Get-Date -Format 'u')] Failed to connect to PnP Online: $($_.Exception.Message)"
-        return
-    }
-
-    try {
         $teamsData = Import-Excel -Path $FilePath -WorksheetName "teams"
         $existingTeams = Get-PnPTeamsTeam
     }

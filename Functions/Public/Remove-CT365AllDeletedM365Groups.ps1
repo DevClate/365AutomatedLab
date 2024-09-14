@@ -47,7 +47,7 @@ function Remove-CT365AllDeletedM365Groups {
             }
         }
         
-        Connect-PnPOnline -Url $AdminUrl -Interactive
+
     }
 
     Process {

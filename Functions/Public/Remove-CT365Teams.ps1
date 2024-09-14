@@ -66,22 +66,7 @@ function Remove-CT365Teams {
         # Import required modules.
         $ModulesToImport = "ImportExcel", "PnP.PowerShell", "PSFramework", "Microsoft.Identity.Client"
         Import-Module $ModulesToImport
-        
-        try {
-            # Connect to SharePoint Online.
-            $connectPnPOnlineSplat = @{
-                Url         = $AdminUrl
-                Interactive = $true
-                ErrorAction = 'Stop'
-            }
-            Connect-PnPOnline @connectPnPOnlineSplat
-        }
-        catch {
-            # Log an error and exit if the connection fails.
-            Write-PSFMessage -Message "Failed to connect to SharePoint Online" -Level Error 
-            return 
-        }
-        
+ 
         try {
             # Import site data from Excel.
             $SiteData = Import-Excel -Path $FilePath -WorksheetName "Teams"

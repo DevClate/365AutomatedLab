@@ -45,9 +45,6 @@ function Remove-CT365AllSitesFromRecycleBin {
                 Install-Module $module -Scope CurrentUser
             }
         }
-
-        # Connect to SharePoint Online
-        Connect-PnPOnline -Url $AdminUrl -Interactive
     }
 
     Process {
