@@ -12,7 +12,7 @@
 RootModule = '365AutomatedLab.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.11.0'
+ModuleVersion = '2.12.0'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -53,14 +53,13 @@ PowerShellVersion = '7.1'
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules = @(
     @{ ModuleName='ImportExcel'; ModuleVersion='7.8.2' }
-    @{ ModuleName='ExchangeOnlineManagement'; ModuleVersion='2.0.6' }
-    @{ ModuleName='Microsoft.Graph.Users'; ModuleVersion='1.17.0' }
-    @{ ModuleName='Microsoft.Graph.Groups'; ModuleVersion='1.17.0' }
-    @{ ModuleName='Microsoft.Graph.Identity.DirectoryManagement'; ModuleVersion='1.17.0' }
-    @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='1.17.0' }
+    @{ ModuleName='ExchangeOnlineManagement'; ModuleVersion='3.5.0' }
+    @{ ModuleName='Microsoft.Graph.Users'; ModuleVersion='2.25.0' }
+    @{ ModuleName='Microsoft.Graph.Groups'; ModuleVersion='2.25.0' }
+    @{ ModuleName='Microsoft.Graph.Identity.DirectoryManagement'; ModuleVersion='2.25.0' }
+    @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='2.25.0' }
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
-    @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.2.0' }
-    #@{ ModuleName='Microsoft.Identity.Client'; RequiredVersion='4.50.0' }
+    @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.99.139' }
 )
 
 # Assemblies that must be loaded prior to importing this module
