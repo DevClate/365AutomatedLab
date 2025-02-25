@@ -1,6 +1,7 @@
 ![Alt 365AutomatedLab Logo](https://github.com/DevClate/365AutomatedLab/blob/main/Static/365automatedlab.png?raw=true)
 
 # 365AutomatedLab
+![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/365AutomatedLab?label=Downloads&style=flat-square)
 
 This module will create a Microsoft 365 Test Environment using an excel workbook
 
