@@ -59,7 +59,7 @@ RequiredModules = @(
     @{ ModuleName='Microsoft.Graph.Identity.DirectoryManagement'; ModuleVersion='2.25.0' }
     @{ ModuleName='Microsoft.Graph.Users.Actions'; ModuleVersion='2.25.0' }
     @{ ModuleName='PSFramework'; ModuleVersion='1.8.289' }
-    @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.99.139' }
+    @{ ModuleName='PnP.PowerShell'; ModuleVersion='2.12.0' }
 )
 
 # Assemblies that must be loaded prior to importing this module

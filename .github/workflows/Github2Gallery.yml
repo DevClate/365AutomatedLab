@@ -15,5 +15,5 @@ jobs:
         shell: pwsh
         run: |
           Set-PSRepository psgallery -InstallationPolicy trusted
-          Install-Module ImportExcel, ExchangeOnlineManagement, Microsoft.Graph.Users, Microsoft.Graph.Groups, Microsoft.Graph.Identity.DirectoryManagement, Microsoft.Graph.Users.Actions, PSFramework, PnP.PowerShell, Microsoft.Identity.Client -confirm:$false -force
+          Install-Module ImportExcel, ExchangeOnlineManagement, Microsoft.Graph.Users, Microsoft.Graph.Groups, Microsoft.Graph.Identity.DirectoryManagement, Microsoft.Graph.Users.Actions, PSFramework, PnP.PowerShell -confirm:$false -force
           Publish-Module -Path ./ -NuGetApiKey $env:NUGET_KEY -Verbose
